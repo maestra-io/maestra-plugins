@@ -62,14 +62,25 @@ columnsGap={{ size: N, mobile: { size: N } }}
 ```jsx
 style={{
   font: { family: "…" },
+  fallbackFontFamily: "Tahoma",
   fontSize: N,
+  lineHeight: "1.8",
+  letterSpacing: N,
   color: "#RRGGBB",
-  inscription: ["bold"|"italic"|"underlined"|"strikethrough"],
+  inscription: ["bold"|"italic"|"underlined"|"crossed"],
   link: { color: "…", inscription: […] },
   align: "left"|"center"|"right",
   mobile: { fontSize: N, align: "left"|"center"|"right" }
 }}
 ```
+
+Strikethrough is `crossed`. The converter silently accepts `strikethrough` and draws nothing:
+there will be no error, and there will be no strikethrough in the email either.
+
+These are the nine fields that reading an email prints in full on a node outside the letter styles
+(the editor's Design tab; §8 `dsl-surface.md`). `lineHeight` is a string (`"1.0"`, `"1.8"`), `letterSpacing` is a number:
+the layout's letter-spacing is reproduced, not declared impossible; the live preview has been verified on both.
+`fallbackFontFamily` follows the font rules — preserve it on a round-trip, don't invent a new one.
 
 If `Text.style` sets `fontSize` or `align`, set `style.mobile` deliberately.
 Without it the backend substitutes the mobile default `{ fontSize: 18, align: "left" }`,
@@ -103,8 +114,14 @@ The same availability rule as for `Text.style.font.family` above applies to
 ### buttonSize
 
 ```jsx
-buttonSize={{ height: N, heightMobile: N, widthType: "percent", width: N, widthMobile: N }}
+buttonSize={{ height: N, widthType: "percent"|"pixels", width: N }}
+buttonSize={{ height: N, heightMobile: N, widthType: "pixels", width: N, widthMobile: N }}
 ```
+
+`widthType` is required next to `width`: without it the number is read as a percentage. Write `heightMobile` and
+`widthMobile` only when the mobile value differs from the desktop one — without them the mobile
+side is synchronized with desktop. On choosing between percent and pixels, see `dsl-surface.md`, §6
+"Button".
 
 ### align
 
@@ -154,8 +171,12 @@ verticalAlign={{ align: "top"|"middle"|"bottom", mobile: { align: "…" } }}
 
 ```jsx
 image={{ mode: "static", static: { url: "<HTTPS URL>", fileName: "<file name>" } }}
+image={{ mode: "dynamic", dynamic: [<Var param="RecipientCustomFieldString" customFieldType={{ "systemName": "<CUSTOM_FIELD_SYSTEM_NAME_FROM_LOOKUP>" }} />] }}
 ```
 
+- `mode: "dynamic"` is a personal image: the address is taken from the parameter's value. `static` is not
+  written in this form; the missing fields are merged onto the default. A domain prefix before `<Var>` is allowed
+  only on the user's direct instruction.
 - For gallery assets: if `name` already ends with `fileExtension`, `fileName = name`; otherwise
   `fileName = name + fileExtension`.
 - Besides the required `image`, a standalone Image accepts `url`, `size`, `align`,
@@ -192,8 +213,18 @@ align={{ align: "left"|"center"|"right", mobile: { align: "…" } }}
 url="https://shop.example/item"
 ```
 
-This is an optional HTTPS click-through link, not the image source. The source always
-comes from `image.static.url`. A placeholder or invented `url` is forbidden by policy.
+This is an optional HTTPS click-through link, not the image source. For a static source
+use `image.static.url`; for a personal one, `image.dynamic`. A placeholder or invented
+`url` is forbidden by policy.
+
+A personal click-through link is written as a list of segments:
+
+```jsx
+url={["https://shop.example/points/", <Var param="RecipientBonusBalance" balance={{ "systemName": "<BALANCE_SYSTEM_NAME_FROM_LOOKUP>" }} />]}
+```
+
+The converter does not apply scheme validation to a value with a chip — the correctness of the address is
+up to the field's contents.
 
 ## 8. Grid (Column.size)
 
@@ -208,7 +239,7 @@ comes from `image.static.url`. A placeholder or invented `url` is forbidden by p
 
 ## 10. Group attributes
 
-Use these forms only on the group that owns the attribute. The exact defaults for `itemsGap` are not fixed.
+Use these forms only on the group that owns the attribute. The `itemsGap` defaults are in `dsl-surface.md` §6, "Defaults that appear on their own".
 
 ### itemsGap and iconTextGap
 

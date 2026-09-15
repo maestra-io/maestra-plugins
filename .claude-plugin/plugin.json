@@ -1,7 +1,7 @@
 {
   "name": "maestra",
-  "version": "1.0.0",
-  "description": "Maestra skills for marketers: emails in the visual editor, segment filters, and more.",
+  "version": "1.1.0",
+  "description": "Maestra skills for marketers: emails in the visual editor (personalization, product rows, letter styles, test sends), segment filters, and more.",
   "author": {
     "name": "Maestra.io"
   },
@@ -17,6 +17,11 @@
     "segment",
     "segmentation",
     "audience",
-    "cdp"
+    "cdp",
+    "personalization",
+    "recommendations",
+    "product-feed",
+    "letter-styles",
+    "test-send"
   ]
 }

@@ -3,12 +3,25 @@
 **When to read this:** you need an HTML download, a PNG, desktop/mobile, QA/debug, or
 diagnosis of a specific rendering or fallback problem. For a simple "show/refresh
 preview," the invariants in `SKILL.md` are enough — don't open this file.
-**Return to:** step 3 "Edits, freshness, and optional preview/QA" of the canonical
+**Return to:** step 3 "Editing, freshness, and optional preview/QA" of the canonical
 workflow in `SKILL.md`, or back to the user with the QA result.
 
 ```text
-visual_template_preview(jsx) → temporary htmlUrl + MCP App widget in a supporting host
+visual_template_preview(jsx, formatInternalId) → temporary htmlUrl + MCP App widget in a supporting host
 ```
+
+This is the editor's canvas: personalization is filled with sample values, a link with
+personalization is rendered as `#`, an empty image — as a placeholder. The response also
+carries `containerWidth` — the preview panel needs it; don't relay it to the user.
+
+Always pass `formatInternalId` when the format is known: with it, the document gets the
+width, background, "Global (CSS) styles" and the letter styles (the editor's Design tab) of
+the email itself laid under it, and the snapshot shows the email. Otherwise the snapshot is
+only the document — and it looks exactly as convincing, which is precisely why QA against it
+is deceptive: a divergence from the real email is not visible on the picture in any way. In
+that case the tool itself states what was drawn, and you have to judge by its response, not
+by the argument you passed: a format with a typo and a format with no saved email give the
+same snapshot as a format not named at all.
 
 - **Preview is no longer an automatic step after every edit.** Each call to
   `visual_template_preview` opens a new MCP App widget in a supporting host;
@@ -80,9 +93,9 @@ visual_template_preview(jsx) → temporary htmlUrl + MCP App widget in a support
   asks to check the email, asks for PNG/mobile/desktop, or talks about specific
   text, a link, an image, cropping, responsiveness, or other rendering — that's
   already a diagnostics request: call an HTML preview of the current JSX, show
-  the link/widget, download the HTML if needed, and call the MCP PNG preview for
-  PNG. Don't ask a separate question about whether it's OK to open the
-  HTML/get a PNG.
+  the link/widget, download the HTML if needed, and take the PNG from that same
+  preview's response. Don't ask a separate question about whether it's OK to
+  open the HTML/get a PNG.
 - **A routine edit without QA:** after changing the JSX, just write that the
   previous preview is stale and offer to show a new one. If the user doesn't ask
   for preview/QA, don't call `visual_template_preview`, don't download HTML, and
@@ -100,43 +113,54 @@ visual_template_preview(jsx) → temporary htmlUrl + MCP App widget in a support
   check with HTML and desktop/mobile PNG links.
   ```
 
-  Example of a write confirmation without a fresh preview:
+  A write confirmation without a fresh preview is assembled from the canonical set of fields in the
+  "Confirmation" section of the main `SKILL.md` — campaign, A/B variant, formats with Draft expanded,
+  the change, freshness, and the mandatory letter-styles line. Only the choice is added here:
 
   ```text
-  Campaign: <name>
-  Format: Active
-  Change: <brief>
-  Preview: not refreshed since the last edit.
   Choose: 1) show a new preview; 2) run a full QA with HTML and PNG;
   3) save without a new preview.
   ```
 
   After option 1 or 2, report the result and ask for save confirmation
   separately; preview/QA never implies consent to write. HTML QA reads the
-  downloaded file selectively and checks the expected text, links, images,
-  personalization/unsubscribe, and obvious escaping/structure issues against the
-  user's request. Don't read the entire HTML into the model's context
-  unnecessarily. In the preview HTML, `${Message.UnsubscribeLink}` may remain a
-  literal string until send: don't treat this as a defect, and don't replace it
-  with a fake URL. PNG QA uses the MCP desktop/mobile links and visually checks
-  content, cropping, the responsive branch, and image loading. This is
-  best-effort QA, not a full Outlook/Gmail compatibility test.
-- **PNG preview is provided by MCP.** When PNG/mobile/desktop is requested, call
-  the MCP PNG preview tool for the current JSX. This is a separate MCP function,
-  analogous to HTML preview: it returns temporary links to PNG files — desktop
-  and mobile. Don't use a local screenshot as the standard path: the standard
-  source for PNGs is the MCP preview links. The exception is the Cowork fallback
-  below, if MCP PNG preview is unavailable or returns no links.
+  downloaded file selectively and checks the expected text, images, layout, and
+  obvious escaping/structure issues against the user's request. Don't read the
+  entire HTML into the model's context unnecessarily. **What the canvas HTML does not prove:**
+
+  - personalization is filled with sample values: `${Customer.FirstName}` and other
+    `${...}` will no longer appear in the canvas HTML;
+  - **all** links inside `<Text>` have `href="#"` in the canvas HTML — both ordinary ones and
+    the canonical unsubscribe link `${Message.UnsubscribeLink}`. The same goes for
+    `<Button>`/`<Image>`/`<Icon>` if their `url` contains personalization;
+  - an empty image is rendered as a placeholder.
+
+  None of this is a defect. Don't present the substituted values as customer data, and don't
+  check link addresses against the canvas: `href="#"` in the canvas HTML **does not mean** that
+  the link is lost or that the JSX holds a fake URL — addresses and the presence of
+  `${Message.UnsubscribeLink}` must be checked against the JSX (`visual_template_get` / what the
+  Generator passed), not against the HTML.
+
+  PNG QA uses the desktop/mobile links from the preview response and visually checks
+  content, cropping, the responsive branch, and image loading. This is best-effort QA, not a
+  full Outlook/Gmail compatibility test.
+- **The PNGs come in the same response as the preview link.** There is no separate PNG tool:
+  `visual_template_preview` returns links to the desktop and mobile snapshots together with
+  the `htmlUrl`, in one call. When PNG/mobile/desktop is requested, don't look for a second
+  tool and don't call the preview a second time — take the links from the response you already
+  have, and if there has been no preview since the last edit, call it once. Don't use a local
+  screenshot as the standard path. The exception is the Cowork fallback below, if the response
+  turned out to have no links.
   If the user asks for only mobile or only desktop, you can show just that
   link; for a full responsive diagnosis, show both. Take field names in the
   response from the actual MCP tool output; when talking to the user, call them
   the "desktop snapshot" and the "mobile snapshot."
-- **Fallback if MCP doesn't return a PNG.** If MCP PNG preview is unavailable,
-  returns an error, or returns no links, and the user still needs a visual
-  check, in Cowork you can use Claude in Chrome as an emergency fallback to
-  view/capture the HTML preview. Tell the user explicitly that this is a
-  fallback, not the standard MCP PNG. Don't fall back to the removed legacy path
-  through local PNG scripts.
+- **Fallback if there are no PNG links.** If the preview returned an error or came back
+  without PNG links, and the user still needs a visual check, in Cowork you can use Claude in
+  Chrome as an emergency fallback to view/capture the HTML preview. Tell the user explicitly
+  that this is a fallback, not the standard PNGs from the tool's response. The browser only
+  reads here: entering the Maestra interface with it and clicking anything on the user's
+  behalf is forbidden. Don't fall back to the removed legacy path through local PNG scripts.
 - **How to use the PNG links.** Show the user the desktop/mobile PNG links and
   use them for a visual check if the current host allows opening/viewing
   images. If the host can't render a PNG from a link, say plainly that the PNGs
@@ -145,15 +169,14 @@ visual_template_preview(jsx) → temporary htmlUrl + MCP App widget in a support
 - **Diagnosing a follow-up complaint.** If the user reports a content/rendering
   problem in a generated campaign, get the current JSX, call a fresh HTML
   preview, download the HTML only if you need to check HTML fragments; for a
-  visual/responsive problem, also call the MCP PNG preview and check the
-  desktop/mobile PNG links. Only use existing local HTML if it's provably fresh
-  for the same JSX.
+  visual/responsive problem, check the desktop/mobile PNG links from the preview
+  response. Only use existing local HTML if it's provably fresh for the same JSX.
 
 If additional QA finds a defect and the Generator changes the JSX, the previous
 `htmlUrl`, MCP App widget, local HTML, and PNG links no longer prove the state of
 the new JSX. Mark the preview as stale. If the user continues QA/debug, repeat the
-HTML preview, the needed HTML download, and/or the MCP PNG preview; if not, just
-offer to refresh the preview.
+HTML preview and the needed HTML download; if not, just offer to refresh the
+preview.
 
 Don't edit the JSX yourself — run preview/QA only per this policy, keep the
 artifacts, and carry out save.

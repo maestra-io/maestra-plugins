@@ -28,7 +28,11 @@ user request or when similar options are ambiguous.
 2. Selection invariants:
 
    - the email always gets the original `url` from `gallery_images_list`, exactly
-     as MCP printed it;
+     as MCP printed it; with a `.webp` filter the URL may point to an imgproxy
+     conversion of the source file rather than to the original S3 object — that's
+     normal;
+   - rely on the actual columns of the `gallery_images_list` response: `name`,
+     `fileExtension`, `isSystem`, `url`; size/date may be absent;
    - `fileName` is assembled as `name + fileExtension`, if `name` doesn't already
      end with that extension;
    - the user picks a card number; never silently pick a similar option for them;

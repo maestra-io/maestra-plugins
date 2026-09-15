@@ -24,7 +24,7 @@ The patterns below cover the typical cases. Each example is self-contained, with
 ```
 
 **Why it's done this way:**
-- `style={{ fontSize: 32, inscription: ["bold"], align: "center", mobile: { fontSize: 28, align: "center" } }}` — the heading is defined with an explicit size, alignment, and a mobile branch, not with `variant` (the DSL has no theme presets).
+- `style={{ fontSize: 32, inscription: ["bold"], align: "center", mobile: { fontSize: 28, align: "center" } }}` — the heading is defined with an explicit size, alignment, and a mobile branch. That takes it off the letter styles (the editor's Design tab): `style` is the entire typography of this text, and there is no halfway here (§8 `dsl-surface.md`).
 - `size={12}` — a single full-width column.
 - Plain text — no `<b>`, no `<a>`, no HTML markup.
 - `Text` without `style` — regular text with the theme defaults.
@@ -100,6 +100,30 @@ The patterns below cover the typical cases. Each example is self-contained, with
 - `Text` and `Button` in separate columns are independent elements.
 - No percentage `width` anywhere — width is set only via `size`.
 
+## 4a. Porting a row with two images (6+6)
+
+**User description:** "Port a 1200px-wide row with two adjacent 600px + 600px images from HTML/Klaviyo"
+
+```jsx
+<Template>
+  <Block>
+    <FlexRow>
+      <Column size={6}>
+        <Image image={{ mode: "static", static: { url: "https://cdn.example.com/left.jpg", fileName: "left.jpg" } }} />
+      </Column>
+      <Column size={6}>
+        <Image image={{ mode: "static", static: { url: "https://cdn.example.com/right.jpg", fileName: "right.jpg" } }} />
+      </Column>
+    </FlexRow>
+  </Block>
+</Template>
+```
+
+**Why it's done this way:**
+- The two images were neighbours in one source HTML/Klaviyo row, so they stay in one
+  `FlexRow` instead of turning into two consecutive rows of `Column size={12}`.
+- `600+600` out of a `1200px` container is `6+6` in the 12-unit grid; the column sizes must sum to exactly 12.
+
 ## 5. Block with background and padding
 
 **User description:** "A section with a gray background and 24px padding"
@@ -148,7 +172,7 @@ The patterns below cover the typical cases. Each example is self-contained, with
 - Emails are stored as JSON; the JSON→JSX read may emit a quoted string — no data is lost.
 - Use `<Html>` only when nothing else fits — text, a button, and an image survive manual edits, an html block does not.
 
-## 7. Menu built from Text lines
+## 7. Menu built from Text items
 
 **User description:** "A horizontal menu: Catalog and Sale"
 
@@ -168,8 +192,8 @@ The patterns below cover the typical cases. Each example is self-contained, with
 ```
 
 **Why it's done this way:**
-- `<Menu>` contains direct lines without `<Column>`.
-- All lines are of the same type: only `<Text>` here.
+- `<Menu>` contains direct items without `<Column>`.
+- All items are of the same type: only `<Text>` here.
 
 ## 8. Bulleted list
 
@@ -208,9 +232,9 @@ The patterns below cover the typical cases. Each example is self-contained, with
     <FlexRow>
       <Column size={12}>
         <Socials imageSize={{ type: "fixed", width: 40, mobile: { type: "fixed", width: 40 } }}>
-          <Image image={{ mode: "static", static: { url: "https://cdn.example.com/vk.png", fileName: "vk.png" } }} />
-          <Image image={{ mode: "static", static: { url: "https://cdn.example.com/tg.png", fileName: "tg.png" } }} />
-          <Image image={{ mode: "static", static: { url: "https://cdn.example.com/fb.png", fileName: "fb.png" } }} />
+          <Image image={{ mode: "static", static: { url: "https://cdn.example.com/instagram.png", fileName: "instagram.png" } }} />
+          <Image image={{ mode: "static", static: { url: "https://cdn.example.com/facebook.png", fileName: "facebook.png" } }} />
+          <Image image={{ mode: "static", static: { url: "https://cdn.example.com/tiktok.png", fileName: "tiktok.png" } }} />
         </Socials>
       </Column>
     </FlexRow>
@@ -219,8 +243,8 @@ The patterns below cover the typical cases. Each example is self-contained, with
 ```
 
 **Why it's done this way:**
-- `<Socials>` contains only `<Image image={{...}} />` lines; each icon has its own URL.
-- `imageSize` is set on the group, not on individual Image lines.
+- `<Socials>` contains only `<Image image={{...}} />` items; each icon has its own URL.
+- `imageSize` is set on the group, not on individual Image items.
 - All `cdn.example.com` URLs here are illustrative. In a real answer, substitute each with only a URL
   the user provided or one returned by an unambiguously selected gallery DTO.
 
@@ -297,6 +321,10 @@ The patterns below cover the typical cases. Each example is self-contained, with
 ```
 
 **Why it's done this way:**
+- **This is a pattern for static content** that you write yourself. Product cards from a mechanic —
+  recommendations, viewed products, order items — are built with the `<CollectionRow>` product row
+  (`references/product-rows.md`): there the card is drawn once per product and the heights are synchronized on their own,
+  without splitting into rows.
 - Don't put each whole card into its own `Column`: column heights are computed independently,
   text wraps differently, and the buttons "drift" vertically. Fixed heights via
   `<Html>` tables are fragile — the renderer wraps components in its own tables/cells.
@@ -343,7 +371,7 @@ The patterns below cover the typical cases. Each example is self-contained, with
 - Background + `borderRadius` + `innerSpacing` on `Column` make a card; the `Block` background provides contrast with neighboring sections.
 - Copy **the roles of the colors, not the values**: section background → card background (one step lighter or darker than the section background) → heading accent → muted description color. The specific hex values come from the client's reference. The section doesn't have to be dark: for a light brand, the section background is light and the text is dark — contrast matters more than direction.
 - Three size levels (28 / 18 / 14) create hierarchy; the numbers themselves also adapt to the layout.
-- Styles are set only via `style` — `<Theme>` and `variant` are forbidden in the DSL.
+- Styles are set via `style` on the node itself: the example takes the texts off the letter styles instead of editing them. Editing the letter styles would ripple through the whole email.
 - Every `<Text>` with `fontSize` has a mobile branch, otherwise the backend will substitute its own values.
 - **The font is not set from the layout:** it's assigned by the tenant's theme, and different components may get a different typeface (for example `Menu` and `BulletList` don't get the same family as `Text`). If unified typography matters for the email, that's configured in the editor, not in the layout.
 - Verified live: the preview accepts this section and returns correct HTML.
@@ -373,7 +401,7 @@ The patterns below cover the typical cases. Each example is self-contained, with
   the stored template and live HTML confirm an actual width of 40px.
 - Don't substitute a styled `<span>` marker inside `<Text>` or `<Html>`: those render, but
   don't give the user a separate editable element.
-- One BulletList uses one icon for all its lines. For different numerals, create
+- One BulletList uses one icon for all its items. For different numerals, create
   a separate BulletList per point, or use a separate fixed-size `<Image>` and `<Text>`.
 - The URL is a placeholder: before generating, get a confirmed asset through Ops.
 - A custom marker has one `size` for desktop/mobile, so before saving, visually
