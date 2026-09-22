@@ -1,23 +1,19 @@
 ---
 name: flow-business-audit
 description: >-
-  Business audit of a project's marketing scenarios (flows) that ends in fixes to
-  the scenarios themselves. First the figures — revenue, orders, funnel and rates
-  per flow over the period, against the month before and the same month a year
-  earlier — to find the flows that have a problem and the flows that work best;
-  then, only for those, the construction: start block, conditions, sends, repeat
-  settings — to name the block, the setting and the action that would fix it, or
-  the approach worth copying. Three to seven scenarios are taken through in full,
-  the remaining problem ones become a short table of hypotheses. Two report forms,
-  chosen at the start: the full report, or a client-ready deck of proposals with a
-  separate note for the CSM. Use when the question is about business results
-  **asked in any language**: "which flows earn and which don't", "audit the
-  project's scenarios on money", "which scenarios work and which do not, and what
-  to fix", "what did the scenarios bring in for the month", or one named flow's
-  money. The answer goes back in the language it was asked in. Don't use to check
-  one flow's structure for anti-patterns with no figures behind it (use
-  flow-issues-audit), to summarize what a flow does (use flow-summary), or to
-  create or edit anything — this skill is read-only.
+  Business audit of a project's marketing flows that ends in fixes to the flows
+  themselves. First the figures — revenue, orders, funnel and rates per flow over
+  the period, against the month before and the same month a year earlier — to find
+  the flows with a problem and the ones that work best; then, only for those, the
+  construction (start block, conditions, sends, repeat settings) to name the
+  block, setting or action that would fix it, or the approach worth copying. Two
+  report forms, chosen at the start: the full report, or a client-ready deck of
+  proposals with a note for the CSM. Use when the question is about business
+  results, in any language: "which flows earn and which don't", "audit the
+  project's flows on money", "what did the flows bring in for the month", or one
+  named flow's money. Answers in the language asked. Don't use to check one flow's
+  structure with no figures (flow-issues-audit), to summarize what a flow does
+  (flow-summary), or to create or edit anything — read-only.
 metadata:
   author: Maestra.io
   upstream: AI tribe

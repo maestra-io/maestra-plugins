@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.2.1 — 2026-09-22
+
+- **`flow-business-audit`**: the frontmatter `description` was 1,335 characters; claude.ai's plugin
+  marketplace caps it at 1,024 and left the skill out of the sync with a warning. Shortened to under
+  1,000 characters with the same triggers and exclusions. No behaviour change.
+
 ## 1.2.0 — 2026-09-21
 
 Four flow skills added, ported from the upstream `flow` plugin 1.27.0 (author "AI tribe") — the same
