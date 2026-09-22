@@ -1,230 +1,306 @@
 ---
 name: filter-build
 description: >-
-  Build a CDP filter (a selection of customers, products or actions; the basis of a segment)
-  from a natural-language request: the filters-domain reference → draft → validation →
-  resolving the project's catalogue wording → a link to the list in the project, and the filter
-  itself on request.
-  Triggers: "build a filter", "make a segment", "select customers who",
-  "who bought X in the last N days", "filter by products",
-  "starter filters".
-  NOT for: datamart analytics — "count", "how many", a report, a metric, ClickHouse SQL
-  (the `analytics_*` tools of the same MCP server); explaining a filter that already exists
-  (/maestra:filter-explain).
-argument-hint: "who to select — e.g. customers with a confirmed email who bought Nike in the last 90 days"
-author: Maestra.io
+  Build or edit a CDP filter — a selection of customers, products or actions, the basis of a
+  segment — from a natural-language request, or change existing filter JSON. Returns a
+  platform-confirmed filter and a link to the list in the project when available; does not
+  save a segment.
+  Russian triggers: "собери фильтр", "построй фильтр", "сделай выборку", "нужен сегмент",
+  "выбери клиентов, которые...", "фильтр по товарам", "добавь условие в фильтр".
+  English triggers: "build a filter", "make a segment", "select customers who...",
+  "who bought X in the last N days", "filter products", "edit this filter",
+  "add a filter condition", "starter filters".
+  NOT for: explaining an existing filter (maestra:filter-explain); datamart analytics —
+  "count", "how many", "сколько клиентов", a report, a metric, ClickHouse SQL (the
+  `analytics_*` tools of the same MCP server).
+argument-hint: "who to select, or the existing filter JSON and the requested change"
+metadata:
+  author: Maestra.io
+  upstream: AI tribe
+  version: 1.3.0
 ---
 
 # Filter build
 
-Build a CDP filter from a natural-language request. The domain lives in the project's MCP
-server: the `wiki` tool holds the filter language and the entity catalogue, the `filter_*`
-tools do validation, catalogue lookups and building.
+Use the project and environment already settled in the conversation. Find that server's
+`filter_*` tools and `feedback`. One connection may serve several projects. When its tools
+require `tenant`, use the exact project system name; if it is unknown, discover accessible
+projects with `tenants_list`. Choose the sole applicable project or ask when several fit.
+Explain a missing connection. Keep all calls on the chosen server and project: catalogue
+IDs belong to that project.
 
-**This skill deliberately holds no domain knowledge.** No entity or field names, no grammar,
-no operator list — all of that is in `wiki`, generated outside this plugin and
-changing without any edit here. A copy would inevitably drift from its
-source and silently teach outdated syntax. What lives here is the route, the boundaries and the
-shape of the answer.
+Examples below are independent and use synthetic requests. Replace `<tenant>` with the
+confirmed project system name before calling; omit it only if the tool's schema has no
+`tenant` argument. Use the actual request, editor and returned records. Tool names may have
+a server prefix.
 
-## Three rules
+## 1. Read the current entry point
 
-1. **Knowledge comes from `wiki`, not from memory.** Fields, relations, operators, document
-   ids, catalogue names. What is not in a document you have read does not exist — do not
-   extrapolate by analogy.
-2. **Tool answers document themselves.** The answer already states what the result means and
-   what to do next: why something was refused, whether a retry is worth it, what to ask the
-   person, why there is no link. Read the tool's answer and do what it says — do not override it
-   with this instruction and do not paraphrase it from memory.
-3. **The filter is not saved.** The domain's tools are read-only: building returns the finished
-   filter but creates and changes nothing in the project. Never report "the filter is ready",
-   "the segment was created", or "saved".
+At the start of every build or edit, freshly read the connected server's root README, even
+if you read it in an earlier task:
 
-## Checklist
-
-Keep a checklist of steps 0–3 and tick off what is done. Keep the count of rebuild rounds in the
-checklist rather than in your head: the rule "after this, ask the person" depends on it.
-
-## 0. Choose the project — before anything else
-
-**The skill's first action.** Do not read the reference, do not write a draft and do not call a
-single tool until it is settled which project you are building on.
-
-Almost everything depends on the project: its own catalogues (brands, categories, segments,
-custom fields), its own set of available filters, its own data and its own link. The same name
-exists in one project and not in another, and a filter built on the wrong project does not fail
-with an error — it silently describes a different audience. So the project is **never chosen by
-default and never guessed**.
-
-Find the tools in your list that belong to filter building (names shaped like
-`mcp__<server>__filter_*`) — one set per connected project.
-
-**None.** Say that the MCP server for the project is not connected, naming the environment and
-project if the request mentioned them. The user knows how MCP is connected — do not invent a
-command or an address. Go no further: without a server there is nothing to build with.
-
-The server needs network access and rights to the project — it authorises the user, not the
-skill. So "the server is connected but no tools appeared" is nearly always access
-rather than the request: have the user check their rights on the project. If the tools are there
-but answer with a refusal, that is the **refusal** branch below, where the tool itself says
-whether it is access or the service.
-
-**The project is unambiguous** — exactly one server is connected and the request names no other
-project or environment. Name the chosen project out loud in your first answer and work with it.
-
-**In every other case, ask — and it is the first question, before any other work.** It is
-ambiguous when:
-
-- more than one server is connected, whether those are different projects or one project across
-  environments;
-- the request names a project or environment and the connected server is not it, or it is
-  unclear whether it is;
-- the server's name does not clearly say which project it stands for.
-
-When asking, list the connected servers and which project and environment each one stands for.
-Once chosen, call **only that server's** tools — never mix answers from different servers into
-one filter. Keep the chosen project in the checklist and name it in the final report.
-
-## 1. Take the building instructions
-
-Start from the `filters` domain reference — the `wiki` tool. Its index lists what is there.
-
-You need at least two kinds of material, both before writing a draft: the **step-by-step
-building procedure** and the **grammar** of the language. The procedure is the source of truth
-for step 2 — what to take as the root, how to split the request into predicates, how to group
-conditions. The grammar is what that split is written in. If the index holds anything else
-relevant to the task, take that too.
-
-If the reference does not have what the work relies on, stop and say that the reference and the
-skill have diverged. Improvising here is not allowed: the route rests on it.
-
-There is no full-text search: you navigate only by the id links inside documents you have
-already read, and the tool prints the canonical id of whatever it found. **Do not guess ids** —
-follow the links until you reach the fields, relations and worked recipes you need.
-
-You read a lot and out of order, so **write a short summary immediately after reading**: what
-you took as the root, the canonical ids you read, the available fields and relations, the recipe
-that fits. You will need it for the report. But the source is the documents, not the summary: if
-you are unsure of a name or an operator, re-read the document instead of extrapolating from your
-own notes.
-
-## 2. Work the procedure through to a valid result
-
-From here follow **the procedure from the reference**, not the steps of this instruction. It
-names the tools and the order itself — including checking the draft and turning catalogue values
-into the project's own wording. Take exact tool names, arguments and permitted values from the
-tool schemas; they are deliberately absent here so that this file cannot drift from the server.
-
-The skill adds only what the procedure does not carry — the boundaries:
-
-- **the draft does not pass the check** — go back to the reference for the right field, operator
-  or construct instead of patching blindly. And do not weaken a condition to make a draft pass:
-  the audience changes. If it cannot be expressed, say so plainly rather than substituting
-  something similar.
-- **catalogue values did not match** — the answer lists them with a reason and hands back
-  ready-made lines for asking again. Work through its text and retry, **two rounds at most**.
-  After that ask the person instead of cycling through wordings.
-- **a refusal or a service failure** — the answer states whether retrying is worth it and what
-  to tell the person. Follow it.
-
-## 3. Return the link
-
-**By default hand over the link alone.** It is the artefact a person can act on: it opens the
-selection in the project, shows who fell into it, and is where the filter becomes a saved
-segment. The filter itself is machine payload — long, unreadable, and useless to somebody who
-only wanted the audience.
-
-**The draft never goes in the answer.** The query you wrote is working material: its syntax is
-the reference's business, not the person's, and pasting it invites them to review a language
-they did not ask to learn. Say what the filter selects in their own words instead — that
-sentence is what they check, and it is the only place they can catch a misread request. Show
-the draft only if it is asked for by name.
-
-Hand the filter itself over in two cases only:
-
-- **it was asked for** — either in so many words, or by what they said they would do with it:
-  pass it on, store it, feed it to something else;
-- **there is no link** — then it is all there is, and the answer's reason for the missing link
-  goes with it.
-
-Whatever you hand over, take it **from the tool's answer as it stands**: do not edit or reformat
-it and do not retype it from memory; do not construct a link yourself. There may be no link — the
-answer then says why, and that reason is to be quoted, not filled in by guesswork. If the answer
-notes that the filter can be saved as a segment from that page, pass that on: otherwise the
-person is left one click short of what they asked for.
-
-**An answer with no filter in it has no filter to hand over.** The build can end without one even
-though the draft was fine — the platform has to confirm the assembled filter, and when it cannot
-be reached nothing has validated it. The answer says so, and says whether to retry. There is
-nothing to substitute in that case: not the draft, not a filter from an earlier build, not one
-written out by hand. Report what the answer says and stop — a filter no backend agreed to, handed
-over as the result, is the one failure here nobody downstream can detect.
-
-## When to ask the person
-
-`wiki` describes a procedure for an autonomous service that has nobody to talk to. You do have
-somebody — so ask, but **only at forks where different readings produce different audiences**.
-
-Choosing the project does not fall under this rule: it is not a fork but the mandatory gate of
-step 0, and ambiguity there always stops the work.
-
-The forks worth asking about:
-
-- two plausible roots with different meanings for the selection (entity pages carry "use when /
-  do not use when" sections — read those first and ask only if they do not settle it);
-- a catalogue value is ambiguous — the project holds several entries under that name and the
-  draft does not say which;
-- a second rebuild round still did not match;
-- the request sets no boundary that the selection depends on, and there is no sensible default.
-
-Decide the rest yourself and record it as an assumption: an unstated but obvious period, a
-choice between equivalent phrasings of a predicate.
-
-If part of the request cannot be expressed as a filter, name which part, and hand over the
-subset you did build, saying honestly how it is broader or narrower than what was asked. Whether
-such a selection will do is the person's call. Dropping an inexpressible condition silently is
-not allowed: the filter would look right and select the wrong audience. Nor is substituting
-something else for it — people come for a filter in order to act on the selection.
-
-## The shape of the answer
-
-The link comes first. Then this order and content, so that the report does not change from run
-to run.
-
-The labels below say what each section is for; they are not text to copy. Write the whole answer —
-labels included — in the language the person asked in. Half-translated headings over a translated
-body read as a machine's form, and this answer is the one thing they came for.
-
-```markdown
-**Filter:** what falls into the selection, in the person's own words — every condition
-  that made it in, none of the syntax. This is the only thing they can check, so it
-  carries the whole burden of catching a misread request.
-
-**Link** — exactly as the tool returned it.
-  — if the answer explains why there is no link, quote the reason; do not invent a link;
-  — if it notes that the filter can be saved as a segment, say so.
-
-**The filter itself** — only if it was asked for, or if there is no link.
-  Exactly as the tool returned it. Otherwise leave the section out and say nothing
-  about it; mention it is available on request only if they seem to want it.
-
-**Assumptions:** what you decided yourself instead of asking; "none" if there were no forks.
-**Project:** the project and environment it was built on — the choice from step 0.
-**Status:** not saved — the result still has to be applied by whatever saves filters.
+```text
+filter_wiki_read({"tenant": "<tenant>", "paths": ["README.md"]})
 ```
+
+This is the maintained, up-to-date entry point. Use its current navigation and tool guidance
+alongside the workflow below. Reuse pages within this build; follow returned paths instead
+of reconstructing filenames. Do not preload the full syntax and build guides.
+
+For an edit, retain the complete set of existing conditions, plus the requested changes.
+Reuse a confirmed `finalSql` and selected records from this conversation. Otherwise call
+`filter_json_to_sql` with the complete original JSON; keep its selected records and inspect
+`unlabelled` and `unsupported`. A list URL cannot be imported by these tools: ask for JSON
+if the filter is not already in context. Do not silently drop an unreadable condition.
+
+## 2. Choose the root and editor
+
+If either the root or property set is unknown, read the root catalogue:
+
+```text
+filter_wiki_read({"tenant": "<tenant>", "paths": ["root/README.md"]})
+```
+
+Choose the root by what one result row represents: customers, products, orders or another
+listed object. Objects mentioned in conditions may be related to that root. Preserve any
+root and property set supplied by the caller. For a standalone list, use the root's `Default`
+editor; for an embedded mechanic, use its required editor. Ask if the destination is unclear
+and the choice changes what can be expressed.
+
+Open the chosen editor page to learn its available fields, relations and restrictions. If
+both values were supplied, go directly to that page after step 1. API identifiers and wiki
+paths have different casing:
+
+| `root` | `filterablePropertySet` | Wiki path |
+|---|---|---|
+| `User` | `Default` | `root/user.default.md` |
+| `User` | `ScenarioInboundEvent` | `root/user.scenario_inbound_event.md` |
+| `RetailProduct` | `Default` | `root/retail_product.default.md` |
+
+```text
+filter_wiki_read({"tenant": "<tenant>", "paths": ["root/user.scenario_inbound_event.md"], "root": "User", "filterablePropertySet": "ScenarioInboundEvent"})
+```
+
+Use `filterablePropertySet` as the argument name, not `filter_property_set`. Copy document
+paths including underscores and `.md`; `README.md` is uppercase. If a path is unknown, discover
+it with `filter_wiki_ls({"tenant": "<tenant>", "path": "root"})`. Carry the chosen root and property set into subsequent
+wiki, validation and compile calls that accept them. Never widen the editor to bypass a refusal.
+
+## 3. Find the meaning and documented constructs
+
+For business labels or a request that may have a recipe, search recipes and the glossary:
+
+```text
+filter_wiki_grep({"tenant": "<tenant>", "pattern": "реактив|спящ|dorman(?:t|cy)|reactivat", "paths": ["recipe", "glossary"], "root": "User", "filterablePropertySet": "Default"})
+filter_wiki_read({"tenant": "<tenant>", "paths": ["glossary/reactivation.md", "recipe/user.reactivation.md"], "root": "User", "filterablePropertySet": "Default"})
+```
+
+Read relevant hits, especially `Use for`, `Not for`, `Not offered` and `Ask`. For straightforward
+conditions, open the editor's linked field or relation pages directly. Learn the full construct,
+including which conditions must hold on the same related object. Read syntax guidance only
+when needed. Reuse documents already read for this build.
+
+`pattern` is a case-insensitive regular expression; it does not translate or stem words.
+Search useful stems and alternatives explicitly — the wiki's recipe, glossary and pattern
+pages carry Russian and English wording side by side, so search both. For example, `реактив`
+matches forms such as `реактивация` and `реактивировать`; `спящ` finds `спящие` and `спящих`;
+`dorman(?:t|cy)` covers `dormant` and `dormancy`; `reactivat` covers `reactivate` and
+`reactivation`.
+
+For subscriptions and mailings, respectively:
+
+```text
+filter_wiki_grep({"tenant": "<tenant>", "pattern": "подпис(?:к|ок|ан)|subscri(?:b|pt)", "paths": ["pattern", "field"], "root": "User", "filterablePropertySet": "Default"})
+filter_wiki_grep({"tenant": "<tenant>", "pattern": "рассыл(?:к|ок)|mailings?", "paths": ["lookup", "glossary"], "root": "User", "filterablePropertySet": "Default"})
+```
+
+The first covers `подписка`, `подписок`, `подписан`, `subscribe` and `subscription`; the
+second covers `рассылка`, `рассылок`, `mailing` and `mailings`. These cover the shown forms,
+not every synonym. Use only patterns relevant to the request, read useful hits and follow
+the `skip`/`limit` footer when results continue. `paths` prioritizes sections rather than
+excluding all others. Search excerpts alone are not the full rule.
+
+## 4. Resolve remaining business questions through help
+
+If the local pages leave a product or business meaning unclear, search `help` explicitly.
+Its absence from the README map does not establish that help is unavailable:
+
+```text
+filter_wiki_grep({"tenant": "<tenant>", "pattern": "реактив|спящ|dorman(?:t|cy)|reactivat", "paths": ["help"], "root": "User", "filterablePropertySet": "Default"})
+```
+
+Read relevant returned `help/` articles. Use business wording here, not internal field names.
+Then check the proposed condition against the editor and filter reference. A help article
+can explain a feature without making it available in this editor. If help is unavailable or
+the meaning remains unclear, ask about the point that changes the audience.
+
+## 5. Resolve catalogue records before writing SQL
+
+When conditions name project records, discover the catalogue types and read the relevant pages:
+
+```text
+filter_wiki_ls({"tenant": "<tenant>", "path": "lookup", "root": "User", "filterablePropertySet": "Default"})
+filter_wiki_read({"tenant": "<tenant>", "paths": ["lookup/segment.md"], "root": "User", "filterablePropertySet": "Default"})
+filter_search_entities({"tenant": "<tenant>", "context": "Customers in the Example segment", "types": ["segment"], "query": "Example segment", "mode": "match"})
+```
+
+`query` is the name to find; `context` supplies the surrounding request, not another search
+query or a semantic selection guarantee. Batch names in `queries` when they share types and
+parent; do not send both `query` and `queries`. For custom-field values, `of` is the field
+name. Choose records by meaning, type and parent. A score ranks wording similarity; it is
+not confidence that the record expresses the request.
+
+Browse one catalogue type, or search literal substrings with `mode=list`:
+
+```text
+filter_search_entities({"tenant": "<tenant>", "context": "Find the requested customer segment", "types": ["segment"], "mode": "list", "pageSize": 20})
+filter_search_entities({"tenant": "<tenant>", "context": "Find the requested customer segment", "types": ["segment"], "query": "Example", "mode": "list", "pageSize": 20})
+```
+
+These are two separate searches. For another page of either, repeat the same arguments and
+add `"cursor": "<exact nextCursor from that response>"`. If the cursor is rejected, restart
+the same listing once without `cursor`; report a repeated failure through feedback. Follow
+`nextCursor` as needed; an incomplete or truncated response does not establish absence. For segments, `pageSize` counts
+segmentations. A matching segmentation can include child segments whose names do not
+match the query. A segmentation and one segment within it are different selections: keep
+the chosen level and parent.
+
+Keep every chosen `ref` object, including all `ids`, `type`, `name`, `parent` and `tool` when
+present. Use its canonical name in SQL. Resolve every named catalogue value, including any
+parent the condition needs; do not invent an ID or use an unrelated record to fill a slot.
+
+## 6. Clarify disputed choices
+
+Ask together about remaining ambiguous records or interpretations that would change the
+selection. Show the candidate names and parents and explain the difference. A single clear
+match needs no confirmation. Reuse answers already given; if the user delegates a choice,
+make it and name the assumption. Establish any omission or alternative with the user before
+building a narrower filter. A failed lookup alone is not permission to drop a condition.
+
+## 7. Draft and validate
+
+Write the complete FilterSQL draft using the documented constructs and chosen records.
+Validate with the same root and property set. In `coverage`, quote the relevant user wording
+and record your chosen representation and why you chose it, including assumptions and agreed omissions.
+It records intent; it is not a proof that the SQL matches the request.
+
+A standalone example with no catalogue references:
+
+```text
+filter_sql_validate({
+  "tenant": "<tenant>",
+  "sql": "FROM User WHERE user.age >= 30",
+  "root": "User",
+  "filterablePropertySet": "Default",
+  "coverage": [{
+    "request": "Customers aged at least 30",
+    "decision": "user.age >= 30",
+    "reason": "At least includes the boundary; age is measured in years."
+  }]
+})
+```
+
+Proceed on `status: valid`. When `reference` lines are returned, match each to the already
+chosen record by type, value, parent and occurrence. Copy its `slot` to that record's
+`selected` entry; keep every returned ID. Slots belong to this draft: refresh them after
+changing SQL. Follow reported `repair` guidance and validate the corrected draft before
+compilation. If validation exposes a missing lookup, resolve it before proceeding.
+
+## 8. Compile the validated draft once
+
+For the no-reference example above:
+
+```text
+filter_compile_preview({
+  "tenant": "<tenant>",
+  "sql": "FROM User WHERE user.age >= 30",
+  "root": "User",
+  "filterablePropertySet": "Default",
+  "selected": [],
+  "includeFilterJson": false
+})
+```
+
+For a draft with references, fill `selected` with the chosen `ref` objects and their current
+slots. Set `includeFilterJson=true` on this first compile if the user requests JSON or another
+AI agent, tool or skill needs a filter to configure a mechanic. Otherwise return the link.
+A successful result without a list link includes JSON automatically.
+
+A successful compile already includes the platform check: do not compile again to confirm it.
+Require `status: ready` and `platform: accepted`, then compare `finalSql` with the full request.
+Validation and platform acceptance do not establish semantic correctness. Fix a missing,
+extra or misinterpreted condition before handing over the result.
+
+On failure, follow the specific `repair` and pass returned `feedbackState` unchanged into the
+next compile. Change the draft or selections only when the problem calls for it. A platform
+processing failure or access denial is not a SQL defect: preserve the conditions, report the
+blocker, and retry only after it can be resolved. Never present an unsuccessful preview or a
+stale result after a failed edit as complete.
+
+## 9. Hand over the result
+
+Copy the returned link and explain what the user will see: the selected objects, effective
+conditions, time windows, exclusions, material assumptions and agreed omissions. If the result
+notes that a segment can be saved from that page, pass that on — otherwise the user is left one
+click short of what they asked for. Use the conversation's language and identify the project
+and environment. Keep SQL out of the answer unless requested. When JSON is needed, pass the
+complete returned payload unchanged to its caller; a link or SQL cannot replace it. If no link
+is available, provide the returned JSON and the tool's explanation of the limitation. Building
+does not save a segment or change data.
+
+## 10. Handle an incorrect result with feedback
+
+If the user says the result is wrong, clarify the mismatch and ask for a link to a filter
+that represents the intended selection. Use that URL as a reference in feedback; request
+its JSON as well if you need to inspect or edit it. Send the report through the same server:
+
+```text
+feedback({"tenant": "<tenant>", "feedback": "<report filled from the template below>"})
+```
+
+Fill this template from the current session. Keep both URL fields explicit; write
+`not provided` or `unavailable` when the source does not exist. Never invent a trace ID.
+
+```text
+Request: <the user's filter request>
+Project and editor: <project system name, environment, root, filterablePropertySet>
+Expected: <the intended selection>
+Actual: <the observed mismatch>
+Correct filter URL: <URL of the correct filter supplied by the user, or not provided>
+Trace URL / ID: <technical session trace URL or trace ID if available, or unavailable>
+Technical trace:
+1. Tool: <exact tool name>
+   Arguments: <actual JSON arguments>
+   Result: <actual response text or error>
+2. Tool: <next tool name>
+   Arguments: <actual JSON arguments>
+   Result: <actual response text or error>
+<continue in chronological order, including failed attempts and repairs>
+```
+
+The technical trace is the sequence of calls and responses, not a prose summary of what
+you tried. Include the relevant wiki and catalogue lookups, validation and compile calls,
+with SQL, selected refs, coverage, finalSql, platform verdicts and feedbackState when present.
+Remove credentials and personal data. Report only observed behavior. A missing reference
+filter or trace URL does not prevent reporting: include the visible technical trace anyway.
+
+`feedback` accepts one text report, not a trace attachment. Say it was submitted only after
+the tool succeeds. If unavailable, provide a copyable report. Continue a requested correction
+through this workflow; do not promise a reply from the feedback channel.
 
 ## Batch requests
 
 A request may name a set of filters rather than one. Each item of the set walks the full
-route on its own — draft, check, resolve, build — but the report is one list, not a stack of
-full reports: for every item its name, the one-sentence description of what it selects, and
-the link. Assumptions, the project and the not-saved status are stated once for the whole set.
+route on its own — steps 1 to 9 — but the report is one list, not a stack of full reports: for
+every item its name, the one-sentence description of what it selects, and the link. Assumptions,
+the project and environment, and the not-saved status are stated once for the whole set.
 
 <!-- ========================= TEMPORARY BLOCK =========================
-     Remove everything between these markers once the filters wiki ships
-     `pattern.user.starter_filters` — the wiki then carries this set and
-     the skill must not duplicate it. The "Batch requests" section above
-     and the starter-filter trigger phrases in the description STAY.
+     Maestra-specific appendix, not in the upstream skill. Remove
+     everything between these markers once the filters wiki ships
+     `pattern/user.starter_filters.md` — the wiki then carries this set
+     and the skill must not duplicate it. The "Batch requests" section
+     above and the starter-filter trigger phrase in the description STAY.
 -->
 
 ## TEMP: the starter set — "main filters"
@@ -312,8 +388,9 @@ The usual period and channel questions are NOT asked — the set fixes them. Ask
 building: the brand, on a multibrand project (and scope every branch of every filter by it);
 and resolve against the project's catalogues whether the 'Abandoned Checkout' status exists
 (if not, the cart branch alone carries item 3) and what the cart product list is called
-(usually 'Cart' or similar). Fields, operators and exact syntax still come from `wiki`, as
-rule 1 demands — this block fixes the business composition only.
+(usually 'Cart' or similar). Fields, operators, catalogue records and exact syntax still come
+from the filters wiki and the `filter_*` tools, as steps 1–8 demand — this block fixes the
+business composition only.
 
 ### TEMP: geo / state segments
 
@@ -331,16 +408,3 @@ not open, while ~24 branches did. Hand such a link over with this warning; if it
 open for the person, hand over the filter JSON as the artefact instead and say why.
 
 <!-- ======================= END TEMPORARY BLOCK ======================= -->
-
-## What not to do
-
-- Do not report a filter as created or saved.
-- Do not invent document ids, field names, catalogue names or links.
-- Do not edit what the tool returned.
-- Do not substitute a "close enough" name for the exact one: matching is by the whole name, and
-  merely similar does not resolve.
-- Do not declare a value missing from the project on the strength of an empty or partial
-  catalogue answer.
-- Do not restate the grammar from memory and do not extend it here.
-- Do not start work with the project unsettled, and do not choose it silently.
-- Do not put the draft in the answer unless it was asked for by name.

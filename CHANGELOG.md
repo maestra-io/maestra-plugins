@@ -1,5 +1,47 @@
 # CHANGELOG
 
+## 1.3.0 — 2026-09-22
+
+`filter-build` + `filter-explain` re-ported in full from the upstream `filters` plugin 1.3.0 (author
+"AI tribe", the same team as the email and flow skills; both skills now carry
+`metadata.version: 1.3.0`). Upstream rewrote both skills against the current filter tool family —
+`filter_wiki_ls` / `filter_wiki_grep` / `filter_wiki_read`, `filter_search_entities`,
+`filter_sql_validate`, `filter_compile_preview`, `filter_json_to_sql` — which is the family the
+Maestra MCP server exposes today; the previous skills described a route through the shared `wiki`
+tool and the retired lookup/build tools, so on a current server they had no working procedure.
+
+New in `filter-build`:
+
+- **Edits an existing filter**, not only builds a new one: the stored JSON is read back with
+  `filter_json_to_sql`, every condition kept, the change applied, then validated and compiled again.
+- The workflow is spelled out with tool-call examples: read the wiki's live `README.md` first, choose
+  the root and editor (`root/…` pages, `filterablePropertySet`), consult recipes, glossary, patterns
+  and — explicitly — `help`, resolve catalogue records with `filter_search_entities` (match and list
+  modes, cursors, segmentations vs. segments) **before** drafting FilterSQL, clarify disputed
+  choices, validate the complete draft with a `coverage` log of request → decision → reason, then
+  compile once and require `status: ready` + `platform: accepted`.
+- Regex search examples cover Russian and English word forms — the wiki's recipe, glossary and
+  pattern pages carry both.
+- JSON is requested (`includeFilterJson=true`) only when the user or another skill needs the payload,
+  e.g. `flow-create` configuring a condition block; otherwise the link alone.
+- A feedback template for a wrong result: the correct-filter URL, the trace URL or ID, and the
+  chronological tool calls with arguments and responses, sent through the server's `feedback` tool.
+- Bilingual trigger phrases (Russian and English) in the description.
+- The CSM **starter set** (thirteen standard filters, the Texas geo segment, the two "bots"
+  segments) stays as a Maestra appendix until the wiki ships it as a pattern.
+
+New in `filter-explain`:
+
+- Explains from the recovered FilterSQL: `filter_json_to_sql` first, then wiki lookups for each
+  concept, catalogue lookups for values that stayed IDs, and a fixed answer shape — Result,
+  Conditions, Limits and gaps — that preserves AND/OR grouping, negation, boundaries, time windows,
+  segment-vs-segmentation and current-vs-historical distinctions.
+- `unlabelled` / `unsupported` / `UNSUPPORTED_FILTER(...)` are disclosed as gaps, never rebuilt away.
+- Bilingual trigger phrases in the description.
+
+Plugin: `.codex-plugin/plugin.json` and `skills/filter-*/agents/openai.yaml` added (Codex / ChatGPT
+metadata, as upstream ships); plugin description now mentions editing and explaining filters.
+
 ## 1.2.1 — 2026-09-22
 
 - **`flow-business-audit`**: the frontmatter `description` was 1,335 characters; claude.ai's plugin

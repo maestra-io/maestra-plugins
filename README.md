@@ -9,7 +9,7 @@ Skills that let Claude work in your [Maestra.io](https://maestra.io) account: se
 | Skills | What they do |
 |---|---|
 | **Emails** | Create and edit emails in the visual editor from a text description: layout, images, personalization chips, product recommendation rows, letter styles, preview, saving into your campaign, test sends to your staff test recipients. Live sending stays in Maestra. |
-| **Filters** | Build a filter from a request in plain words and get a link to the list in your account; explain a filter your account already stores. It can't change anything. |
+| **Filters** | Build a filter from a request in plain words and get a link to the list in your account; edit an existing filter without losing its conditions; explain a filter your account already stores. It can't save or change anything. |
 | **Flows** | Summarize what an existing flow does; audit one flow or all of them for known anti-patterns, with a fix per finding; audit them on business results — revenue, orders, funnel and rates per flow — and get back what to change in the flow. Build a new draft flow from a request in plain words. Launching stays with you. |
 
 The skills see only what you can see in Maestra.
@@ -46,6 +46,8 @@ Phrases like "create an email" or "build a filter" wake the right skill:
 - "Create an email in Maestra: a spring-sale promo with a hero image, two product cards, and a discount code. Show me a preview before saving."
 - "Add a row of recommended products and greet the customer by name."
 - "Build a filter: customers with a confirmed email who bought Nike in the last 90 days."
+- "Add a condition to this filter: exclude anyone who ordered in the last 7 days." (paste the filter JSON)
+- "Explain this filter — who does it select?" (paste the filter JSON)
 - "What does the Welcome flow do?"
 - "Audit our flows and tell me what to fix."
 - "Which flows earned the most last month, and what should we change in the ones that did not?"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Filter Build"
+  short_description: "Build or edit a Maestra CDP filter from a plain-language request; get a platform-confirmed link."
+  developer_name: "Maestra.io"

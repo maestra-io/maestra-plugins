@@ -1,0 +1,4 @@
+interface:
+  display_name: "Filter Explain"
+  short_description: "Explain existing Maestra filter JSON in plain language, including what could not be read."
+  developer_name: "Maestra.io"

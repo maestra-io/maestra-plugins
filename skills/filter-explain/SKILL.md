@@ -1,144 +1,134 @@
 ---
 name: filter-explain
 description: >-
-  Explain an existing CDP filter in plain words: what selection it describes, which conditions it
-  holds, and what about it cannot be read. Takes the filter as the project stores it — the JSON.
-  Triggers: "explain this filter", "what does this filter do", "what does this segment select",
-  "who does this selection pick".
-  NOT for: building a new filter or changing one (/maestra:filter-build); datamart
-  analytics — "count", "how many", a report, a metric (the `analytics_*` tools of the same
-  MCP server).
-argument-hint: "the filter JSON as the project stores it — paste it whole"
-author: Maestra.io
+  Explain existing CDP filter JSON in plain language, including conditions and values that
+  could not be read. Use when asked what a filter or segment selects. Does not change it.
+  Russian triggers: "объясни фильтр", "что делает этот фильтр", "кого выбирает эта выборка",
+  "разбери фильтр", "объясни условия сегмента".
+  English triggers: "explain this filter", "what does this segment select",
+  "who matches this filter", "explain these filter conditions".
+  NOT for: building or editing a filter (maestra:filter-build); datamart analytics —
+  "count", "how many", "сколько клиентов", a report, a metric (the `analytics_*` tools of
+  the same MCP server).
+argument-hint: "the complete filter JSON from the project"
+metadata:
+  author: Maestra.io
+  upstream: AI tribe
+  version: 1.3.0
 ---
 
 # Filter explain
 
-Say what an existing filter selects. The filter reaches you as machine payload — a JSON object
-full of internal ids, which says nothing to a person. The project's MCP server turns it into an
-intermediate, SQL-shaped query and puts the project's own names where the ids were; you turn that
-into sentences.
+## Choose the project and input
 
-**This skill deliberately holds no domain knowledge.** No entity or field names, no grammar, no
-operator list — all of that is in `wiki`, generated outside this plugin and changing
-without any edit here. What lives here is the route, the boundaries, and what may
-and may not be claimed about somebody's filter.
+Use the project and environment settled in the conversation. Find its `filter_*` tools.
+One connection may serve several projects. When the tools require `tenant`, use the exact
+project system name; discover it with `tenants_list` if unknown. Choose the sole applicable
+project or ask when several fit. Explain a missing connection. Keep calls on the chosen
+server and project: names and IDs identify records only within that project.
 
-## Three rules
+Use the complete original filter JSON. A filtered-list URL cannot be imported, and these
+tools do not fetch saved filters by name. If only a link or an unseen filter is supplied,
+ask for its JSON. For a successful build already in this conversation, reuse its confirmed
+`finalSql` and selected records instead of converting it again.
 
-1. **Nothing is invented about somebody else's project.** An internal id is not a name, an
-   unfamiliar field is not a guess. What you cannot read, you say you cannot read.
-2. **Tool answers document themselves.** The answer states what the result means and what to do
-   next: why something was refused, whether a retry is worth it, which parts could not be read.
-   Read it and do what it says — do not override it with this instruction and do not paraphrase it
-   from memory.
-3. **Nothing is changed.** Every tool here is read-only. Explaining a filter neither saves nor
-   edits it, and the person's filter is exactly as it was before you looked at it.
+Freshly read the connected server's maintained, up-to-date entry point:
 
-## 0. Choose the project — before anything else
-
-Names come out of **that project's** catalogues. The same id means a different brand, segment or
-custom field in another project, and reading a filter against the wrong project does not fail
-with an error — it produces a confident, wrong explanation.
-
-Find the tools in your list that belong to filters (names shaped like
-`mcp__<server>__filter_*`) — one set per connected project.
-
-**None.** Say that the MCP server for the project is not connected, naming the environment and
-project if the request mentioned them. Go no further: the JSON alone cannot be read into names.
-
-**Exactly one, and the request names no other project** — name the chosen project out loud and
-work with it. **In every other case ask first**, listing the connected servers and which project
-and environment each stands for. Once chosen, call only that server's tools.
-
-## 1. Get the filter itself
-
-The tool reads **the JSON the project stores**, copied whole.
-
-- **The person pasted JSON** — use it as it stands. Do not reformat it, do not retype it, do not
-  trim it to what looks relevant: a filter reassembled by hand looks plausible and is not the
-  same filter.
-- **The person pasted a link to a list with a filter applied** — that link carries the platform's
-  own compact form, and nothing here converts it back into the filter JSON. Say that plainly and
-  ask for the JSON. Do not attempt to decode the link, and do not explain the filter from its
-  URL: a guess about somebody's audience is worse than a question.
-- **The filter was just built in this conversation** — use what the build returned, unedited.
-- **The person refers to a filter you have never seen** ("the segment in the admin site") — ask
-  for the JSON. There is no tool that lists or fetches a project's saved filters.
-
-If the JSON is broken, the tool refuses it with wording that says what is wrong with it. Pass the
-substance on and ask for a clean copy rather than repairing it yourself.
-
-## 2. Read it back into a query
-
-One call turns the filter into a readable query with the project's names in it. The answer is not
-just the text: it says, before the query, **what about this filter could not be read**. Both
-caveats change what you are allowed to say, so read them first.
-
-- **Values that stayed internal ids.** The catalogue has no entry for them — deleted since the
-  filter was saved, or below what one page of the catalogue reaches. Name them as unidentified.
-  Never guess what an id meant, never present an id as a name, and never quietly drop the
-  condition it belongs to: a condition on an unknown value is still a condition, and the audience
-  depends on it.
-- **Parts the query cannot express.** They appear as explicit markers. Their meaning is not in the
-  text at all, so no reading of the text can recover it. Explain the rest, and say plainly that
-  the filter also holds conditions you cannot describe. Summarising as if they were absent
-  produces an explanation of a filter that does not exist.
-
-If the tool refuses the call, its answer says whether a retry is worth it and what to tell the
-person. Follow it rather than trying another route.
-
-## 3. Understand what the conditions mean
-
-The query is in a language with its own fields and functions, and their meaning is in `wiki` —
-the same reference the building side uses. **Do not explain a field from its name.** A plausible
-reading of an unfamiliar field is the one mistake in this skill nobody can catch: the sentence
-sounds right and describes a different audience.
-
-Look up what you are not sure of: the root entity — what one row of the selection *is* — and the
-fields, relations and functions the query actually uses. Navigate by the ids inside documents you
-have already read; there is no full-text search and ids are not to be guessed.
-
-What the reference does not cover, you do not either. Say that a condition is there and that you
-cannot describe what it checks — the honest gap in an explanation costs far less than a confident
-invention in it.
-
-## The shape of the answer
-
-The plain-words reading comes first, because it is the whole point and the only part the person
-can check. Then this order, so the report does not change from run to run.
-
-The labels below say what each section is for; they are not text to copy. Write the whole answer —
-labels included — in the language the person asked in. Half-translated headings over a translated
-body read as a machine's form, and this answer is the one thing they came for.
-
-```markdown
-**Selects:** what one row of this selection is, then every condition in the person's own
-  words. No syntax, no field names unless the person's own vocabulary has them.
-
-**Could not be read** — leave the section out entirely if there is nothing in it:
-  — values that stayed internal ids: which condition each sits in, and that it cannot be
-    identified. Never a guess at what it meant;
-  — conditions that could not be read at all: that they are there and that their meaning is
-    not recoverable.
-
-**Project:** the project and environment it was read on — the choice from step 0.
-**Status:** nothing was changed; the filter is exactly as it was.
+```text
+filter_wiki_read({"tenant": "<tenant>", "paths": ["README.md"]})
 ```
 
-**The query text stays out of the answer** unless it is asked for by name — and so does the name
-of the language it is written in. It is working material: its syntax is the reference's business,
-not the person's, and putting either the text or its language in the answer invites them to review
-something they did not ask to learn. When it is asked for, hand it over exactly as the tool
-returned it.
+Use its navigation and current tool guidance. Reuse pages within this explanation. Examples
+below are synthetic. Replace `<tenant>` with the confirmed project system name; omit the
+argument only if the tool's schema has no `tenant`. Use the actual input and returned paths.
+Tool names may have a server prefix.
 
-## What not to do
+## 1. Convert the original JSON to SQL
 
-- Do not present an internal id as a name, and do not guess what one referred to.
-- Do not drop a condition you could not fully read — say it is there and unread.
-- Do not explain a filter from a link, a screenshot or a description of it.
-- Do not explain a field, function or entity from its name instead of the reference.
-- Do not edit, reformat or retype what the person or the tool gave you.
-- Do not say a filter is "empty" or "selects everyone" because you could not read it.
-- Do not offer to fix, improve or rebuild the filter unless asked — this skill reads.
-- Do not start work with the project unsettled, and do not choose it silently.
+Pass the complete JSON unchanged as the `filterJson` object. For example:
+
+```text
+filter_json_to_sql({"tenant": "<tenant>", "filterJson": {
+  "entityType": "User",
+  "filterFactory": "and",
+  "innerConditions": [{
+    "entityType": "User",
+    "filterFactory": "age",
+    "value": {"mode": "concrete", "value": {"range": {"from": "30", "to": ""}, "unit": "Years"}}
+  }]
+}})
+```
+
+Read the returned `sql`, selected records and warnings. The tool already attempts to resolve
+catalogue IDs to names; do not repeat successful lookups. `status: read` means the JSON was
+read, not that the platform has accepted the filter. `unlabelled` means some values remain
+unnamed; `unsupported` or `UNSUPPORTED_FILTER(...)` marks conditions the conversion cannot
+explain. Keep the original JSON and these gaps visible in your reasoning. Do not reconstruct
+a simpler filter to make them disappear.
+
+## 2. Read the meaning and resolve remaining labels
+
+Identify the root, fields, relations, operators and business concepts in the SQL. Search the
+wiki for each distinct concept whose meaning or limitations you need to establish, combining
+related terms in a regex and reusing relevant pages already read:
+
+```text
+filter_wiki_grep({"tenant": "<tenant>", "pattern": "возраст|\\bage(?:d|s)?\\b", "paths": ["field/user"], "root": "User"})
+filter_wiki_read({"tenant": "<tenant>", "paths": ["field/user.age.md"], "root": "User"})
+```
+
+`pattern` is a case-insensitive regular expression. The wiki's pages carry Russian and English
+wording side by side, so search both. Here `возраст` matches forms such as `возраста` and
+`возрастной`; `\\bage(?:d|s)?\\b` matches the English words `age`, `aged` and `ages` without
+matching `message`. JSON strings need `\\b` to send the regex boundary `\b`. For subscription
+conditions, `подпис(?:к|ок|ан)|subscri(?:b|pt)` covers forms such as `подписка`, `подписок`,
+`подписан`, `subscribe` and `subscription`. Choose the terms needed for the filter.
+
+`paths` prioritizes sections; it does not exclude other sections. Follow `skip`/`limit` when
+results continue. Copy returned paths exactly, including underscores, casing and `.md`.
+Read field and relation pages for behavior, and recipes or glossary pages for business meaning.
+If that still leaves a product question, search with business terms and `paths: ["help"]`;
+a missing README entry alone does not establish that help is unavailable. Documentation
+explains a condition; it does not add conditions to the filter.
+
+For an unresolved catalogue value, discover the relevant lookup type and supported search:
+
+```text
+filter_wiki_ls({"tenant": "<tenant>", "path": "lookup", "root": "User"})
+filter_wiki_read({"tenant": "<tenant>", "paths": ["lookup/segment.md"], "root": "User"})
+filter_search_entities({"tenant": "<tenant>", "context": "Identify an unnamed segment referenced by this filter", "types": ["segment"], "mode": "list", "pageSize": 20})
+```
+
+Browse when practical, or search a known name with `query`. Continue with the returned
+`nextCursor` as `cursor`, preserving the other arguments. If rejected, restart the same
+listing once without `cursor`; disclose a repeated failure as an unresolved lookup.
+Match the returned `ref.ids`,
+type and parent against the original reference before assigning a label. A similar name or
+ranking score cannot identify an ID, and `query` is not a general get-by-ID operation.
+If the identity remains unresolved, say so. An incomplete search or a missing label alone
+does not prove the record was deleted or that the audience is empty.
+
+## 3. Explain the actual selection
+
+Use the conversation's language and business terms. Structure the explanation around:
+
+- **Result:** what one returned row is and which audience or objects the filter selects.
+- **Conditions:** grouped inclusions, alternatives and exclusions, with values and periods.
+- **Limits and gaps:** material behavior from the reference and anything that could not be read.
+
+Preserve AND/OR grouping, negation, inclusive or exclusive boundaries, relative and absolute
+time windows, counts, and conditions that must hold on the same related object. Distinguish
+one segment from its whole segmentation, current membership from historical membership,
+and any matching event from the latest event when those constructs occur. Do not replace
+these distinctions with a broad label such as "active customers".
+
+State documented caveats that affect this filter and explain why each matters. Identify
+unnamed values by their role and ID when needed; never present an ID as a catalogue name.
+Describe an unsupported condition as a gap rather than assuming the remaining SQL is the
+whole filter. Do not infer an empty or unrestricted audience from an unreadable part.
+
+Identify the project and environment. Keep SQL and internal field names out of the answer
+unless requested or needed to identify a gap. Explanation needs no validation or compilation
+and does not change project data. If the user requests a correction, switch to
+`maestra:filter-build` with the original JSON, the recovered SQL and selected records;
+preserve untouched conditions.

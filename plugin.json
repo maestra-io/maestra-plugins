@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "maestra",
-  "version": "1.2.1",
-  "description": "Maestra skills for marketers: emails in the visual editor (personalization, product rows, letter styles, test sends), segment filters, and marketing flows — summarize one, audit a project's flows for anti-patterns or for business results, and build a new flow from a plain-language request.",
+  "version": "1.3.0",
+  "description": "Maestra skills for marketers: emails in the visual editor (personalization, product rows, letter styles, test sends), segment filters — build one from a request in plain words, edit an existing one, explain what one selects — and marketing flows — summarize one, audit a project's flows for anti-patterns or for business results, and build a new flow from a plain-language request.",
   "author": {
     "name": "Maestra.io",
     "url": "https://maestra.io"
