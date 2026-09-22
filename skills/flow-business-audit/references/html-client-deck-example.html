@@ -1,0 +1,335 @@
+<!--
+  Example / template for the flow-business-audit CLIENT DECK — built only when the report form
+  chosen at `SKILL.md § Inputs` is the deck, after step 8 has selected what goes on the slides.
+
+  Reproduce this STRUCTURE and STYLING as-is (the theme is the one html-report-example.html uses).
+  Replace only the CONTENT — and only with figures and claims that are already in the full report.
+
+  THE RULES OF THIS FORMAT, decided once here and never per run:
+
+  1.  The deck is READY TO SEND TO THE CLIENT AS IT STANDS. Nothing on it is addressed to the CSM:
+      no "how to say it", no "what not to say", no note to the presenter. All of that goes to the
+      separate CSM note (`writing-the-report.md`, "The CSM note") — a Markdown file beside this one,
+      one section per proposal slide. Handover count 13 (`findings-and-failures.md`) is the number
+      of such notes found in this file: 0.
+  2.  Slides: one overview (mandatory) + three to seven proposals — as many as have a figure and a
+      construction reading behind them. Never padded to seven, never cut to a round number. When the
+      selection left findings out, the overview carries the line "another N findings are in the full
+      report".
+  3.  Which findings get a slide: `SKILL.md` step 8 — "problem" findings plus at most one
+      project-level finding; several flows with one cause share one slide; "can't judge", "fine"
+      and "did not send" never get one.
+  4.  The frame of a proposal slide — six elements in this order: the context line (number,
+      flow name(s) as links, urgency label right); the heading — a business statement, no
+      metric names, no identifiers, up to 19 words; one large figure with its window under it;
+      one paragraph; a table only when the slide is about several flows (up to five rows, the
+      project's line last and marked `dead`, the worst row marked `worst`); then the disclosures.
+  5.  Disclosures — exactly three, in this order: the EVIDENCE (headed by what it shows: "Where
+      exactly it is lost", "What was checked", "What this does not explain" — never a self-assessing
+      heading like "Why the comparison is fair"); "What is in the flow" (blocks by their own names in
+      quotes, settings as set, counts with their window); "What to do" (the steps verbatim from the
+      full report's "What to do", each naming a place, an action and an addressee).
+  6.  Labels — a closed set of three: b-now "Decide today", b-fix "Fix", b-idea "Idea". They
+      say how soon, not what state; none of the four verdict words appears anywhere in the deck.
+  7.  Identifiers: never in the visible text, in any position, unless the user asked. The name in the
+      context line is the link, and the link carries the id.
+  8.  Charts are optional. Where a series carries the slide, draw it inline in the deck's own
+      colours (an SVG or the `.bars` strip below) with the same window and origin a figure carries,
+      from figures already in the full report. A slide without a chart is complete.
+  9.  The footnote under the navigation is mandatory: the data windows, the goal, the money sentence
+      (`writing-the-report.md`, "Money"). It is the whole of `## What we do not know` the deck carries.
+  10. Navigation: prev/next, dots, Home/End, ←/→, hash routing. No toggle for notes — there are none.
+  11. Counts taken on the finished file and written to the log (`findings-and-failures.md`, counts
+      11–13): every figure and claim on the slides found verbatim in the full report (U = 0);
+      proposal slides = sections in the CSM note; notes to the presenter in this file = 0; bare
+      identifiers in the visible text = 0 unless asked.
+
+  Every figure, name and link below is an INVENTED calibration example, drawn from the same invented
+  project as html-report-example.html. A real audit's numbers are never pasted in here. The example is in
+  English; the deck is written in the language of the report.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Example: proposals for the flows</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#eef4f5; --card:#ffffff; --surface-muted:#ebeff0; --table-bg:#fdfdfc;
+    --ink:#282a2f; --muted:#637076;
+    --line:#dae3e8; --line-strong:#bfccd4; --focus:#b8e5d6;
+    --accent:#028f69; --accent-hover:#00664b; --accent-soft:#f2faf7;
+    --high:#db3309; --high-bg:#ffefeb; --high-border:#ffbbad;
+    --med:#cc8100; --med-bg:#fff5db; --med-border:#f6e0a4;
+    --info:#402f9e; --info-bg:#f0eef9; --info-border:#9d91da;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,"PT Sans","Trebuchet MS",system-ui,sans-serif;
+    font-size:17px;line-height:25px;-webkit-font-smoothing:antialiased;
+    padding-block:24px 20px;padding-left:20px;padding-right:20px}
+  .deck{max-width:960px;margin:0 auto}
+
+  .slide{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:38px 44px 34px;min-height:520px;display:flex;flex-direction:column}
+  .slide[hidden]{display:none}
+  .eyebrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+  .num{font-size:14px;font-weight:600;letter-spacing:.12em;color:var(--accent)}
+  .scope{font-size:14px;color:var(--muted)}
+  .scope a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .scope a:hover{color:var(--accent-hover);border-color:var(--accent)}
+  .eyebrow .sp{flex:1}
+  .badge{display:inline-flex;align-items:center;min-height:26px;padding:2px 12px;
+    border:1px solid transparent;border-radius:999px;font-size:13px;font-weight:500;
+    letter-spacing:.04em;white-space:nowrap}
+  .b-now{color:#fff;background:var(--high);border-color:var(--high)}
+  .b-fix{color:var(--high);background:var(--high-bg);border-color:var(--high-border)}
+  .b-idea{color:var(--info);background:var(--info-bg);border-color:var(--info-border)}
+
+  .slide h2{margin:0 0 20px;font-size:38px;line-height:45px;font-weight:600;
+    letter-spacing:-.02em;text-wrap:balance;max-width:19ch}
+  .lede{font-size:19px;line-height:29px;margin:0 0 26px;max-width:62ch}
+  .lede b{font-weight:600}
+
+  .figure{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+    padding:22px 26px;background:var(--accent-soft);border:1px solid var(--focus);
+    border-radius:12px;margin-bottom:26px}
+  .figure .big{font-size:56px;line-height:1.05;font-weight:600;color:var(--accent);
+    font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+  .figure .cap{font-size:17px;line-height:24px;max-width:34ch}
+  .figure .cap span{display:block;color:var(--muted);font-size:14px;line-height:20px;margin-top:3px}
+
+  /* optional inline chart: a bar strip, one <i> per point, height = --v (0..100) */
+  .bars{display:flex;align-items:flex-end;gap:6px;height:72px;margin:0 0 6px}
+  .bars i{flex:1;display:block;background:var(--accent);border-radius:3px 3px 0 0;height:calc(var(--v) * 1%);min-height:2px;opacity:.85}
+  .bars i.hi{background:var(--high)}
+  .chart-cap{font-size:13px;line-height:18px;color:var(--muted);margin-bottom:22px}
+
+  .grow{flex:1}
+
+  .reveals{border-top:1px solid var(--line);padding-top:6px}
+  details.rv{border-bottom:1px solid var(--line)}
+  details.rv:last-child{border-bottom:none}
+  details.rv > summary{list-style:none;cursor:pointer;padding:12px 2px;
+    display:flex;align-items:center;gap:11px;font-size:16px;font-weight:500}
+  details.rv > summary::-webkit-details-marker{display:none}
+  details.rv > summary:hover{color:var(--accent-hover)}
+  details.rv > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .tri{flex:none;color:var(--accent);font-size:13px;transition:transform .13s}
+  details.rv[open] .tri{transform:rotate(90deg)}
+  .rv .in{padding:2px 2px 16px 24px;font-size:16px;line-height:24px;max-width:72ch}
+  .rv .in p{margin:0 0 10px}
+  .rv .in p:last-child{margin-bottom:0}
+  .rv .in .win{color:var(--muted);font-size:14px;line-height:20px}
+
+  .scroll{overflow-x:auto;margin-bottom:26px}
+  table{border-collapse:collapse;width:100%;font-size:16px;background:var(--table-bg);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line)}
+  th{font-size:13px;color:var(--muted);font-weight:600;background:var(--surface-muted);
+     text-transform:uppercase;letter-spacing:.05em}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  tr.worst td{background:var(--high-bg);font-weight:600}
+  tr.dead td{color:var(--muted)}
+
+  .ov{display:grid;gap:10px;margin-top:4px}
+  .ov button{display:flex;align-items:center;gap:16px;width:100%;text-align:left;
+    background:var(--table-bg);border:1px solid var(--line);border-radius:10px;
+    padding:15px 18px;font:inherit;color:inherit;cursor:pointer}
+  .ov button:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .ov button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ov .k{flex:none;font-size:14px;font-weight:600;color:var(--accent);letter-spacing:.1em;width:24px}
+  .ov .tx{flex:1;font-size:17px;line-height:23px;font-weight:500}
+  .ov .tx em{display:block;font-style:normal;font-size:14px;line-height:20px;
+    color:var(--muted);font-weight:400;margin-top:2px}
+  .ov-more{font-size:14px;color:var(--muted);margin-top:14px}
+
+  .nav{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .nav button{border:1px solid var(--line-strong);background:var(--card);color:var(--ink);
+    border-radius:999px;min-height:40px;padding:0 20px;font:inherit;font-size:15px;
+    font-weight:500;cursor:pointer}
+  .nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .nav button:disabled{opacity:.4;cursor:default}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .dots{display:flex;gap:7px;flex:1;justify-content:center}
+  .dots button{min-height:0;padding:0;width:10px;height:10px;border-radius:50%;
+    border:1px solid var(--line-strong);background:var(--card)}
+  .dots button[aria-current="true"]{background:var(--accent);border-color:var(--accent)}
+  .pos{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+  .hint{text-align:center;font-size:13px;line-height:19px;color:var(--muted);margin-top:12px;
+    max-width:76ch;margin-left:auto;margin-right:auto}
+
+  @media (max-width:760px){
+    body{font-size:16px;padding-left:14px;padding-right:14px}
+    .slide{padding:26px 22px 24px;min-height:0;border-radius:12px}
+    .slide h2{font-size:27px;line-height:34px;max-width:none}
+    .lede{font-size:17px;line-height:26px}
+    .figure{padding:18px 20px;gap:12px}
+    .figure .big{font-size:40px}
+    .nav button{padding:0 15px}
+    .dots{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){.tri{transition:none}}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ================= 0 · overview ================= -->
+<section class="slide" id="sl0">
+  <div class="eyebrow"><span class="scope">project Example · August 2026 · goal "Orders"</span></div>
+  <h2>Proposals for the current flows</h2>
+  <div class="ov">
+    <button type="button" data-go="1"><span class="k">01</span><span class="tx">The highest-earning flow loses subscribers five times faster than the rest<em>"Abandoned cart" · 70 of the project's 114 unsubscribes for the month</em></span></button>
+    <button type="button" data-go="2"><span class="k">02</span><span class="tx">Three flows produce two thirds of the project's bounce<em>domain reputation · 812 bounce out of 1,240</em></span></button>
+    <button type="button" data-go="3"><span class="k">03</span><span class="tx">Subscription confirmations count as revenue<em>the whole project · 7.4% of flow revenue rests on transactional emails</em></span></button>
+  </div>
+  <p class="ov-more">Another 4 findings are in the full report.</p>
+  <div class="grow"></div>
+</section>
+
+<!-- ================= 1 ================= -->
+<section class="slide" id="sl1" hidden>
+  <div class="eyebrow"><span class="num">01</span>
+    <span class="scope"><a href="https://example.com/scenarios/1234">"Abandoned cart"</a></span>
+    <span class="sp"></span><span class="badge b-fix">Fix</span></div>
+  <h2>The highest-earning flow loses subscribers five times faster than the rest</h2>
+  <div class="figure">
+    <span class="big">0.48%</span>
+    <span class="cap">Unsubscribe % (Email) — against 0.12% for the project<span>August 2026, 14,550 deliveries; from the project's reporting data</span></span>
+  </div>
+  <div class="bars" aria-hidden="true"><i style="--v:38"></i><i style="--v:41"></i><i style="--v:44"></i><i style="--v:47"></i><i style="--v:52"></i><i style="--v:58"></i><i style="--v:63"></i><i style="--v:70"></i><i style="--v:77"></i><i style="--v:84"></i><i style="--v:91"></i><i style="--v:100" class="hi"></i></div>
+  <div class="chart-cap">Unsubscribe % (Email) by month, September 2025 — August 2026 · from the project's reporting data</div>
+  <p class="lede">The flow earns more than any other — <b>$1,185,769.20</b> in August — and produces 70 of the project's 114 unsubscribes on 15% of its deliveries. A year ago the rate was half that: 0.24%. Over the same year the project grew by 40%, this flow doubled.</p>
+  <div class="grow"></div>
+  <div class="reveals">
+    <details class="rv"><summary><span class="tri">▸</span>Where exactly it is lost</summary>
+      <div class="in"><p>Of the 70 unsubscribes, 58 come from two emails out of five: the third (34) and the fifth (24). The other three emails together produce 12.</p>
+      <p class="win">August 2026, flow report by message; the same month and the same goal as the figure on the slide.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is in the flow</summary>
+      <div class="in"><p>Five sends on one path with pauses of 1 hour, 1 day, 1 day, 2 days and 2 days. One check before the first email — "Subscribed and valid" — and no repeat check after the pauses. The flow has no re-entry limit.</p>
+      <p class="win">Flow structure and executions for the last 30 days (August 18 — September 17), not for August: 12,410 executions entered, 9,880 passed the check, 9,865 reached the fifth email.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What to do</summary>
+      <div class="in"><p>Lengthen the pauses before the third and the fifth email from one day to two and repeat the "Subscribed and valid" check after every pause — for whoever runs the project in the platform. What will show the result: the unsubscribe % of the third and the fifth email over the next full month against 0.48% now.</p>
+      <p>The hypothesis this tests: the unsubscribes come from the emails that arrive soonest after the previous one — the third and the fifth sit behind one-day pauses. If the unsubscribes spread evenly across the series, the cause is not the pauses.</p></div></details>
+  </div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section class="slide" id="sl2" hidden>
+  <div class="eyebrow"><span class="num">02</span>
+    <span class="scope"><a href="https://example.com/scenarios/1240">"Welcome series"</a>, <a href="https://example.com/scenarios/1263">"Birthday"</a>, <a href="https://example.com/scenarios/1290">"Order confirmation"</a></span>
+    <span class="sp"></span><span class="badge b-fix">Fix</span></div>
+  <h2>Three flows produce two thirds of the project's bounce</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Flow</th><th class="num">Bounce Rate</th><th class="num">Sent</th><th class="num">Bounce</th></tr></thead>
+      <tbody>
+        <tr class="worst"><td>Welcome series</td><td class="num">3.41%</td><td class="num">12,337</td><td class="num">421</td></tr>
+        <tr><td>Birthday</td><td class="num">2.50%</td><td class="num">7,892</td><td class="num">197</td></tr>
+        <tr><td>Order confirmation</td><td class="num">2.46%</td><td class="num">7,890</td><td class="num">194</td></tr>
+        <tr class="dead"><td>The whole project</td><td class="num">0.42%</td><td class="num">298,705</td><td class="num">1,240</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="lede">The threshold this report applies is 2%. These three account for 9% of the project's sends and <b>65% of all bounces</b>. Every bounce is an email to an address that does not exist, and mailbox providers count them across the domain as a whole.</p>
+  <div class="grow"></div>
+  <div class="reveals">
+    <details class="rv"><summary><span class="tri">▸</span>Where exactly it breaks</summary>
+      <div class="in"><p>In "Welcome series", 369 of the 421 bounces are on the first email (4.95% of its sends), 52 on the second (1.06%). Addresses fail at the first contact, not over the course of the series.</p>
+      <p class="win">August 2026, flow report by message.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is in the flow</summary>
+      <div class="in"><p>"Welcome series": the trigger is the event "subscription status changed", the path to the first email is a 1-hour pause → the condition "Subscribed, valid, no orders" → "Send Welcome 1". The only address check in the flow is "email exists and is invalid = no", inside that condition: it fires on the invalid flag, that is, on an address that has already bounced.</p>
+      <p class="win">Structure and executions for August 18 — September 17: 18,200 entered, 5,900 reached the first email.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What to do</summary>
+      <div class="in"><p>Between the address capture form on the site and the "Send Welcome 1" block, put a check that runs before the first send — syntax and domain existence; there is no such check in the flow today. For whoever runs the project in the platform. What will show the result: the Bounce Rate of the first email over the next full month against 4.95%.</p>
+      <p>For "Birthday" and "Address confirmation", check the address source before the first email the same way: the sources differ, the defect is the same.</p></div></details>
+  </div>
+</section>
+
+<!-- ================= 3 ================= -->
+<section class="slide" id="sl3" hidden>
+  <div class="eyebrow"><span class="num">03</span>
+    <span class="scope">the whole project · attribution</span>
+    <span class="sp"></span><span class="badge b-now">Decide today</span></div>
+  <h2>Subscription confirmations count as flow revenue</h2>
+  <div class="figure">
+    <span class="big">7.4%</span>
+    <span class="cap">of flow revenue rests on transactional emails<span>August 2026: $312,400 of $4,210,000 and 48 orders out of 590; from the project's reporting data</span></span>
+  </div>
+  <p class="lede">The subscription confirmation email and the order messages arrive at the moment of purchase and <b>intercept the revenue</b> from the mailings that led to the purchase. By the platform's design such emails are excluded from attribution; on this project the exclusion is not configured, so the money figures of every other flow are understated by an unknown share.</p>
+  <div class="grow"></div>
+  <div class="reveals">
+    <details class="rv"><summary><span class="tri">▸</span>What was checked</summary>
+      <div class="in"><p>Three emails with a transactional profile carry attributed revenue for August: "Confirm your subscription" — $181,200, "Thank you for your order" — $80,100, "Order placed" — $51,100. For all three the revenue follows orders the customer is making at that moment anyway.</p>
+      <p class="win">August 2026, project revenue by mailing type; the mailing profile is from the flow structure.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is in the flow</summary>
+      <div class="in"><p>"Order confirmation": a scheduled trigger, one group of steps, one mailing — "Confirm your subscription", transactional profile. The exit leads nowhere further: the flow ends with the email.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What to do</summary>
+      <div class="in"><p>Configure the exclusion from attribution — for the three mailings or by a filter on the transactional type, so that new ones fall under it automatically; then recalculate attribution, and the revenue will redistribute to the remaining mailings. For whoever runs the project in the platform. What will show the result: the transactional line in flow revenue for the next month is zero.</p></div></details>
+  </div>
+</section>
+
+  <div class="nav">
+    <button type="button" id="prev">← Back</button>
+    <div class="dots" id="dots"></div>
+    <span class="pos" id="pos"></span>
+    <button type="button" id="next">Next →</button>
+  </div>
+  <div class="hint">Data: the whole of August 2026, compared with July 2026 and August 2025; the flows' own series — 13 months; executions by step — August 18 — September 17, 2026, they are not stored deeper than 30 days. The goal "Orders". Revenue here is "Revenue from messages delivered in the selected period", by send date; it will not match the "Revenue for the period" in the flow report, which is counted by order date. Links point to https://example.com — the address is derived from the project's system name.</div>
+
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var TOTAL = slides.length;
+  var prev = document.getElementById('prev'),
+      next = document.getElementById('next'),
+      pos  = document.getElementById('pos'),
+      dots = document.getElementById('dots');
+  var dotBtns = [], i;
+  for (i = 0; i < TOTAL; i++) {
+    var d = document.createElement('button');
+    d.type = 'button';
+    d.setAttribute('aria-label', i === 0 ? 'Overview' : 'Proposal ' + i);
+    (function(n){ d.addEventListener('click', function(){ go(n); }); })(i);
+    dots.appendChild(d); dotBtns.push(d);
+  }
+  var cur = 0;
+  function go(n){
+    if (n < 0 || n >= TOTAL) return;
+    cur = n;
+    for (var k = 0; k < TOTAL; k++) {
+      slides[k].hidden = (k !== n);
+      dotBtns[k].setAttribute('aria-current', String(k === n));
+    }
+    prev.disabled = (n === 0);
+    next.disabled = (n === TOTAL - 1);
+    pos.textContent = n === 0 ? 'Overview' : n + ' / ' + (TOTAL - 1);
+    try { history.replaceState(null, '', '#' + n); } catch(e){}
+    window.scrollTo(0, 0);
+  }
+  prev.addEventListener('click', function(){ go(cur - 1); });
+  next.addEventListener('click', function(){ go(cur + 1); });
+  Array.prototype.forEach.call(document.querySelectorAll('.ov button[data-go]'), function(b){
+    b.addEventListener('click', function(){ go(parseInt(b.getAttribute('data-go'), 10)); });
+  });
+  document.addEventListener('keydown', function(e){
+    var t = e.target || {};
+    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(cur - 1); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(TOTAL - 1); }
+  });
+  var start = 0;
+  try { var h = parseInt((location.hash || '').replace('#', ''), 10); if (!isNaN(h) && h >= 0 && h < TOTAL) start = h; } catch(e){}
+  go(start);
+})();
+</script>
+</body>
+</html>

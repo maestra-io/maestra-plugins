@@ -1,0 +1,300 @@
+<!--
+  Example / template for the flow-issues-audit HTML checklist (produced only on request).
+  Reproduce this STRUCTURE and STYLING as-is — it is the product's visual theme.
+  Do NOT change colors, fonts, radii, or layout unless the user explicitly asks.
+  Replace only the CONTENT: project name, scenario names/ids/links, and findings.
+  Base URL is shown as https://example.com — use the project's real admin base URL
+  (`<base_project_url>/scenarios/<flowId>`). The scenarios below are the skill's own
+  calibration examples; a real report lists the actually-audited flows.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow audit</title>
+<style>
+  @font-face{
+    font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;
+    src:local("Inter"),url("https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_teKQ.woff2") format("woff2");
+  }
+  @font-face{
+    font-family:"Inter";font-style:normal;font-weight:500;font-display:swap;
+    src:local("Inter"),url("https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_teKQ.woff2") format("woff2");
+  }
+  @font-face{
+    font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;
+    src:local("Inter"),url("https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_teKQ.woff2") format("woff2");
+  }
+
+  :root{
+    /* Surfaces */
+    --bg:#f4f8f9; --card:#ffffff; --table-bg:#fdfdfc; --surface-muted:#ebeff0;
+    /* Text */
+    --ink:#282a2f; --muted:#637076; --disabled:#a9aaac;
+    /* Borders */
+    --line:#dae3e8; --line-strong:#bfccd4; --focus:#b8e5d6;
+    /* Maestra accent */
+    --accent:#028f69; --accent-hover:#00664b; --accent-active:#004d38; --accent-soft:#f2faf7;
+    /* Error / High */
+    --high:#db3309; --high-bg:#ffefeb; --high-border:#ffbbad;
+    /* Warning / Medium */
+    --med:#cc8100; --med-bg:#fff5db; --med-border:#f6e0a4;
+    /* Success / OK */
+    --low:#00803c; --low-bg:#edfaf2; --low-border:#bcebce;
+    /* Informational / Recommendation */
+    --info:#402f9e; --info-bg:#f0eef9; --info-border:#9d91da;
+    /* Neutral / Manual check */
+    --neutral:#637076; --neutral-bg:#f4f8f9;
+
+    --radius:8px; --shadow:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,"PT Sans","Trebuchet MS",sans-serif;font-size:14px;line-height:20px;
+    -webkit-font-smoothing:antialiased;padding:32px 20px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header.top{margin-bottom:22px}
+  h1{font-size:25px;line-height:32px;font-weight:600;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13px;line-height:18px}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 8px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;padding:12px 16px;min-width:120px}
+  .stat .n{font-size:24px;font-weight:600}
+  .stat .l{font-size:12px;line-height:16px;color:var(--muted);letter-spacing:.02em}
+  .stat.red .n{color:var(--high)} .stat.green .n{color:var(--low)} .stat.amber .n{color:var(--med)}
+
+  h2.section{font-size:14px;line-height:20px;font-weight:600;text-transform:none;letter-spacing:0;
+    color:var(--ink);margin:34px 0 12px}
+
+  .tablecard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;overflow:hidden}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:760px;background:var(--table-bg)}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;line-height:16px;text-transform:none;letter-spacing:0;color:var(--muted);
+    font-weight:600;background:var(--surface-muted);position:sticky;top:0}
+  tr:last-child td{border-bottom:none}
+  td.name a{color:var(--accent);text-decoration:none;font-weight:600}
+  td.name a:hover{color:var(--accent-hover);text-decoration:underline}
+  td.name .id{display:block;color:var(--muted);font-size:12px;line-height:16px;font-weight:400;margin-top:2px}
+  td ul{margin:0;padding-left:16px} td li{margin:2px 0}
+  .chk{width:34px;text-align:center}
+  input[type="checkbox"]{accent-color:var(--accent);cursor:pointer}
+  .chk input{width:17px;height:17px}
+  .badge{display:inline-flex;align-items:center;min-height:24px;padding:2px 8px;
+    border:1px solid transparent;border-radius:999px;font-size:12px;line-height:16px;
+    font-weight:500;white-space:nowrap}
+  .b-high{color:var(--high);background:var(--high-bg);border-color:var(--high-border)}
+  .b-med{color:var(--med);background:var(--med-bg);border-color:var(--med-border)}
+  .b-low{color:var(--low);background:var(--low-bg);border-color:var(--low-border)}
+  .b-list{color:var(--muted);background:var(--surface-muted);border-color:var(--line)}
+
+  .cards{display:grid;gap:16px;margin-top:12px}
+  .flow{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;overflow:hidden}
+  .flow .head{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .flow .head .t{flex:1;min-width:200px}
+  .flow .head h3{margin:0;font-size:16px;line-height:24px;font-weight:600}
+  .flow .head h3 a{color:var(--ink);text-decoration:none}
+  .flow .head h3 a:hover{color:var(--accent-hover)}
+  .flow .head .meta{color:var(--muted);font-size:12px;line-height:16px;margin-top:3px}
+  .flow .body{padding:6px 18px 16px}
+  .grp{margin-top:14px}
+  .grp .lab{font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+  .grp.prob .lab{color:var(--high)} .grp.sugg .lab{color:var(--info)} .grp.man .lab{color:var(--neutral)}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .grp.prob .dot{background:var(--high)} .grp.sugg .dot{background:var(--info)} .grp.man .dot{background:var(--neutral)}
+  .item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:none}
+  .item input{margin-top:3px;width:16px;height:16px;flex:none}
+  .item .txt{flex:1}
+  .item .txt b{font-weight:600}
+  .item .where{color:var(--muted);font-size:12px;line-height:16px}
+  .item .fix{margin-top:3px}
+  .item .fix::before{content:"→ ";color:var(--accent);font-weight:600}
+  .clean{color:var(--low);font-weight:600;padding:10px 0 4px;display:flex;align-items:center;gap:8px}
+  .foot{color:var(--muted);font-size:12px;line-height:16px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+  .note{color:var(--ink);background:var(--accent-soft);border:1px solid var(--focus);
+    border-radius:8px;padding:12px 16px;font-size:13px;line-height:18px;margin:16px 0}
+  code{background:var(--surface-muted);padding:1px 5px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>Technical flow audit</h1>
+    <div class="sub">Project <b>Example</b> · 4 of 4 flows audited · processing-load and communication-correctness checklist</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="n">4</div><div class="l">Flows</div></div>
+    <div class="stat green"><div class="n">3</div><div class="l">Clean</div></div>
+    <div class="stat red"><div class="n">1</div><div class="l">With problems</div></div>
+    <div class="stat amber"><div class="n">3</div><div class="l">Problems total</div></div>
+  </div>
+
+  <div class="note">
+    "Problems" are what is worth fixing. "Suggestions" are optional improvements (a load-vs-clarity trade-off), not defects.
+    "Check manually" is what the flow's structure cannot settle on its own (for example, whether an email carries a subscription topic, or whether live sending is switched on).
+    Ticked checkboxes live only in the open tab.
+  </div>
+
+  <!-- ============ PRIORITY TABLE ============ -->
+  <h2 class="section">Summary by priority</h2>
+  <div class="tablecard">
+    <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="chk">✓</th>
+          <th>Flow</th>
+          <th>Problems</th>
+          <th>What to do</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1001">Welcome with an A/B test</a><span class="id">#1001</span></td>
+          <td><ul>
+            <li>The A/B test is built on a random split instead of the A/B test block</li>
+            <li>No subscription check for the channel before sending</li>
+            <li>No contact-validity check (email / phone)</li>
+          </ul></td>
+          <td><ul>
+            <li>Rebuild it on the A/B test block</li>
+            <li>Check the channel subscription: SMS before SMS, email before email</li>
+            <li>Add "valid email" before email and "valid phone" before SMS</li>
+          </ul></td>
+          <td><span class="badge b-high">High</span></td>
+        </tr>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1004">Scheduled reactivation</a><span class="id">#1004</span></td>
+          <td>No problems found</td>
+          <td>Optional: some conditions could move into the launch conditions (lower load)</td>
+          <td><span class="badge b-low">OK</span></td>
+        </tr>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1002">Abandoned cart</a><span class="id">#1002</span></td>
+          <td>No problems found</td>
+          <td>Only confirm the subscription topic and that live sending is on</td>
+          <td><span class="badge b-low">OK</span></td>
+        </tr>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1003">Abandoned mechanics (combined)</a><span class="id">#1003</span></td>
+          <td>No problems found</td>
+          <td>Only confirm the subscription topic and that live sending is on</td>
+          <td><span class="badge b-low">OK</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ============ DETAIL CARDS ============ -->
+  <h2 class="section">Flow by flow</h2>
+  <div class="cards">
+
+    <!-- 1001 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1001">Welcome with an A/B test</a></h3>
+          <div class="meta">#1001 · starts on the event "customer registered" · <b style="color:var(--high)">3 problems + 1 suggestion</b></div>
+        </div>
+        <span class="badge b-high">High</span>
+      </div>
+      <div class="body">
+        <div class="grp prob">
+          <div class="lab"><span class="dot"></span>Problems</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>The A/B test is built on a random split instead of the A/B test block.</b> <span class="where">A 50/50 split block: one branch SMS, the other email.</span><div class="fix">Rebuild it on the A/B test block — that one pins a customer to a single variant. A random split sends the same customer into different variants on re-entry, which distorts the comparison.</div></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>No subscription check for the channel before sending.</b> <span class="where">The SMS branch has no subscription check at all; before email only the brand subscription is checked.</span><div class="fix">Check the subscription for the channel actually being sent (and for the email's topic, where it has one): SMS before the SMS step, email before the email step. A brand subscription is not consent for a channel.</div></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>No contact-validity check.</b> <span class="where">There is no contact check before the send steps.</span><div class="fix">Add "valid email" before the email step and "valid phone" before the SMS step — without them undelivered messages rise and sender reputation takes the hit.</div></div></div>
+        </div>
+        <div class="grp sugg">
+          <div class="lab"><span class="dot"></span>Suggestions (optional)</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>The segment filter sits after the start and after a day-long wait.</b> <span class="where">A condition straight after the 1-day wait (customers outside the segment leave the flow).</span><div class="fix">If the filter is purely static, move it into the launch conditions so customers outside the audience never enter and never wait a day for nothing (saves load). Keep it as its own step if you need the drop-off visible in the funnel. A load-vs-clarity trade-off, not a defect.</div></div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Check manually</div>
+          <div class="item"><div class="txt">Whether the emails carry a subscription topic — that decides whether to check the topic or the channel.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1004 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1004">Scheduled reactivation</a></h3>
+          <div class="meta">#1004 · starts on a schedule</div>
+        </div>
+        <span class="badge b-low">OK</span>
+      </div>
+      <div class="body">
+        <div class="clean">✓ No serious problems found.</div>
+        <div class="grp sugg">
+          <div class="lab"><span class="dot"></span>Suggestions (optional)</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>The checks run as separate steps after the start.</b> <span class="where">Several filter conditions in a row after the schedule start block.</span><div class="fix">Some of these could move into the schedule's launch conditions, cutting the audience before entry and lowering load. If the steps are deliberately separate — to see where the audience drops out — that is fine, leave them. A load-vs-clarity trade-off.</div></div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Check manually</div>
+          <div class="item"><div class="txt">Whether the email carries a subscription topic — that decides the level of the subscription check (topic or channel).</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1002 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1002">Abandoned cart</a></h3>
+          <div class="meta">#1002 · starts on the event "session ended"</div>
+        </div>
+        <span class="badge b-low">OK</span>
+      </div>
+      <div class="body">
+        <div class="clean">✓ No problems found — a correct abandoned-cart mechanic.</div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Check manually</div>
+          <div class="item"><div class="txt">The email channel subscription is checked (no topic). If the email carries a subscription topic, check the topic, not only the channel.</div></div>
+          <div class="item"><div class="txt">Checked and sound: the session trigger (cart changed, no order in the session), a 30-minute wait before re-checking, a daytime window on leaving the wait, and the valid-email and subscription checks.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1003 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1003">Abandoned mechanics (combined)</a></h3>
+          <div class="meta">#1003 · starts on the event "session ended"</div>
+        </div>
+        <span class="badge b-low">OK</span>
+      </div>
+      <div class="body">
+        <div class="clean">✓ No problems found — a combined flow that branches by activity type.</div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Check manually</div>
+          <div class="item"><div class="txt">The email channel subscription is checked (no topic). If the emails are tagged with a subscription topic, check the topic.</div></div>
+          <div class="item"><div class="txt">Checked and sound: the session trigger, a 30-minute wait before re-checking, a daytime window on exit, the valid-email and subscription checks; the mechanic's conditions (cart / wishlist / view / category) branch — that is priority routing, not a dead-end chain.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    Coverage: 4 of 4 flows audited. The checks come from the processing-load and communication-correctness checklist (session- vs customer-scope, waiting before checking "did not do X", subscription by channel/topic, contact validity, night sends, a random split instead of an A/B test, a recalculated segment instead of a realtime one, condition granularity).
+    The project-wide checks (several flows on one event, stale test versions) can be run separately.
+  </div>
+
+</div>
+</body>
+</html>

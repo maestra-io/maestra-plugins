@@ -1,5 +1,44 @@
 # CHANGELOG
 
+## 1.2.0 — 2026-09-21
+
+Four flow skills added, ported from the upstream `flow` plugin 1.27.0 (author "AI tribe") — the same
+team whose visual-editor skills became `maestra-email` and `maestra-email-ops`. The upstream pack was
+already English and already written against the flow tool family this platform exposes, so three of
+the four are near-verbatim ports; the fourth was rewired onto this platform's own reporting.
+
+- **`flow-summary`** (read-only) — a concise, structured business summary of one flow from its
+  structure: trigger, logic, goal. Reads the graph with `flows_lookup` and decodes blocks, events and
+  steps from the Flows wiki. Optionally folds in ~30-day execution counts.
+- **`flow-issues-audit`** (read-only) — a technical audit of one flow or a whole project against known
+  anti-patterns (processing load, communication correctness), each finding with a concrete fix and a
+  short why. Offers a presentation-ready HTML checklist on request.
+- **`flow-create`** (writes drafts) — builds a correct draft flow from a plain-language request:
+  reads the wiki, resolves entities to ids, creates and fills blocks, wires outputs, verifies every
+  block by reading it back, and hands over a link. Filter bodies are delegated to `filter-build` in a
+  sub-agent and written back unchanged; marketing mechanics come from the wiki's mechanics folder,
+  never from memory. Creates a mailing per send step; launches nothing.
+- **`flow-business-audit`** (read-only) — a business audit that ends in fixes to the flows themselves:
+  the figures find the flows worth opening, then their construction says why they move and what to
+  change. Two report forms, full report or client-ready deck.
+
+**`flow-business-audit` runs on `flow_report`, not on SQL.** Upstream computed every figure with
+hand-written ClickHouse over two scenario marts; this platform's analytics catalogue does not carry
+them, and its `flow_report` tool answers money, volume, funnel and every rate for every flow and for
+the project **in one call** — the same computation behind the Scenarios screen, so a figure in the
+report and a figure in the admin UI are the same figure. The skill's template handles were kept
+(T1, T1m, T2, T10, T3f …) and their definitions replaced; `metrics-map.md`, `rates.md`,
+`beyond-the-overview.md`, `invariants.md` and `calling-the-tools.md` were rewritten around the new
+source. The datamart-coverage and recalculation-freshness handles retire with the marts, and the
+revenue-by-mailing-type split is now read from construction plus the wiki's `flow_types` rather than
+from a column — all three losses are stated in the skill rather than papered over.
+
+Other adaptations: cross-skill references point at `maestra:` (`maestra:filter-build`,
+`maestra:flow-summary`); flow links build on `https://<systemName>.maestra.io/scenarios/<id>`;
+worked examples, both HTML report templates and the client deck are English with US currency;
+`flow-summary`'s three output headings and `flow-issues-audit`'s project table are English by
+default, translated with the report when the reader works in another language.
+
 ## 1.1.0 — 2026-09-15
 
 `maestra-email` + `maestra-email-ops` synced with the upstream visual-editor skills, version 1.11.0

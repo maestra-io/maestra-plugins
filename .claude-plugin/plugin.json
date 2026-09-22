@@ -1,7 +1,7 @@
 {
   "name": "maestra",
-  "version": "1.1.0",
-  "description": "Maestra skills for marketers: emails in the visual editor (personalization, product rows, letter styles, test sends), segment filters, and more.",
+  "version": "1.2.0",
+  "description": "Maestra skills for marketers: emails in the visual editor (personalization, product rows, letter styles, test sends), segment filters, and marketing flows — summarize one, audit a project's flows for anti-patterns or for business results, and build a new flow from a plain-language request.",
   "author": {
     "name": "Maestra.io"
   },
@@ -22,6 +22,12 @@
     "recommendations",
     "product-feed",
     "letter-styles",
-    "test-send"
+    "test-send",
+    "flow",
+    "flows",
+    "scenario",
+    "automation",
+    "audit",
+    "journey"
   ]
 }
