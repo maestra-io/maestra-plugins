@@ -6,138 +6,141 @@ description: >-
   each with a concrete fix and a short why. Use when asked to audit, review,
   health-check, or "find what's wrong / what to fix" in an existing flow, or across
   a whole project's flows. Don't use to summarize what a flow does (use flow-summary)
-  or to create, edit, or launch a flow — this skill is read-only.
+  or to create, edit, or launch a flow (use flow-create) — this skill is read-only.
 metadata:
   author: Maestra.io
   upstream: AI tribe
+  version: 1.0.0
 ---
 
 # Flow audit
 
-Inspect one flow (or a project's flows) and report where it violates known
-best-practices, with a concrete fix and a brief reason for each finding.
+If you delegate this audit, hand the sub-agent: this file's path, the flow reference
+(`flowId` + `versionNumber`, or "project-wide"), the project's admin base URL, the language to
+write in, and the report shape from `## Output format`.
 
-**Prefer to run this audit in a subagent** if you're orchestrating other work — delegate the whole
-audit and surface only the short report. But you can't rely on it: a host may run this skill inline,
-in which case your report goes straight to the user. **Either way the report must be user-ready on its
-own** — concise and in plain business language (see `## Writing the report`). You fetch the structure
-yourself with the flows tools — do not expect it to be pasted into your prompt.
+The report may go straight to the user — always write it per `## Writing the report`. Fetch the
+structure yourself with the flows tools; do not expect it to be pasted into your prompt.
 
-Decode blocks from their type tag, name, and `detail=Full` properties. What the skill needs
-from the flows tools — and how to read their output — is in `references/flows-tools.md`
-(the tools themselves are authoritative for exact signatures); this file and the checklists
-describe *capabilities*.
+Read on demand, with `Read`:
 
-The anti-patterns themselves live in two checklist files, bundled with the skill — read the
-one(s) you need on demand with `Read`:
-
-- `references/checklist-per-flow.md` — checks for **one flow**. The default.
+- `references/checklist-per-flow.md` — the anti-patterns for **one flow**. The default.
 - `references/checklist-all-flows.md` — checks that only make sense across **all flows** of a project.
-- `references/examples.md` — worked examples (clean **and** flawed real flows) calibrating what to flag
+- `references/<locale>/examples.md` — worked examples (clean **and** flawed real flows) calibrating what to flag
   and, crucially, what **not** to flag. Consult it whenever a call is borderline.
-- `references/html-report-example.html` — the themed HTML report to reproduce **only when the user asks**
-  for an HTML checklist (see `## Output format`).
+- `references/<locale>/terminology.md` — the table headers, priority labels and fixed phrases the report prints.
+- `references/<locale>/html-report-example.html` — the themed HTML report, reproduced only on request.
+
+`<locale>` is `en-US` or `ru-RU` — pick the one matching the user's language; if their language has
+no variant, use `en-US` and translate the wording yourself.
+
+## Where to look
+
+- **Read the connected tool's schema before building a call; it wins over anything written here.**
+- **The wiki wins on meanings** — what a block type does, what a status means, what an output name
+  denotes, what a trigger event fires on. It is served by the **`wiki` tool** on the same MCP server
+  as the flow tools and is the only route to it. Take every id from the index you are standing on or
+  from a document's `# References` list; never assemble one yourself.
+
+For an audit the documents worth opening are `overview` (how a flow runs, dead ends, what counts as
+a run, ordering and load, and the flow-level settings), the domain index and `blocks` (block types
+and their outputs), `events` and `steps` (the trigger and operation-step catalogues), `flow_types`
+(which recipient checks a flow applies by itself and which have to be written into it) and `urls`
+(the address of a flow version, and the flow status vocabulary). The `entities` domain resolves a
+name you may need to print — a segment, a mailing — into the identifier that names it. Read only
+what this audit needs.
+
+**A missing `wiki` tool is not a stop** — this skill is read-only and its checks work off the
+structure. Decode from the tag, the block name and the full properties instead, and mark whatever
+you cannot confirm as needing manual confirmation.
 
 ## CRITICAL — never fabricate a finding
 
 - **Report only anti-patterns you can substantiate from fetched data.** Tie each finding to a
   specific real block/edge in the fetched data (for your own rigor). Never invent a block, an edge, or a problem.
 - **A false alarm on a healthy flow is as bad as a miss.** Reference flows must come back
-  clean. If a check needs a block property you haven't fetched, fetch `detail=Full` for that
-  block before deciding — don't guess, and don't flag on suspicion alone.
-- **When structure isn't enough to confirm, say so.** Some checks (e.g. segment-is-recalculated,
-  subscription topic/channel) may not be fully decidable from the flow alone. Mark those as
-  "requires manual confirmation" rather than asserting a violation.
-- **Never audit a flow you couldn't load.** And keep the report free of internals — no block ids,
-  no `rowVersion`, no internal field/enum names (`entityType`, `entityDataPartType`,
-  `sessionOrdersStatus`, block-type tags, …), no checklist numbers. Speak in user terms
-  (see `## Writing the report`). See also `## If something goes wrong`.
+  clean. If a check needs a block property you haven't fetched, fetch that block's full properties
+  before deciding — don't guess, and don't flag on suspicion alone.
+- **A check you can't decide from the fetched data is "requires manual confirmation"** — never a
+  violation, and never a clean bill either.
+- **Never audit a flow you couldn't load.** See also `## If something goes wrong`.
 
 ## Prerequisites — check the tools first
 
-Before anything else, confirm the flow tools you need are available in this session:
 - a per-flow audit needs `flows_lookup`;
 - a project-wide audit needs `flows_list`, `flows_get`, and `flows_lookup`.
 
-No separate probe is needed — the first call you'd make anyway is the check: the skeleton fetch for a single
-flow, or `flows_list` for a project. **If a required tool isn't available / the project's flow MCP isn't
-connected** (distinct from a transient error — for that, retry once), **abort immediately. Do not run a partial
-audit.** Tell the user plainly, in their language:
-- the audit needs the project's flow tools (list flows / read a flow's structure / read version history) and they aren't connected here;
-- they should connect the project's flow MCP (the one that exposes these tools) and re-run the audit;
-- if they don't know how, point them to their team's instructions for connecting the flow MCP.
+Your first call doubles as the check. If a required tool is missing (as opposed to erroring — for
+that, retry once), abort; never run a partial audit. Tell the user, in their language, that the
+project's flow MCP isn't connected here, and to connect it and re-run the audit.
 
 ## Inputs
 
-- Per-flow audit (default): `flowId` (int) and `versionNumber` (int). Tenant/project is set on
-  the MCP connection.
-- Project-wide audit: no specific flow — you enumerate flows yourself with `flows_list`.
+- Per-flow audit (default): `flowId` (int) and `versionNumber` (int). The project is fixed by the
+  MCP connection.
 
 If a per-flow audit is asked but `flowId`/`versionNumber` is missing, ask the caller instead of guessing.
 
 ## Which checklist
 
 - Called on a **specific flow** → run `references/checklist-per-flow.md`. After reporting, **offer** to also
-  run the project-wide checks ("some issues only show up across all flows — want me to run that too?").
+  run the project-wide checks (`terminology.md` → `offer.allFlows`).
 - Asked to audit the **project / all flows** → run `references/checklist-all-flows.md`, and run the per-flow
   checklist on each flow you can (or on the ones the caller cares about).
 
 ## Procedure — per-flow
 
-**First satisfy `## Prerequisites`** (the flow tools are available) — the step‑1 skeleton fetch below doubles as that check.
-
-1. **Map the graph — cheaply first.** Fetch the skeleton of the whole flow
-   (`detail=Skeleton, structure=Full`). Read the entry block, branches, merges, which outputs
-   are dead-ends (no outgoing edge), and any orphan branches.
-
-   **Gate:** if the fetch failed or the graph is empty / has no entry block, **stop and report**
-   (see below). Do not produce an audit of nothing.
+1. **Map the graph — cheaply first.** Fetch the skeleton view of the whole flow, the cheap
+   properties-free one. Read the entry block, branches, merges, which outputs are dead-ends (no
+   outgoing edge), and any orphan branches.
 
 2. **Read `references/checklist-per-flow.md`.** It defines every anti-pattern (how-not / why /
    how-instead / how-to-check). Work through the checks.
 
-3. **Pull `detail=Full` where a check needs block properties** — condition entity & subject,
-   delay time-of-day strategy, operation-step channel/topic,
-   segment vs realtime condition. Scope it (`structure=Subgraph`/`Neighbours` + `depth`) to the
-   relevant blocks so a big flow stays cheap. Several skeleton-only checks (Split-for-A/B,
-   only-narrowing condition, consecutive same-entity conditions, missing wait before a
-   "not-done" check) need no Full fetch.
+3. **Pull full properties where a check needs them** — condition entity & subject, delay
+   time-of-day strategy, operation-step channel/topic, segment vs realtime condition, and the
+   flow-level `repeatSettings`. Bound the traversal to the relevant blocks (a subtree or a
+   neighbourhood at a small depth) so a big flow stays cheap. Several skeleton-only checks
+   (Split-for-A/B, only-narrowing condition, consecutive same-entity conditions, missing wait before
+   a "not-done" check) need no full fetch.
 
-4. **(Optional) Corroborate with executions.** Re-fetch with executions when it strengthens a
-   finding (a narrowing condition that drops everyone; an overheating flow). Always state the
-   window; counts exist only for ~30 days. Never make it the sole basis of a structural finding.
+4. **(Optional) Corroborate with executions.** Re-fetch with execution counts when they strengthen
+   a finding (a narrowing condition that drops everyone; an overheating flow), and state the window
+   you counted. Never make counts the sole basis of a structural finding.
 
 5. **Assemble findings.** For each confirmed violation record: the anti-pattern, the exact
    block(s), why it's bad, and the fix — drawn from the checklist. Then write the report.
 
-> These five steps are short and linear — no separate plan is needed for a normal flow. For a very
-> large flow, keep a quick running list of which checklist cases you've applied vs still pending so
-> you don't drop the tail.
+> On a very large flow, track which cases you've applied and which are still pending.
 
 ## Procedure — all-flows
 
-**First satisfy `## Prerequisites`** (the flow tools are available); the `flows_list` call below is that check.
+Follow the ordered steps in `references/checklist-all-flows.md`.
 
-Follow the ordered "how to check" steps inside `references/checklist-all-flows.md` (enumerate with
-`flows_list`; read each flow as an entity with `flows_get` for its launch event and version history —
-that drives both the merge-by-event and stale-test checks; use `flows_lookup` only for a flow's
-longest-delay path).
+**Scope by status when asked.** If the user wants only *running* (launched) flows audited, keep the
+flows the listing reports as running and skip the stopped and draft ones. The listing tool has no
+status parameter, so filter its rows yourself; take the exact status spelling from the listing tool's
+own description or from the wiki document `urls` — a status you invent silently matches nothing.
 
-**Scope by status when asked.** If the user wants only *running* (launched) flows audited, include only
-flows whose status is `Execution` (running) — `flows_list` returns the status — and skip stopped/draft ones
-(`Paused`, `Indevelopment`, …). Don't audit everything when the ask was "running flows".
+**Batch the sweep and keep the findings on disk** — a project can have dozens of flows, more than fit
+one context.
 
-**Track coverage — a project sweep must not silently go partial.** A project can have dozens of
-flows, more than fit one context comfortably. Keep a running list of every flow from `flows_list`
-with a status (audited / pending / skipped-and-why), work through it deliberately, and for very
-large projects batch the flows (and respawn/continue if the context fills) rather than dropping
-the tail. **Always state coverage in the report** — "audited N of M flows" — and list any flow you
-could not reach, so an incomplete sweep never reads as complete.
+1. From `flows_list`, write a findings file in the working directory (or another path the host
+   allows) holding every flow in scope with its state: audited / pending / skipped-and-why, and
+   update it after every batch, before starting the next one.
+2. Audit the flows in batches. Where the host offers sub-agents, run one sub-agent per batch, briefed
+   as at the top of this file, each returning its per-flow findings in the shape `## Output format`
+   defines. Merge the returned findings yourself.
+3. Read the file back before writing the report, and build the report from it rather than from
+   memory.
+
+**Always state coverage in the report** — `terminology.md` → `coverage` — and list any flow you could
+not reach, so an incomplete sweep never reads as complete.
 
 ## Output format
 
-Write the report in **the language the user is working in** (it reaches the user directly), following
-`## Writing the report`, and cover **only** what the user should act on.
+Take table headers, priority labels and fixed phrases from `references/<locale>/terminology.md`.
+Sample outputs: `references/<locale>/examples.md`.
 
 **Two kinds of finding — keep them distinct:**
 - **Problems** (firm): split used instead of an A/B test; customer- vs session-scope in "abandoned" mechanics;
@@ -148,64 +151,50 @@ Write the report in **the language the user is working in** (it reaches the user
   **not** problems. If the only findings are advisory, say the flow is basically fine and list them as optional.
 
 **Per-flow report:**
-- **No problems and no suggestions → one short line**, e.g. "No issues found — the flow looks correct."
+- **No problems and no suggestions → one short line** (`terminology.md` → `verdict.clean`).
 - **Otherwise** → a short verdict line, then one short block per finding: **what** (plain words); **where** (block
   by its name in quotes, or a plain role/position description — never an id); **fix** (concrete, with a brief note
-  of why it matters). Problems first, then any suggestions clearly labelled as optional.
-- Only if you couldn't confirm something from the structure: one line on what to check manually.
-- Close with a one-line offer to also run the project-wide checks.
+  of why it matters). Problems first, then any suggestions clearly labelled as optional. Two issues
+  are two short blocks, not two screens.
 
 **Project-wide report:** lead with the concrete scenarios, ordered by priority — a **table**:
 
-| Flow | Problems | What to do | Priority |
+| Scenario | Problems | What to do | Priority |
 |---|---|---|---|
 | [name](link) | short list | short list | High / Med / Low |
 
-Each scenario name is a **link** (see below). Order rows by priority (most impactful first); keep cells short;
-state coverage ("audited N of M flows"). Keep advisory suggestions out of the "Problems" column — put them in
-"What to do" as optional, or in a lower-priority note. Write the table in English unless the user is working in
-another language; then translate the headers with it.
+Order rows by priority (most impactful first), keep cells short, and keep advisory items out of the
+"Problems" column — put them in "What to do" as optional.
 
-**Scenario links:** build as `<base_project_url>/scenarios/<flowId>` — e.g.
-`https://acme.maestra.io/scenarios/269446`. The `<base_project_url>` is the project's admin URL; if you
-don't know it, ask the user once (or reuse a scenario URL they gave you) and apply the same base to every link.
+**Scenario links:** a flow's address is the project's admin base URL plus the path the wiki document
+`urls` prints — build the link from that document, which also says which version each form of the
+link opens. No flow tool returns the base URL, but on this platform it is
+`https://<system name>.maestra.io`, the system name being the `tenant` every tool takes as
+`tenants_list` prints it: build the base from that, say so in the report, and ask the user once only
+when the project answers on another address (or reuse a scenario URL they gave you). Apply the same
+base to every link.
 
-**HTML checklist — offer, never auto-build.** At the end, always **offer** to assemble a presentation-ready HTML
-version of the report ("want an HTML checklist you can open in a browser and show the client?"). Build it **only on
-request**, and reproduce `references/html-report-example.html`: its structure and visual theme are the product's
-design — **keep the colors, fonts, radii and layout exactly as they are**, change only the content (project name,
-scenarios, ids, links, findings). It's a self-contained `.html` (inline CSS; the product web-font is loaded by URL
-with a local fallback) — the prioritized linked table plus a per-scenario card breakdown (problems / optional
-suggestions / manual-check), each with a checkbox to tick off.
-
-Most impactful first. No raw JSON, no skeletons, no "everything else is fine" section.
+**HTML checklist.** Offer an HTML version at the end (`terminology.md` → `offer.html`); build it only
+on request. Reproduce `references/<locale>/html-report-example.html`, replacing only the data — keep
+its structure and visual theme exactly as they are.
 
 ## Writing the report — talk to the user, not the system
 
-The reader is a marketer/CSM who has never seen the flow's internals. Translate everything into their world:
+The reader is a marketer who has never seen the flow's internals — translate everything into their world.
 
-- **No system terms.** Never name internal fields or enum values (`sessionOrdersStatus: Absent`,
-  `entityDataPartType: Customer`, `entityType: User`, `filterFactory`, `conditionBlock`, …). Say what it
-  *means*: not "set `sessionOrdersStatus: Absent`" but "make the trigger fire only when the session ended
-  without an order"; not "the condition is on `entityType: User`" but "the condition looks at the customer
-  overall instead of the session that just ended".
-- **No block ids.** Refer to a block by its **name in quotes** if it has one (the «Welcome» email step);
+- **No system terms.** Never print a field name, an enum value or a block type tag — none of the
+  vocabulary the flow tools and the wiki speak. Say what it *means* instead: not the name of the
+  trigger's order-state setting and the value to put in it, but "make the trigger fire only when the
+  session ended without an order"; not the technical name of the condition's entity context, but "the
+  condition looks at the customer overall instead of the session that just ended".
+- **No block ids.** Refer to a block by its **name in quotes** if it has one (the "Welcome" email step);
   otherwise **describe it** by role/position — "the start (trigger) block", "the 30-minute wait",
   "the third condition in the chain", "the email-send step group".
 - **No checklist numbers.** Never write "case 6" or "check №2 — ok". The user never sees the checklist.
-- **Only actionable things.** If an aspect is fine, don't mention it — no reassurance, no "and this is
-  correct" notes. Say only what to change and, briefly, why it matters (deliverability, wasted processing
-  load, distorted test results, night sends, …).
-- **Short.** A clean flow is one line. Two issues are two short blocks, not two screens.
-
-## Rules (quick reference)
-
-- Never fabricate; when unsure, say what to check manually — see `## CRITICAL — never fabricate a finding`.
-- Report only what the user should act on, in plain user terms — see `## Writing the report`.
+- **No internals.** No block ids, no optimistic-lock token, no raw JSON, no skeletons, no
+  "everything else is fine" section. If an aspect is fine, don't mention it.
 
 ## If something goes wrong
-
-Read-only skill, so blast radius is small — but a wrong finding erodes trust in the whole audit.
 
 | Situation | What to do |
 |---|---|
@@ -213,4 +202,4 @@ Read-only skill, so blast radius is small — but a wrong finding erodes trust i
 | `flows_lookup` / `flows_list` errors or times out | Retry once. If it still fails, stop and report the error — don't audit partial data as if complete. |
 | Skeleton empty / no entry block / flow or version not found | Stop and report: the flow/version couldn't be loaded (or doesn't exist). Never audit an empty graph. |
 | A check needs block properties the Full fetch didn't return | Report that check as "requires manual confirmation", naming what's missing — don't flag or clear it on a guess. |
-| Executions requested but no run data in the window (or older than ~30 days) | Skip the run-based corroboration; keep the structural findings without invented figures. |
+| Executions requested but no run data in the window (or the period predates what the counters retain) | Skip the run-based corroboration; keep the structural findings without invented figures. |

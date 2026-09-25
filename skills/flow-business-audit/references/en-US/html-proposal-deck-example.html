@@ -1,59 +1,66 @@
+<!-- locale: en-US. Parallel variant of ../ru-RU/html-proposal-deck-example.html. Keep both in step. -->
+
 <!--
-  Example / template for the flow-business-audit CLIENT DECK — built only when the report form
-  chosen at `SKILL.md § Inputs` is the deck, after step 8 has selected what goes on the slides.
+  Example / template for the flow-business-audit PROPOSAL DECK — built only when the report form
+  chosen at `../../SKILL.md § Inputs` is the deck, after step 8 has selected what goes on the slides.
 
   Reproduce this STRUCTURE and STYLING as-is (the theme is the one html-report-example.html uses).
   Replace only the CONTENT — and only with figures and claims that are already in the full report.
 
   THE RULES OF THIS FORMAT, decided once here and never per run:
 
-  1.  The deck is READY TO SEND TO THE CLIENT AS IT STANDS. Nothing on it is addressed to the CSM:
-      no "how to say it", no "what not to say", no note to the presenter. All of that goes to the
-      separate CSM note (`writing-the-report.md`, "The CSM note") — a Markdown file beside this one,
-      one section per proposal slide. Handover count 13 (`findings-and-failures.md`) is the number
-      of such notes found in this file: 0.
+  1.  The deck is READY TO PRESENT AS IT STANDS. Nothing on it is addressed to the presenter:
+      no "how to say it", no "what not to say", no note to whoever speaks. All of that goes to the
+      separate presenter notes (`../writing-the-report.md`, "The presenter notes") — a Markdown file
+      beside this one, one section per proposal slide. Handover count 13
+      (`../findings-and-failures.md`) is the number of such notes found in this file: 0.
   2.  Slides: one overview (mandatory) + three to seven proposals — as many as have a figure and a
       construction reading behind them. Never padded to seven, never cut to a round number. When the
-      selection left findings out, the overview carries the line "another N findings are in the full
-      report".
-  3.  Which findings get a slide: `SKILL.md` step 8 — "problem" findings plus at most one
-      project-level finding; several flows with one cause share one slide; "can't judge", "fine"
+      selection left findings out, the overview carries the `deck.overview.more` line.
+  3.  Which findings get a slide: `../../SKILL.md` step 8 — "problem" findings plus at most one
+      project-level finding; several scenarios with one cause share one slide; "can't judge", "fine"
       and "did not send" never get one.
   4.  The frame of a proposal slide — six elements in this order: the context line (number,
-      flow name(s) as links, urgency label right); the heading — a business statement, no
+      scenario name(s) as links, urgency label right); the heading — a business statement, no
       metric names, no identifiers, up to 19 words; one large figure with its window under it;
-      one paragraph; a table only when the slide is about several flows (up to five rows, the
+      one paragraph; a table only when the slide is about several scenarios (up to five rows, the
       project's line last and marked `dead`, the worst row marked `worst`); then the disclosures.
-  5.  Disclosures — exactly three, in this order: the EVIDENCE (headed by what it shows: "Where
-      exactly it is lost", "What was checked", "What this does not explain" — never a self-assessing
-      heading like "Why the comparison is fair"); "What is in the flow" (blocks by their own names in
-      quotes, settings as set, counts with their window); "What to do" (the steps verbatim from the
-      full report's "What to do", each naming a place, an action and an addressee).
-  6.  Labels — a closed set of three: b-now "Decide today", b-fix "Fix", b-idea "Idea". They
-      say how soon, not what state; none of the four verdict words appears anywhere in the deck.
+      A slide carrying a table carries no large figure: the table is the figure.
+  5.  Disclosures — exactly three, in this order: the EVIDENCE, headed by what it shows
+      (`deck.heading.whereLost`, `deck.heading.whatChecked`, `deck.heading.whatThisDoesNotExplain` in
+      terminology.md) — never a self-assessing heading such as "Why the comparison is fair";
+      then `deck.heading.inTheScenario` (blocks by their own names in quotes, settings as set,
+      counts with their window); then `deck.heading.whatToDo` (the steps verbatim from the full
+      report's "What to do", each naming a place, an action and an addressee).
+  6.  Labels — a closed set of three, `urgency.now` / `urgency.fix` / `urgency.idea` in
+      terminology.md, carried by the classes b-now / b-fix / b-idea. They say how soon, not what
+      state; none of the four verdict words appears anywhere in the deck.
   7.  Identifiers: never in the visible text, in any position, unless the user asked. The name in the
       context line is the link, and the link carries the id.
   8.  Charts are optional. Where a series carries the slide, draw it inline in the deck's own
       colours (an SVG or the `.bars` strip below) with the same window and origin a figure carries,
       from figures already in the full report. A slide without a chart is complete.
   9.  The footnote under the navigation is mandatory: the data windows, the goal, the money sentence
-      (`writing-the-report.md`, "Money"). It is the whole of `## What we do not know` the deck carries.
-  10. Navigation: prev/next, dots, Home/End, ←/→, hash routing. No toggle for notes — there are none.
-  11. Counts taken on the finished file and written to the log (`findings-and-failures.md`, counts
+      (`../writing-the-report.md`, "Money"). It is the whole of `## What we do not know` the deck carries.
+  10. Navigation: prev/next, dots, Home/End, ←/→, hash routing. No notes pane to switch on — there
+      are none.
+  11. Counts taken on the finished file and written to the log (`../findings-and-failures.md`, counts
       11–13): every figure and claim on the slides found verbatim in the full report (U = 0);
-      proposal slides = sections in the CSM note; notes to the presenter in this file = 0; bare
+      proposal slides = sections in the presenter notes; notes to the presenter in this file = 0; bare
       identifiers in the visible text = 0 unless asked.
 
   Every figure, name and link below is an INVENTED calibration example, drawn from the same invented
-  project as html-report-example.html. A real audit's numbers are never pasted in here. The example is in
-  English; the deck is written in the language of the report.
+  project as html-report-example.html, and every one of them stands in that page too — the two
+  examples are one run. A real audit's numbers are never pasted in here. The wording of the labels,
+  the disclosure headings and the footnote is `terminology.md` in this folder; the deck is written in
+  the language of the report.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Example: proposals for the flows</title>
+<title>Example: proposals for the scenarios</title>
 <style>
   :root{
     color-scheme: light;
@@ -180,106 +187,107 @@
 
 <!-- ================= 0 · overview ================= -->
 <section class="slide" id="sl0">
-  <div class="eyebrow"><span class="scope">project Example · August 2026 · goal "Orders"</span></div>
-  <h2>Proposals for the current flows</h2>
+  <div class="eyebrow"><span class="scope">project Example · August 2026 · goal “Orders”</span></div>
+  <h2>Proposals for the scenarios as they stand</h2>
   <div class="ov">
-    <button type="button" data-go="1"><span class="k">01</span><span class="tx">The highest-earning flow loses subscribers five times faster than the rest<em>"Abandoned cart" · 70 of the project's 114 unsubscribes for the month</em></span></button>
-    <button type="button" data-go="2"><span class="k">02</span><span class="tx">Three flows produce two thirds of the project's bounce<em>domain reputation · 812 bounce out of 1,240</em></span></button>
-    <button type="button" data-go="3"><span class="k">03</span><span class="tx">Subscription confirmations count as revenue<em>the whole project · 7.4% of flow revenue rests on transactional emails</em></span></button>
+    <button type="button" data-go="1"><span class="k">01</span><span class="tx">The best-earning mechanic loses subscribers four times faster than the rest<em>“Abandoned cart” · 70 of the project's 114 unsubscribes for the month</em></span></button>
+    <button type="button" data-go="2"><span class="k">02</span><span class="tx">One in six of the project's messages is a greeting that brings almost no money<em>“Birthday” · 15 % of deliveries and 5.6 % of revenue</em></span></button>
+    <button type="button" data-go="3"><span class="k">03</span><span class="tx">A third more messages went out this year, and noticeably fewer are read<em>the whole project · deliveries +37 %, opens −21 %</em></span></button>
   </div>
-  <p class="ov-more">Another 4 findings are in the full report.</p>
+  <p class="ov-more">1 more finding — in the full report.</p>
   <div class="grow"></div>
 </section>
 
 <!-- ================= 1 ================= -->
 <section class="slide" id="sl1" hidden>
   <div class="eyebrow"><span class="num">01</span>
-    <span class="scope"><a href="https://example.com/scenarios/1234">"Abandoned cart"</a></span>
-    <span class="sp"></span><span class="badge b-fix">Fix</span></div>
-  <h2>The highest-earning flow loses subscribers five times faster than the rest</h2>
+    <span class="scope"><a href="https://example.com/scenarios/1234">“Abandoned cart”</a></span>
+    <span class="sp"></span><span class="badge b-now">Decide today</span></div>
+  <h2>The best-earning mechanic loses subscribers four times faster than the rest</h2>
   <div class="figure">
-    <span class="big">0.48%</span>
-    <span class="cap">Unsubscribe % (Email) — against 0.12% for the project<span>August 2026, 14,550 deliveries; from the project's reporting data</span></span>
+    <span class="big">0.48 %</span>
+    <span class="cap">Unsubscribe Rate (Email) — against 0.12 % for the project<span>August 2026, 14,550 deliveries; from the project's reporting data</span></span>
   </div>
   <div class="bars" aria-hidden="true"><i style="--v:38"></i><i style="--v:41"></i><i style="--v:44"></i><i style="--v:47"></i><i style="--v:52"></i><i style="--v:58"></i><i style="--v:63"></i><i style="--v:70"></i><i style="--v:77"></i><i style="--v:84"></i><i style="--v:91"></i><i style="--v:100" class="hi"></i></div>
-  <div class="chart-cap">Unsubscribe % (Email) by month, September 2025 — August 2026 · from the project's reporting data</div>
-  <p class="lede">The flow earns more than any other — <b>$1,185,769.20</b> in August — and produces 70 of the project's 114 unsubscribes on 15% of its deliveries. A year ago the rate was half that: 0.24%. Over the same year the project grew by 40%, this flow doubled.</p>
+  <div class="chart-cap">Unsubscribe Rate (Email) by month, September 2025 — August 2026 · from the project's reporting data</div>
+  <p class="lede">The scenario earns more than any other — <b>$1,185,769.20</b> in August — and produces 70 of the project's 114 unsubscribes from 15 % of its deliveries. A year ago the share was half of this: 0.24 %. Over the same year the project grew 40 %, this scenario doubled.</p>
   <div class="grow"></div>
   <div class="reveals">
     <details class="rv"><summary><span class="tri">▸</span>Where exactly it is lost</summary>
-      <div class="in"><p>Of the 70 unsubscribes, 58 come from two emails out of five: the third (34) and the fifth (24). The other three emails together produce 12.</p>
-      <p class="win">August 2026, flow report by message; the same month and the same goal as the figure on the slide.</p></div></details>
-    <details class="rv"><summary><span class="tri">▸</span>What is in the flow</summary>
-      <div class="in"><p>Five sends on one path with pauses of 1 hour, 1 day, 1 day, 2 days and 2 days. One check before the first email — "Subscribed and valid" — and no repeat check after the pauses. The flow has no re-entry limit.</p>
-      <p class="win">Flow structure and executions for the last 30 days (August 18 — September 17), not for August: 12,410 executions entered, 9,880 passed the check, 9,865 reached the fifth email.</p></div></details>
+      <div class="in"><p>Of the 70 unsubscribes, 58 come from two of the five messages: the third (34) and the fifth (24). The other three together produce 12.</p>
+      <p class="win">August 2026, the scenario broken down message by message; the same month and the same goal as the figure on the slide.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is in the scenario</summary>
+      <div class="in"><p>Five sends on one path with waits of 1 hour, 1 day, 1 day, 2 days and 2 days. One gate before the first message — “Subscribed and valid” — and no re-check after any wait. The scenario has no limit on repeat entries.</p>
+      <p class="win">The scenario's structure and its execution counts over the last thirty days (18 August — 17 September), not over August: 12,410 executions entered, 9,880 passed the gate, 9,865 reached the fifth message.</p></div></details>
     <details class="rv"><summary><span class="tri">▸</span>What to do</summary>
-      <div class="in"><p>Lengthen the pauses before the third and the fifth email from one day to two and repeat the "Subscribed and valid" check after every pause — for whoever runs the project in the platform. What will show the result: the unsubscribe % of the third and the fifth email over the next full month against 0.48% now.</p>
-      <p>The hypothesis this tests: the unsubscribes come from the emails that arrive soonest after the previous one — the third and the fifth sit behind one-day pauses. If the unsubscribes spread evenly across the series, the cause is not the pauses.</p></div></details>
+      <div class="in"><p>Lengthen the waits before the third and the fifth message from one day to two and re-ask the gate “Subscribed and valid” after every wait — for whoever runs the project in the platform. What will show it worked: the unsubscribe share of the third and fifth messages over the next full month, against 0.48 % now.</p>
+      <p>The hypothesis this tests: the unsubscribes sit on the messages that arrive soonest after the one before — the third and the fifth stand behind the one-day waits. If they spread evenly across the sequence, the waits are not the reason.</p></div></details>
   </div>
 </section>
 
 <!-- ================= 2 ================= -->
 <section class="slide" id="sl2" hidden>
   <div class="eyebrow"><span class="num">02</span>
-    <span class="scope"><a href="https://example.com/scenarios/1240">"Welcome series"</a>, <a href="https://example.com/scenarios/1263">"Birthday"</a>, <a href="https://example.com/scenarios/1290">"Order confirmation"</a></span>
+    <span class="scope"><a href="https://example.com/scenarios/1263">“Birthday”</a></span>
     <span class="sp"></span><span class="badge b-fix">Fix</span></div>
-  <h2>Three flows produce two thirds of the project's bounce</h2>
+  <h2>One in six of the project's messages is a greeting that brings almost no money</h2>
   <div class="scroll">
     <table>
-      <thead><tr><th>Flow</th><th class="num">Bounce Rate</th><th class="num">Sent</th><th class="num">Bounce</th></tr></thead>
+      <thead><tr><th>Scenario</th><th class="num">Delivered</th><th class="num">Share of deliveries</th><th class="num">Revenue</th></tr></thead>
       <tbody>
-        <tr class="worst"><td>Welcome series</td><td class="num">3.41%</td><td class="num">12,337</td><td class="num">421</td></tr>
-        <tr><td>Birthday</td><td class="num">2.50%</td><td class="num">7,892</td><td class="num">197</td></tr>
-        <tr><td>Order confirmation</td><td class="num">2.46%</td><td class="num">7,890</td><td class="num">194</td></tr>
-        <tr class="dead"><td>The whole project</td><td class="num">0.42%</td><td class="num">298,705</td><td class="num">1,240</td></tr>
+        <tr><td>Abandoned cart</td><td class="num">14,550</td><td class="num">15 %</td><td class="num">$1,185,769.20</td></tr>
+        <tr><td>Welcome series</td><td class="num">31,004</td><td class="num">32 %</td><td class="num">$402,118.00</td></tr>
+        <tr class="worst"><td>Birthday</td><td class="num">14,880</td><td class="num">15 %</td><td class="num">$118,402.00</td></tr>
+        <tr class="dead"><td>The project as a whole</td><td class="num">96,500</td><td class="num">100 %</td><td class="num">$2,104,890</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="lede">The threshold this report applies is 2%. These three account for 9% of the project's sends and <b>65% of all bounces</b>. Every bounce is an email to an address that does not exist, and mailbox providers count them across the domain as a whole.</p>
+  <p class="lede">“Birthday” takes as many deliveries as the project's best-earning mechanic — 15 % — and returns <b>5.6 %</b> of the revenue against its 56 %. It is clicked three times less often than the project's average message: 0.62 % against 1.74 %. A year ago it was 1.10 %: over that year the project lost 15 %, this scenario 44 %.</p>
   <div class="grow"></div>
   <div class="reveals">
-    <details class="rv"><summary><span class="tri">▸</span>Where exactly it breaks</summary>
-      <div class="in"><p>In "Welcome series", 369 of the 421 bounces are on the first email (4.95% of its sends), 52 on the second (1.06%). Addresses fail at the first contact, not over the course of the series.</p>
-      <p class="win">August 2026, flow report by message.</p></div></details>
-    <details class="rv"><summary><span class="tri">▸</span>What is in the flow</summary>
-      <div class="in"><p>"Welcome series": the trigger is the event "subscription status changed", the path to the first email is a 1-hour pause → the condition "Subscribed, valid, no orders" → "Send Welcome 1". The only address check in the flow is "email exists and is invalid = no", inside that condition: it fires on the invalid flag, that is, on an address that has already bounced.</p>
-      <p class="win">Structure and executions for August 18 — September 17: 18,200 entered, 5,900 reached the first email.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is checked</summary>
+      <div class="in"><p>A click share of 0.62 % against the project's 1.74 % over the same month, on a denominator of 14,880 deliveries, above the threshold. There is no money verdict: 22 orders against a threshold of 50; the same view over June — August would give one, where the count reaches 64.</p>
+      <p class="win">August 2026, from the project's reporting data; the comparison with itself is August 2025.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is in the scenario</summary>
+      <div class="in"><p>Starts on a schedule, daily, on customers whose birthday is in seven days. One condition — “Subscribed to email” — then one send, “Birthday greeting”, with no wait and no exit-time window. The mailing is a marketing one and goes out the moment the schedule fires — at 06:00 in the project's time zone.</p>
+      <p class="win">The scenario's structure and its execution counts over the last thirty days (18 August — 17 September), not over August: 15,120 executions entered, 14,900 passed the condition and reached the send.</p></div></details>
     <details class="rv"><summary><span class="tri">▸</span>What to do</summary>
-      <div class="in"><p>Between the address capture form on the site and the "Send Welcome 1" block, put a check that runs before the first send — syntax and domain existence; there is no such check in the flow today. For whoever runs the project in the platform. What will show the result: the Bounce Rate of the first email over the next full month against 4.95%.</p>
-      <p>For "Birthday" and "Address confirmation", check the address source before the first email the same way: the sources differ, the defect is the same.</p></div></details>
+      <div class="in"><p>Put a wait with an exit window of 10:00—20:00 in the customer's time zone between the condition “Subscribed to email” and the send “Birthday greeting”. For whoever runs the project in the platform. What will show it worked: the click share of “Birthday greeting” over the next full month, against 0.62 % now.</p>
+      <p>The hypothesis this tests: the message goes out at six in the morning, and a greeting read at breakfast is not clicked. If the click share does not move, the hour of the send is not the reason.</p></div></details>
   </div>
 </section>
 
 <!-- ================= 3 ================= -->
 <section class="slide" id="sl3" hidden>
   <div class="eyebrow"><span class="num">03</span>
-    <span class="scope">the whole project · attribution</span>
-    <span class="sp"></span><span class="badge b-now">Decide today</span></div>
-  <h2>Subscription confirmations count as flow revenue</h2>
+    <span class="scope">the whole project · contact frequency</span>
+    <span class="sp"></span><span class="badge b-idea">Idea</span></div>
+  <h2>A third more messages went out this year, and noticeably fewer are read</h2>
   <div class="figure">
-    <span class="big">7.4%</span>
-    <span class="cap">of flow revenue rests on transactional emails<span>August 2026: $312,400 of $4,210,000 and 48 orders out of 590; from the project's reporting data</span></span>
+    <span class="big">+37 %</span>
+    <span class="cap">deliveries over the year — while opens fell by 21 %<span>August 2026 against August 2025, 96,500 deliveries; from the project's reporting data</span></span>
   </div>
-  <p class="lede">The subscription confirmation email and the order messages arrive at the moment of purchase and <b>intercept the revenue</b> from the mailings that led to the purchase. By the platform's design such emails are excluded from attribution; on this project the exclusion is not configured, so the money figures of every other flow are understated by an unknown share.</p>
+  <p class="lede">Deliveries grew 37 % over the year, and every engagement figure worsened at once: opens −21 %, clicks −15 %, unsubscribes +40 %, bounces ×1.8. Almost every scenario moves the same way, so it is not about any one of them. <b>Revenue per message</b> over the same year fell from $25.50 to $21.81.</p>
   <div class="grow"></div>
   <div class="reveals">
-    <details class="rv"><summary><span class="tri">▸</span>What was checked</summary>
-      <div class="in"><p>Three emails with a transactional profile carry attributed revenue for August: "Confirm your subscription" — $181,200, "Thank you for your order" — $80,100, "Order placed" — $51,100. For all three the revenue follows orders the customer is making at that moment anyway.</p>
-      <p class="win">August 2026, project revenue by mailing type; the mailing profile is from the flow structure.</p></div></details>
-    <details class="rv"><summary><span class="tri">▸</span>What is in the flow</summary>
-      <div class="in"><p>"Order confirmation": a scheduled trigger, one group of steps, one mailing — "Confirm your subscription", transactional profile. The exit leads nowhere further: the flow ends with the email.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What this does not explain</summary>
+      <div class="in"><p>On its own this does not say that there are too many messages: how many a single customer receives in a month is not held in the project's reporting data. That figure is the platform's own per-customer count, which is not populated on this project, so it comes from an export.</p>
+      <p class="win">August 2026 against July 2026 and August 2025; from the project's reporting data.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>What is in the scenario</summary>
+      <div class="in"><p>Not one of the scenarios read here carries a contact-frequency limit: “Abandoned cart” has no limit on repeat entries, “Birthday” goes out on a schedule with no exit window, and both series write to the same email base.</p>
+      <p class="win">The structure of the scenarios as read in this audit, and the execution counts over 18 August — 17 September.</p></div></details>
     <details class="rv"><summary><span class="tri">▸</span>What to do</summary>
-      <div class="in"><p>Configure the exclusion from attribution — for the three mailings or by a filter on the transactional type, so that new ones fall under it automatically; then recalculate attribution, and the revenue will redistribute to the remaining mailings. For whoever runs the project in the platform. What will show the result: the transactional line in flow revenue for the next month is zero.</p></div></details>
+      <div class="in"><p>Set a contact-frequency limit on the scenarios that share the email base — start with the three that grew most over the year. The value of the limit is a decision for the project. For whoever runs the project in the platform. What will show it worked: the project's unsubscribe share over the next month, against 0.1187 % now.</p>
+      <p>The hypothesis this tests: customers are receiving more messages than they used to. If the limit moves neither the unsubscribes nor the opens, the reason is elsewhere.</p></div></details>
   </div>
 </section>
-
   <div class="nav">
     <button type="button" id="prev">← Back</button>
     <div class="dots" id="dots"></div>
     <span class="pos" id="pos"></span>
     <button type="button" id="next">Next →</button>
   </div>
-  <div class="hint">Data: the whole of August 2026, compared with July 2026 and August 2025; the flows' own series — 13 months; executions by step — August 18 — September 17, 2026, they are not stored deeper than 30 days. The goal "Orders". Revenue here is "Revenue from messages delivered in the selected period", by send date; it will not match the "Revenue for the period" in the flow report, which is counted by order date. Links point to https://example.com — the address is derived from the project's system name.</div>
+  <div class="hint">Data: the whole of August 2026, compared with July 2026 and August 2025; a scenario's own series covers 13 months; the step-by-step execution counts cover 18 Aug — 17 Sep 2026, and are not kept deeper than 30 days. Goal “Orders”. Revenue here is “Total Revenue (First touch within data range)”, counted on the date the message was sent; it will not match “Total revenue” in the scenario report, which counts on the date of the order. The links point at https://example.com — an address derived from the project's system name.</div>
 
 </div>
 

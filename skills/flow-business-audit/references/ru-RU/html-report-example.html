@@ -1,0 +1,650 @@
+<!-- locale: ru-RU. Parallel variant of ../en-US/html-report-example.html. Keep both in step. -->
+
+<!--
+  Example / template for the flow-business-audit HTML report (produced only on request).
+
+  Reproduce this STRUCTURE and STYLING as-is — it is the product's visual theme, shared with
+  flow-issues-audit. Do NOT change colors, fonts, radii or layout unless the user explicitly asks.
+  Replace only the CONTENT — and only with figures that are already in the terminal report.
+
+  Read this file only when the user has asked for the HTML — a run never asked for it does not
+  pay for reading it.
+
+  WHAT THIS FORMAT BREAKS, AND WHAT HOLDS IT (read before editing anything, and run the
+  counts of rules 6 and 8 on the finished file before handing the page over):
+
+  1. Every number carries its window and its source. A tile, a table and a card each have a
+     slot for it — `.src` under a tile, `.srcline` under a table or card heading, a per-column
+     `.th-src` where one column comes from another window. A block with no source slot filled
+     does not go in the file: delete the block instead, or move its figure into the prose of a
+     block that has one. Pretty tiles are exactly where the footnote gets dropped.
+     **On this page the source is written in words, always — never a template handle (T1, T2p,
+     T8, …), never a tool name, never a column name of the reporting data.** This page has exactly
+     one reader, a person outside this run, and none of those mean anything to them. The same now binds the
+     terminal report, which is read by a person too: what produced a figure is checkable in the run
+     log, not printed beside the number (`../writing-the-report.md`, "One reader, and the proof
+     is the log"). The skill's own vocabulary goes with them — no "rollup", no "grain", no "floor":
+     `../findings-and-failures.md`, "Our words and the reader's". The same binds every action in
+     «What to do»: name what to ask for and who to ask, never "switch on <tool>", which is not an
+     action the reader has.
+  2. `## What we do not know` is a section of this file, always, even when empty — the last
+     section before the footer, never folded away and never shortened for looks. Empty means one
+     explicit line, not a missing block.
+     **Which sections the page owes and in what order is `../writing-the-report.md`'s frame**, the same
+     one the answer in the chat carries, and it is not restated here. The example below fills the
+     sections an example can fill and omits the ones it cannot — a funnel it never read, a year with
+     no pairs to compare, the hypothesis table for the problem scenarios beyond the ones taken in
+     full, the top performers. **An omission there is not permission**: a section with nothing to say
+     prints its reason and its count, exactly as this one does when it is empty.
+  3. The HTML adds nothing — no figure and no statement. Every number on the page is already in
+     the terminal report, to the digit, and so is every claim the prose makes: a sentence the
+     terminal report does not contain is a defect even when it adds no number, because nobody
+     reviewed it. That is also why the
+     example's «revenue per delivery» tile stays out of a page whose terminal report has no such line.
+     **The verdict in a table cell and in a card badge is the string the terminal report used,
+     copied — never re-derived while writing the page.** Re-deriving is how two halves of one run
+     come to call the same scenario two different things. The footer
+     sentence promising the reader that the two halves match is printable because the handover check
+     was run and its numbers are in the log; without it that sentence is a claim with nothing behind
+     it.
+  4. Scenario links: the rule is `../writing-the-report.md`, "A scenario is a name" — it binds
+     both halves of the report, so it is stated once, there, and not restated here. What this file
+     adds is only where it lands on the page: the scenario cell and each card heading carry the
+     name as the link, the page carries the one sentence naming the base the links were built from,
+     and no visible identifier stands beside either. The one case that puts identifiers back — a
+     page that will be SHOWN rather than opened, where a link cannot be clicked — is that same
+     section, and it is a per-run answer from the user, never a property of this template.
+     **An unanswered question is a No**: silence, "decide for yourself", and anything inferred from
+     the wording of the request rather than said by the user all mean no identifiers
+     (`../writing-the-report.md`, the second named case — the fallback is stated there).
+     **That is also why this file carries no style for an identifier beside a name, and must not be
+     given one.** A ready-made class invites the next run to fill it. On the run where the user
+     does ask, the identifier is written inline on that page, in the muted 11px the `.src` slots
+     already use, and nothing comes back into this template.
+     **This rule is counted on the finished file, not read for.** An identifier is legitimate inside
+     an address and forbidden in what the reader sees, so searching for digits finds both at once
+     and drowns the one in the other. **Count it positionally: take the finished file, drop
+     everything between `<` and `>`, and count the runs of five or six digits left in what remains.
+     Zero, or the page is not
+     finished** — and the number goes in the log with the other counts of rule 8, zero included.
+
+  5. Checkboxes belong to actions only. There is one in every «What to do» item and nowhere
+     else: a checkbox beside «revenue fell 18 %» claims the reader can tick a measurement off.
+  6. The flow table is shorter than the terminal report's, and BY A RULE — never by a number the
+     run picks for itself. The page is a presentation, so it carries AT MINIMUM the rows a reader
+     is meant to act on. **The rule is a set, and the set is mechanical — no judgement enters it.**
+     A flow is in the table when ANY of these is true:
+       (a) its verdict is «problem» — no exception, whatever the count;
+       (b) the report discusses it in prose anywhere;
+       (c) it is over EITHER provability floor in the window — 1,000 deliveries or 50 orders.
+     **Read (c) literally: it is the floors that qualify a flow, not its verdict.** A flow over a
+     floor whose verdict came out «can't judge» is in the table like any other. More rows than the
+     set are allowed (the
+     example below keeps two below-floor ones because they illustrate a dash and a probe); fewer
+     are not. The flows the
+     audit declined to judge are NOT dropped and NOT silently cut: one line under the table says
+     how many of how many they are, that their verdict is «can't judge», and that their rows
+     with their figures are in the terminal report. The heading says «N of M» so the cut is
+     visible without reading the line. No flow with
+     «problem» is ever left out, whatever the count. A run that picks its own cap — «half the
+     rows, the rest are in the terminal report» — has invented a rule; a run that prints every row
+     has turned the presentation back into the report.
+     **The rule is checked, not just stated, and the page is what carries the check.** Before
+     writing the table, list the qualifying flows by name in the run log and count them — that
+     count is the N the heading prints, and the heading is the page saying how many rows it owes.
+     After the file is written, count the rows it actually has — the `<td class="name">` cells of
+     the tbody — and compare with N. **Equal, or the page is not finished.** Both numbers go in the
+     log. Every rule above this one is enforced by a person reading the page; this one is not.
+
+  7. **A card's section IS its verdict, and its badge says the same word as its row.** «The
+     scenarios with a problem» holds flows whose verdict is «problem», and nothing else. A flow
+     whose verdict is «can't judge» never takes the red badge and never stands under that heading:
+     it goes under the heading of its own class. The classes with a home on this page are the
+     verdicts of `../../SKILL.md § 5` plus one — **«silent, but still taking people in»**: a flow that
+     sent nothing in the period whose entry counter shows people arriving anyway. That class has
+     its own section below, its own amber tile, and the «can't judge» badge, because «can't judge»
+     is the verdict the audit gave it. **The red accent inside a card belongs to that heading too**:
+     the observation group of a card outside «The scenarios with a problem» takes the neutral
+     `grp man`, never `grp prob`, or the card says «can't judge» in its badge and «problem» in its
+     colour. **A class with a tile but no section is the dangerous
+     shape** — the tile counts the flow, and the flow itself then lands wherever a badge is
+     available.
+
+  8. **Every count on the page comes from the terminal report, is written in one place, and the
+     finished file is counted against four equalities before it is handed over — the last of them
+     against the terminal report, not against the page:**
+       - rows shown + the "another N" line under the table = M, the flows-that-sent count in the
+         heading. **The silent-but-live flow is not one of the M and not one of the rows shown** —
+         it did not send; it is counted in its own section (rule 7);
+       - the red tile = the number of «problem» badges in the table = the number of cards under
+         «The scenarios with a problem»;
+       - confident verdicts + «can't judge» = the number of scenarios that got a row of their own
+         with figures — **the flows that sent PLUS the silent-but-live ones**, which is larger than
+         the M above by exactly that class. Two denominators live on this page and they differ by
+         that one class: say beside each which it is, and never check one against the other.
+       - the number of «What to do» items on this page = the number in the terminal report's own
+         «What to do» section. Both halves owe that section and owe it the same items
+         (`../writing-the-report.md`); a page with four and a chat answer with one is the
+         split this equality exists to catch.
+     **Counting is not the whole cross-half check, and this equality passed over the split it was
+     meant to catch** — two halves can carry the same number of rows and cards while one calls a
+     scenario «problem» and the other «can't judge». What pairs the halves item by item
+     is the handover check (`../findings-and-failures.md`, "The handover check"), run once before
+     either half is handed over; this equality is one of its counts, not a substitute for it.
+     Every one of those numbers except one already stands in the terminal report, so the page copies
+     it rather than counting it again (rule 3). **The exception is N, how many rows this page shows**
+     — a fact about the page and nowhere else, so it is the one count the page derives, and it is
+     derived by counting its own rows, never by remembering how many were meant to go in.
+
+  9. **A scenario card carries five things, in the order `../writing-the-report.md` fixes:**
+     what is observed, what it costs, **what is in the scenario** (the blocks by their own names in
+     quotes, the counts with their own window, the settings as they are set — the group that shows
+     the run opened the scenario; a «problem» card without it is unfinished), **why it moved**, and
+     the steps — each naming a block, a setting, a condition or a data source, and an action. The
+     «why it moved» group
+     shows one of exactly two shapes — a cause established in the run's own figures, printed as a
+     fact with its window; or a supposition, said to be one, with the probe that would settle it
+     written as **what someone would look at and what it would show**. **The page never carries a
+     standing statement that causes are not established**, and no group is headed with one: that is
+     a property of one finding on one run, never of this format. Where a question really does
+     belong to the reader's Maestra manager, it goes with its evidence beside
+     it (the step people stop at, the messages that changed), never as a bare handover.
+     **«What to do» items are actions**: "Reconsider X" is not
+     one — it names no act. **A probe the reader performs IS an action and belongs here** — "look at
+     how many days apart the sequence sends" is something they do and see. What does not belong is a
+     reading the run owed itself: "go through it message by message" is the run's own first cause,
+     spent before the page is built, not homework for the reader.
+     **The «What to do» heading never states an order the run did not compute.** It carries a source
+     line naming the key or keys the items were actually ranked on, the way every other figure on
+     this page carries its origin. The heading used to read «most costly first» while three of its
+     four items had no money figure at all — an ordering claimed on the
+     surface and not made. The keys themselves are `../../SKILL.md § From "what" to "why"`.
+
+  Every figure, name, id and link below is an INVENTED calibration example, not one project's:
+  the same set `html-proposal-deck-example.html` in this folder draws its slides from, figure for
+  figure. Keep it that
+  way — a real audit's numbers must never be pasted in here, not even as a nicer-looking sample:
+  a combination of values identifies a project as surely as its name does.
+  This file is the ru-RU variant; `../en-US/html-report-example.html` is the same page in English,
+  and the two are kept in step. **The page you build is written in the language of the report**,
+  `lang` attribute included, and takes its metric names, verdicts and headings from
+  `terminology.md` in the folder of that locale (`../writing-the-report.md`).
+  Base URL is shown as https://example.com — a real report uses the base the link rule arrives at,
+  and says in the page which base that is.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разбор сценариев — деньги</title>
+<style>
+  /* No @font-face here, deliberately: the page travels to its readers, so Inter is used only where
+     the reader already has it and the stack below falls back on its own. Do not restore a remote
+     font here — a font that has to be fetched does not belong on a page that is sent out. */
+
+  :root{
+    /* Surfaces */
+    --bg:#f4f8f9; --card:#ffffff; --table-bg:#fdfdfc; --surface-muted:#ebeff0;
+    /* Text */
+    --ink:#282a2f; --muted:#637076; --disabled:#a9aaac;
+    /* Borders */
+    --line:#dae3e8; --line-strong:#bfccd4; --focus:#b8e5d6;
+    /* accent */
+    --accent:#028f69; --accent-hover:#00664b; --accent-active:#004d38; --accent-soft:#f2faf7;
+    /* Error / High */
+    --high:#db3309; --high-bg:#ffefeb; --high-border:#ffbbad;
+    /* Warning / Medium */
+    --med:#cc8100; --med-bg:#fff5db; --med-border:#f6e0a4;
+    /* Success / OK */
+    --low:#00803c; --low-bg:#edfaf2; --low-border:#bcebce;
+    /* Informational / Recommendation */
+    --info:#402f9e; --info-bg:#f0eef9; --info-border:#9d91da;
+    /* Neutral / Manual check */
+    --neutral:#637076; --neutral-bg:#f4f8f9;
+
+    --radius:8px; --shadow:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,"PT Sans","Trebuchet MS",system-ui,sans-serif;font-size:14px;line-height:20px;
+    -webkit-font-smoothing:antialiased;padding:32px 20px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header.top{margin-bottom:22px}
+  h1{font-size:25px;line-height:32px;font-weight:600;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13px;line-height:18px}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 8px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;padding:12px 16px;min-width:120px}
+  .stat .n{font-size:24px;font-weight:600}
+  .stat .l{font-size:12px;line-height:16px;color:var(--muted);letter-spacing:.02em}
+  .stat.red .n{color:var(--high)} .stat.green .n{color:var(--low)} .stat.amber .n{color:var(--med)}
+
+  /* Source slots — the window and the call behind a figure. Never leave one empty. */
+  .stat .src{font-size:11px;line-height:15px;color:var(--muted);margin-top:6px;
+    border-top:1px solid var(--line);padding-top:5px}
+  .srcline{color:var(--muted);font-size:12px;line-height:16px;margin:0 0 10px}
+  .th-src{display:block;font-weight:400;color:var(--muted);font-size:11px;line-height:15px;margin-top:2px}
+
+  h2.section{font-size:14px;line-height:20px;font-weight:600;text-transform:none;letter-spacing:0;
+    color:var(--ink);margin:34px 0 12px}
+
+  .tablecard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;overflow:hidden}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:760px;background:var(--table-bg)}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;line-height:16px;text-transform:none;letter-spacing:0;color:var(--muted);
+    font-weight:600;background:var(--surface-muted);position:sticky;top:0}
+  tr:last-child td{border-bottom:none}
+  td.name a{color:var(--accent);text-decoration:none;font-weight:600}
+  td.name a:hover{color:var(--accent-hover);text-decoration:underline}
+  td ul{margin:0;padding-left:16px} td li{margin:2px 0}
+  td.num{white-space:nowrap} td.num b{font-weight:600}
+  td .why{color:var(--muted);font-size:12px;line-height:16px}
+  .chk{width:34px;text-align:center}
+  input[type="checkbox"]{accent-color:var(--accent);cursor:pointer}
+  .chk input{width:17px;height:17px}
+  .badge{display:inline-flex;align-items:center;min-height:24px;padding:2px 8px;
+    border:1px solid transparent;border-radius:999px;font-size:12px;line-height:16px;
+    font-weight:500;white-space:nowrap}
+  .b-high{color:var(--high);background:var(--high-bg);border-color:var(--high-border)}
+  .b-med{color:var(--med);background:var(--med-bg);border-color:var(--med-border)}
+  .b-low{color:var(--low);background:var(--low-bg);border-color:var(--low-border)}
+  .b-list{color:var(--muted);background:var(--surface-muted);border-color:var(--line)}
+  .up{color:var(--low);font-weight:600} .down{color:var(--high);font-weight:600}
+
+  .cards{display:grid;gap:16px;margin-top:12px}
+  .flow{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;overflow:hidden}
+  .flow .head{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .flow .head .t{flex:1;min-width:200px}
+  .flow .head h3{margin:0;font-size:16px;line-height:24px;font-weight:600}
+  .flow .head h3 a{color:var(--ink);text-decoration:none}
+  .flow .head h3 a:hover{color:var(--accent-hover)}
+  .flow .head .meta{color:var(--muted);font-size:12px;line-height:16px;margin-top:3px}
+  .flow .body{padding:6px 18px 16px}
+  .grp{margin-top:14px}
+  .grp .lab{font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+  .grp.prob .lab{color:var(--high)} .grp.sugg .lab{color:var(--info)} .grp.man .lab{color:var(--neutral)}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .grp.prob .dot{background:var(--high)} .grp.sugg .dot{background:var(--info)} .grp.man .dot{background:var(--neutral)}
+  .item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:none}
+  .item input{margin-top:3px;width:16px;height:16px;flex:none}
+  .item .txt{flex:1}
+  .item .txt b{font-weight:600}
+  .item .where{color:var(--muted);font-size:12px;line-height:16px}
+  .item .fix{margin-top:3px}
+  .item .fix::before{content:"→ ";color:var(--accent);font-weight:600}
+  .clean{color:var(--low);font-weight:600;padding:10px 0 4px;display:flex;align-items:center;gap:8px}
+  .foot{color:var(--muted);font-size:12px;line-height:16px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+  .note{color:var(--ink);background:var(--accent-soft);border:1px solid var(--focus);
+    border-radius:8px;padding:12px 16px;font-size:13px;line-height:18px;margin:16px 0}
+  .note p{margin:0 0 6px} .note p:last-child{margin:0}
+  .unknown{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--radius);
+    padding:14px 18px}
+  .unknown ul{margin:0;padding-left:18px} .unknown li{margin:6px 0}
+  code{background:var(--surface-muted);padding:1px 5px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER — the passport of the whole run ============ -->
+  <header class="top">
+    <h1>Разбор сценариев — деньги</h1>
+    <div class="sub">Проект <b>Example</b> · август 2026, полный календарный месяц · цель «Заказы»</div>
+  </header>
+
+  <div class="note">
+    <p><b>Свежесть отчётных данных измерить нельзя</b> — ничто из доступного этому разбору её не сообщает; поэтому разобран закрытый месяц, а не текущий.</p>
+    <p><b>Проверка согласованности:</b> собственная строка проекта сходится с суммой 12 строк сценариев, и разбивка не обрезана — в таблице каждый сценарий, отправлявший в этом месяце. Деньги и доставки приходят одной строкой на сценарий, так что сопоставлять между ними нечего.</p>
+    <p><b>Цель.</b> Деньги посчитаны под целью «Заказы» — так её называет собственный отчёт платформы по сценариям. Ничто из доступного
+       этому разбору не перечисляет остальные цели проекта, поэтому стоит ли считать по другой — вопрос к проекту; <b>под другой целью все денежные цифры этого отчёта были бы другими.</b></p>
+    <p><b>С чем сверены вердикты:</b> тот же месяц годом раньше. Базу сравнения никто не задавал, и разбор берёт ту,
+       к которой откатывается по умолчанию, — она безопаснее второй на сценариях, которые шлют всплесками.
+       Август против июля показан рядом, как контекст.</p>
+    <p><b>Эти цифры не сойдутся с выручкой, которую вы видите в других местах платформы, и так и должно быть.</b>
+       Здесь каждая цифра посчитана по дате отправки сообщения; бизнес-отчёты платформы считают те же
+       деньги по дате заказа, поэтому один и тот же заказ попадает в разные месяцы. Сравнивать нужно
+       сценарии внутри этого отчёта, а не отчёт с тем экраном.</p>
+    <p><b>Недоступно для этого разбора:</b> бенчмарк здоровья email (бренд не удалось определить) и цифры по уникальным клиентам — платформа возвращает их для этого проекта нулями. Чего это стоило — в разделе «Чего мы не знаем».</p>
+    <p><b>Покрытие:</b> классифицированы 60 из 60 сценариев списка проекта — 12 отправляли в периоде, 1 молчит, но продолжает принимать людей, 47 не отправляли. Сценариев, которые есть в отчётных данных и которых нет в списке: 0.</p>
+    <p><b>Уверенность:</b> уверенный вердикт («есть проблема» или «в порядке») — у 3 из 13 сценариев, получивших собственную строку с цифрами: это 12 отправлявших плюс 1 молчащий, но продолжающий принимать людей; остальные 10 — «не берусь судить». Разделяет их порог доказуемости: 1 000 доставок для доли и 50 заказов для денежного вердикта.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">2 104 890 $</div><div class="l">Выручка сценариев</div>
+      <div class="src">Август 2026 · цель «Заказы» · отчётные данные проекта</div></div>
+    <div class="stat"><div class="n">96 500</div><div class="l">Доставлено</div>
+      <div class="src">Август 2026 · отчётные данные проекта</div></div>
+    <div class="stat amber"><div class="n">21,81 $</div><div class="l">Доход на сообщение</div>
+      <div class="src">Август 2026 · выручка ÷ доставки, тот же источник</div></div>
+    <div class="stat"><div class="n">12 из 60</div><div class="l">Сценариев отправляли</div>
+      <div class="src">Август 2026 · отчётные данные против списка сценариев проекта</div></div>
+    <div class="stat red"><div class="n">2</div><div class="l">С проблемой</div>
+      <div class="src">Август 2026 · вердикты ниже</div></div>
+    <div class="stat amber"><div class="n">1</div><div class="l">Молчит, но продолжает принимать людей</div>
+      <div class="src">Счётчик входов, собственное скользящее окно около 30 дней · отдельный раздел ниже</div></div>
+  </div>
+
+  <!-- ============ PROJECT LEVEL ============ -->
+  <h2 class="section">Проект целиком</h2>
+  <p class="srcline">
+    Колонки — это три разных окна: август 2026 и июль 2026, каждый измерен по своему месяцу;
+    август 2025 измерен по тому месяцу годом раньше. Доли посчитаны только по тем каналам, которые умеют сообщать
+    о нужном событии (открытия, клики и отписки — по каналам, которые о них сообщают; bounce и жалобы на спам — так же).
+    Деление на все каналы разом дало бы другие — и неверные — числа.
+  </p>
+  <div class="tablecard">
+    <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Показатель</th>
+          <th>Август 2026<span class="th-src">окно 01–31 августа 2026</span></th>
+          <th>Июль 2026<span class="th-src">те же меры, окно 01–31 июля 2026</span></th>
+          <th>Август 2025<span class="th-src">те же меры, окно 01–31 августа 2025</span></th>
+          <th>Изменение год к году</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Выручка, цель «Заказы»</td><td class="num"><b>2 104 890 $</b></td><td class="num">2 260 040 $</td><td class="num">1 795 300 $</td><td class="num"><span class="up">+17 %</span></td></tr>
+        <tr><td>Заказов</td><td class="num"><b>386</b></td><td class="num">402</td><td class="num">351</td><td class="num"><span class="up">+10 %</span></td></tr>
+        <tr><td>Доставлено</td><td class="num"><b>96 500</b></td><td class="num">94 120</td><td class="num">70 400</td><td class="num"><span class="up">+37 %</span></td></tr>
+        <tr><td>Доход на сообщение</td><td class="num"><b>21,81 $</b></td><td class="num">24,01 $</td><td class="num">25,50 $</td><td class="num"><span class="down">−14 %</span></td></tr>
+        <tr><td>% открытий<span class="th-src">знаменатель: доставки по каналам, которые сообщают об открытиях</span></td><td class="num"><b>14,20 %</b></td><td class="num">14,88 %</td><td class="num">17,90 %</td><td class="num"><span class="down">−21 % относительно</span></td></tr>
+        <tr><td>% кликов</td><td class="num"><b>1,74 %</b></td><td class="num">1,81 %</td><td class="num">2,05 %</td><td class="num"><span class="down">−15 % относительно</span></td></tr>
+        <tr><td>% отписок</td><td class="num"><b>0,1187 %</b></td><td class="num">0,1102 %</td><td class="num">0,0850 %</td><td class="num"><span class="down">+40 % относительно</span></td></tr>
+        <tr><td>Bounce Rate<span class="th-src">знаменатель: отправки по каналам, которые сообщают о bounce</span></td><td class="num"><b>0,21 %</b></td><td class="num">— не измерялось</td><td class="num">0,12 %</td><td class="num"><span class="down">×1,8</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="note">
+    <p><b>Один эффект на весь проект, а не N отдельных ухудшений.</b> Доставок за год стало больше на 37 %, и все
+      показатели вовлечения ухудшились разом — почти все сценарии двинулись в одну сторону, поэтому падение любого
+      из них само по себе не находка про этот сценарий.</p>
+    <p><b>Предположение: людям пишут чаще, чем раньше.</b> Это предположение, и оно так и записано — ничто в этом
+      разборе его не измеряет. Что его решит: посмотреть, сколько сообщений получает один клиент за месяц и выросло ли
+      это число за год. Это решили бы цифры платформы по уникальным клиентам, но для этого проекта они
+      не заполнены, поэтому нужна выгрузка: сколько сообщений получил один клиент за месяц.</p>
+  </div>
+
+  <!-- ============ FLOW TABLE ============ -->
+  <h2 class="section">Сценарии, отправлявшие в периоде — показаны 5 из 12</h2>
+  <p class="srcline">
+    Отсортировано по выручке. Каждая цифра в строке — это август 2026: деньги и объём из отчётных данных проекта,
+    доли за тот же месяц, сравнение с обычным месяцем самого сценария — из его последних двенадцати месяцев,
+    сравнение год к году — из того же месяца годом раньше, с проверкой, что сценарий и тогда слал тот же набор
+    сообщений.
+    «—» в колонке денег значит, что у сценария нет ничего, атрибутированного цели (это не то же самое, что ноль);
+    «—» в доле значит, что событие не сообщается каналами этого сценария или знаменатель пуст.
+    <b>Порог доказуемости, один для всех строк:</b> доля не доказуема ниже 1 000 доставок в окне,
+    денежный вердикт — ниже 50 заказов, атрибутированных цели.
+  </p>
+  <div class="tablecard">
+    <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Сценарий</th>
+          <th>Вердикт</th>
+          <th>Выручка</th>
+          <th>Заказов</th>
+          <th>Доставлено</th>
+          <th>% открытий</th>
+          <th>% кликов</th>
+          <th>% отписок</th>
+          <th>На чём стоит вердикт</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name"><a href="https://example.com/scenarios/1234">Брошенная корзина</a></td>
+          <td><span class="badge b-high">Есть проблема</span></td>
+          <td class="num"><b>1 185 769,20 $</b></td><td class="num">204</td><td class="num">14 550</td>
+          <td class="num">18,40 %</td><td class="num">3,10 %</td><td class="num"><b>0,4812 %</b></td>
+          <td class="why">Приносит больше всех — 56 % выручки проекта — и даёт 70 из 114 его отписок (61 %) с 15 % его доставок: доля отписок вчетверо выше собственной проектной 0,1187 % за тот же месяц, на знаменателе 14 550, заметно выше порога. Подробно ниже</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://example.com/scenarios/1240">Приветственная серия</a></td>
+          <td><span class="badge b-low">В порядке — слабый вывод</span></td>
+          <td class="num">402 118,00 $</td><td class="num">73</td><td class="num">31 004</td>
+          <td class="num">15,02 %</td><td class="num">1,88 %</td><td class="num">0,0800 %</td>
+          <td class="why">Все три доли лучше собственных проектных за тот же месяц. Единственный доступный ориентир — сам проект, отраслевого сравнения в этом разборе нет, поэтому вывод слабый</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://example.com/scenarios/1263">День рождения</a></td>
+          <td><span class="badge b-high">Есть проблема</span></td>
+          <td class="num">118 402,00 $</td><td class="num">22</td><td class="num">14 880</td>
+          <td class="num">9,10 %</td><td class="num"><b>0,62 %</b></td><td class="num">0,1002 %</td>
+          <td class="why">15 % доставок проекта ради 5,6 % его выручки; доля кликов втрое ниже проектных 1,74 % на 14 880 доставках. Денежного вердикта нет — 22 заказа при пороге в 50. Подробно ниже</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://example.com/scenarios/1270">Падение цены в избранном</a></td>
+          <td><span class="badge b-med">Не берусь судить</span></td>
+          <td class="num">84 300,00 $</td><td class="num">17</td><td class="num">2 372</td>
+          <td class="num">16,70 %</td><td class="num">2,40 %</td><td class="num">0,0740 %</td>
+          <td class="why">Выручка вдвое меньше июльской, но <b>выше</b> обычного месяца самого сценария — два сравнения смотрят в разные стороны. Что решит: тот же разрез за июнь — август</td>
+        </tr>
+        <tr>
+          <td class="name"><a href="https://example.com/scenarios/1251">Реактивация, 90 дней</a></td>
+          <td><span class="badge b-med">Не берусь судить</span></td>
+          <td class="num">12 400,00 $</td><td class="num">3</td><td class="num">512</td>
+          <td class="num">—</td><td class="num">—</td><td class="num">— SMS не сообщает об отписках</td>
+          <td class="why">512 доставок и 3 заказа, оба ниже порога, поэтому ни одна доля здесь не доказуема. Что решит: июнь — август, где двенадцатимесячная сумма в 4 380 доставок обещает, что порог набирается</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <p class="srcline">
+    Остальные 7 из 12 отправлявших — «не берусь судить»: их объём ниже порога доказуемости, поэтому вердикта
+    по ним нет. Их строки и цифры есть в полном отчёте.
+    47 из 60 сценариев проекта в августе не отправляли (назову по запросу), и ещё 1 молчит, но продолжает принимать
+    людей — у него отдельный раздел ниже, и в 12 отправлявших он не входит.
+  </p>
+
+  <!-- ============ PROBLEM FLOWS ============ -->
+  <h2 class="section">Сценарии с проблемой</h2>
+  <div class="cards">
+
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1234">Брошенная корзина</a></h3>
+          <div class="meta">Приносит больше всех и непропорционально дорого обходится базе</div>
+        </div>
+        <span class="badge b-high">Есть проблема</span>
+      </div>
+      <div class="body">
+        <div class="grp prob">
+          <div class="lab"><span class="dot"></span>Что наблюдаем</div>
+          <div class="item"><div class="txt">
+            <b>70 из 114 отписок проекта за месяц (61 %) — с 15 % его доставок.</b>
+            <span class="where">Август 2026, этот сценарий против проекта целиком за тот же месяц: 0,4812 % против 0,1187 %, на знаменателе 14 550 — выше порога в 1 000.</span>
+            <div class="fix">Чего это стоит: при собственной доле проекта это было бы около 17 отписок вместо 70 — примерно 53 контакта в месяц. Следующий шаг: посмотреть, какие сообщения серии их дают, сообщение за сообщением.</div>
+          </div></div>
+          <div class="item"><div class="txt">
+            <b>Год назад доля была вдвое ниже — 0,2410 %.</b>
+            <span class="where">Август 2025, тот же сценарий. В обоих месяцах он слал один и тот же набор сообщений, поэтому они сравнимы.</span>
+            <div class="fix">Это движение его собственное, а не проектное: за тот же год проект прошёл с 0,0850 % до 0,1187 % (+40 %), а этот сценарий удвоился.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Что в сценарии</div>
+          <div class="item"><div class="txt">
+            <b>Пять отправок на одном пути с паузами 1 час, 1 день, 1 день, 2 дня и 2 дня; одна проверка перед первой отправкой — «Подписан и валиден» — и ни одной повторной после пауз.</b>
+            <span class="where">Структура сценария и его прохождения за последние тридцать дней (18 августа — 17 сентября), не за разбираемый месяц: вошло 12 410 прохождений, проверку прошли 9 880, до пятой отправки дошли 9 865.</span>
+            <div class="fix">Прочитано подробно вокруг стартового блока: ограничения на повторный вход одного клиента нет. Не прочитано: тело фильтра в проверке.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Почему сдвинулось</div>
+          <div class="item"><div class="txt">
+            <b>Два сообщения из пяти дают 58 из 70: третье (34) и пятое (24).</b>
+            <span class="where">Август 2026, этот сценарий в разрезе по сообщениям — тот же месяц и тот же счёт, что у цифры выше. Остальные три сообщения вместе дают 12.</span>
+            <div class="fix">Это измерено, а не предположено.</div>
+          </div></div>
+          <div class="item"><div class="txt">
+            <b>Предположение: эти два приходят слишком скоро после предыдущего.</b>
+            <span class="where">Не установлено — это предположение, и оно так и записано.</span>
+            <div class="fix">Что решит: лежат ли отписки на сообщениях, приходящих раньше всего после предыдущего, — третье и пятое стоят за однодневными паузами, остальные за двухдневными. Если они распределены ровно по серии, причина не в этом.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Что починить</div>
+          <div class="item"><div class="txt">
+            <b>Удлинить паузы перед третьим и пятым сообщением с одного дня до двух и переспрашивать проверку «Подписан и валиден» после каждой паузы.</b>
+            <span class="where">Для того, кто ведёт проект в платформе. Что покажет, что сработало: доля отписок третьего и пятого сообщения за следующий полный месяц против 0,4812 % сейчас.</span>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1263">День рождения</a></h3>
+          <div class="meta">15 % объёма проекта ради 5,6 % его выручки</div>
+        </div>
+        <span class="badge b-high">Есть проблема</span>
+      </div>
+      <div class="body">
+        <div class="grp prob">
+          <div class="lab"><span class="dot"></span>Что наблюдаем</div>
+          <div class="item"><div class="txt">
+            <b>Доля кликов 0,62 % против проектных 1,74 % — втрое ниже.</b>
+            <span class="where">Август 2026, этот сценарий против проекта целиком за тот же месяц; знаменатель — 14 880 доставок, выше порога.</span>
+            <div class="fix">Против себя год назад: 1,10 % → 0,62 % (−44 %), при том что проект сдвинулся на −15 %. Движение сильнее проектного, значит, оно собственное.</div>
+          </div></div>
+          <div class="item"><div class="txt">
+            <b>Денежного вердикта нет.</b>
+            <span class="where">22 заказа, атрибутированных цели «Заказы» в августе 2026, при пороге в 50.</span>
+            <div class="fix">Что решит: тот же разрез за июнь — август, где счёт доходит до 64.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Что в сценарии</div>
+          <div class="item"><div class="txt">
+            <b>Запуск по расписанию, ежедневно, по клиентам, у которых день рождения через семь дней; одно условие — «Подписан на email», затем одна отправка, «Поздравление с днём рождения», без паузы и без окна выхода.</b>
+            <span class="where">Структура сценария и его прохождения за последние тридцать дней (18 августа — 17 сентября), не за разбираемый месяц: вошло 15 120 прохождений, условие прошли и до отправки дошли 14 900.</span>
+            <div class="fix">Прочитано подробно вокруг шага отправки: рассылка маркетинговая и уходит в момент срабатывания расписания — в 06:00 по времени проекта.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Почему сдвинулось</div>
+          <div class="item"><div class="txt">
+            <b>Предположение: сообщение уходит в шесть утра, а поздравление, прочитанное за завтраком, не кликают.</b>
+            <span class="where">Не установлено — конструкция показывает час; ничто в цифрах этого прогона не связывает час с долей кликов.</span>
+            <div class="fix">Что решит: доля кликов этого сообщения по часу отправки за следующий месяц, когда окно будет поставлено, — или сравнение с другим утренним письмом проекта.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Что починить</div>
+          <div class="item"><div class="txt">
+            <b>Между условием «Подписан на email» и отправкой «Поздравление с днём рождения» поставить паузу с окном выхода 10:00—20:00 по времени клиента.</b>
+            <span class="where">Для того, кто ведёт проект в платформе. Что покажет, что сработало: доля кликов «Поздравления с днём рождения» за следующий полный месяц против 0,62 % сейчас.</span>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ SILENT, BUT STILL TAKING PEOPLE IN — its own class, its own home (rule 7) ============ -->
+  <h2 class="section">Молчит, но продолжает принимать людей</h2>
+  <p class="srcline">
+    Сценарии, которые в периоде ничего не отправляли и продолжают принимать людей. В 12 отправлявших они не входят,
+    и проблемой ни один из них не назван: у разбора нет чтения о том, что происходит с этими людьми, поэтому
+    вердикт здесь — «не берусь судить», как и в полном отчёте.
+  </p>
+  <div class="cards">
+
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1288">Подтверждение адреса</a></h3>
+          <div class="meta">Принимает людей и ничего им не отправляет</div>
+        </div>
+        <span class="badge b-med">Не берусь судить</span>
+      </div>
+      <div class="body">
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Что наблюдаем</div>
+          <div class="item"><div class="txt">
+            <b>В сценарий вошли 2 040 человек, и ни одной доставки.</b>
+            <span class="where">Счётчик точки входа, по собственному скользящему окну около 30 дней, 05.08.2026 … 04.09.2026 — <b>это не период разбора</b>; за август 2026 отчётные данные не держат по этому сценарию ни одной доставки.</span>
+            <div class="fix">Сколько эти люди принесли бы, здесь оценить нельзя — отчётные данные на это не отвечают.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Почему сдвинулось</div>
+          <div class="item"><div class="txt">
+            <b>2 036 из 2 040 останавливаются в одном и том же месте: на проверке сразу после входа.</b>
+            <span class="where">То же скользящее окно около 30 дней, что и у цифры выше, посчитанное по шагам сценария.</span>
+            <div class="fix">Где они останавливаются — установлено. Что эта проверка проверяет, отсюда не видно, поэтому что в ней менять — вопрос к вашему менеджеру Maestra, с названным выше шагом как свидетельством.</div>
+          </div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Проверено пять молчащих сценариев — это предел этого разбора</div>
+          <div class="item"><div class="txt">Остальные молчащие сценарии не проверялись; среди них могут быть такие же.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ ACTIONS — the only place with checkboxes ============ -->
+  <h2 class="section">Что сделать</h2>
+  <p class="srcline">Отсортировано по деньгам на кону там, где у находки есть денежная цифра, затем по числу людей за находкой — у двух из четырёх ниже денежной цифры нет, поэтому они отсортированы по второму ключу.</p>
+  <div class="cards">
+    <div class="flow">
+      <div class="body">
+        <div class="grp sugg">
+          <div class="lab"><span class="dot"></span>Действия</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>«Брошенная корзина»: удлинить паузы перед третьим и пятым сообщением с одного дня до двух и переспрашивать проверку «Подписан и валиден» после каждой паузы.</b>
+            <span class="where">Для того, кто ведёт проект в платформе. Эти два сообщения дают 58 из 70 отписок сценария за август 2026. Что покажет, что сработало: их доля отписок за следующий полный месяц против 0,4812 % сейчас.</span></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>«День рождения»: между условием «Подписан на email» и отправкой «Поздравление с днём рождения» поставить паузу с окном выхода 10:00—20:00 по времени клиента.</b>
+            <span class="where">Для того, кто ведёт проект в платформе. Доля кликов 0,62 % против проектных 1,74 %, август 2026. Что покажет, что сработало: доля кликов этого сообщения за следующий полный месяц.</span></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>«Подтверждение адреса»: посмотреть, что проверяет условие «Адрес ещё не подтверждён» — оно разворачивает все 2 040 прохождений, вошедших за последние тридцать дней, — и называет ли шаг отправки под ним готовую рассылку.</b>
+            <span class="where">Для того, кто ведёт проект в платформе. Это проба: конструкция прочитана до скелета, тело условия и состояние рассылки — нет.</span></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>По всему проекту: поставить ограничение частоты на сценарии, которые делят одну базу email, — начать с трёх, выросших за год сильнее всех.</b>
+            <span class="where">Для того, кто ведёт проект в платформе. Год к году: доставки +37 %, открытия −21 %, отписки +40 %, bounce ×1,8. Значение ограничения — решение проекта; что покажет, что сработало: доля отписок по проекту в следующем месяце против 0,1187 %.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WHAT WE DO NOT KNOW — always present, never folded ============ -->
+  <h2 class="section">Чего мы не знаем</h2>
+  <div class="unknown">
+    <ul>
+      <li><b>Цифры по уникальным клиентам для этого проекта недоступны.</b> Отчёт платформы по сценариям возвращает здесь число клиентов нулём, тогда как прохождения и все остальные цифры заполнены, поэтому ничто в этом разборе не сформулировано на уникального клиента — только на отправку, на доставку и на прохождение.</li>
+      <li><b>Уникальный охват сценария поэтому в отчётных данных не держится</b> — ни повторные входы, ни число разных людей. Единственная цифра охвата в этом разборе — счётчик точки входа, и он покрывает собственное скользящее окно около 30 дней, а это не период разбора.</li>
+      <li><b>Согласие с экранами платформы по каждому сценарию не установлено.</b> Итоги по проекту здесь держатся по методу; отдельная строка таблицы такой гарантии не несёт.</li>
+      <li><b>Августовская выручка — это нижняя граница.</b> Заказ атрибутируется отправке в течение 30 дней после неё, поэтому −7 % против июля могут оказаться нулём, а +17 % против августа 2025 — это «минимум +17 %». Сравнений по объёму это не касается.</li>
+      <li><b>Остальные цели проекта перечислить не удалось.</b> Разбор считал деньги под целью, названной в его шапке; ничто из доступного ему не перечисляет альтернативы, поэтому «стоило ли считать по другой цели» — вопрос к проекту, а не пропуск этого отчёта. Две цели никогда не складываются — это одна и та же выручка, атрибутированная дважды.</li>
+      <li><b>Свежесть отчётных данных измерить нельзя.</b> Ничто из доступного этому разбору её не сообщает — поэтому разобран закрытый месяц, а не текущий.</li>
+      <li><b>Отраслевого бенчмарка в этом разборе нет.</b> Каждое «в порядке» здесь измерено только против самого проекта, и такие вердикты помечены как слабые.</li>
+      <li><b>Проверено пять молчащих сценариев</b> — это предел этого разбора. Остальные молчащие не проверялись.</li>
+      <li><b>Почему вовлечение падает по всему проекту — не установлено.</b> Оно двигается в одну сторону на сценариях, которые никак друг с другом не связаны, — именно поэтому это один эффект на весь проект, а не несколько; но что за ним стоит, здесь не сказано. Чтение, которое это решит, названо рядом с самой находкой, и это вопрос к вашему менеджеру Maestra, с приложенными цифрами.</li>
+      <li><b>Что проверяет проверка сразу после входа в «Подтверждение адреса»</b>, в этом разборе не видно. Где останавливаются 2 040 человек — установлено; почему эта проверка их разворачивает — нет.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    Покрытие: классифицированы 60 из 60 сценариев списка проекта; 12 отправляли в августе 2026.
+    Все деньги — под целью «Заказы»; свежесть отчётных данных измерить нельзя, поэтому разобран закрытый месяц.
+    Цифры на этой странице совпадают с полным отчётом того же прогона до цифры — расхождение между ними дефект, а не округление.
+    Названия сценариев ведут на https://example.com — адрес выведен из системного имени проекта. Если ваша админка
+    отвечает по другому адресу, скажите — и ссылки будут перестроены на нём.
+    Отметки-галочки сохраняются только в этой вкладке браузера.
+  </div>
+
+</div>
+</body>
+</html>

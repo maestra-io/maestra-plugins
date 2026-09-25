@@ -6,7 +6,9 @@ This is the file to re-read when a figure surprises you.
 
 **Evidence markers.** `[measured]` — observed against a live project during this port, with what was
 observed. `[schema]` — stated by the tool's own description in the connected MCP. `[structural]` —
-follows from how the two reports are built, not from a single observation.
+follows from how the two reports are built, not from a single observation. `[upstream]` — observed
+by the upstream team on the same mechanism and carried over with its expiry check, not re-measured
+here.
 
 ## Contents
 
@@ -23,6 +25,7 @@ follows from how the two reports are built, not from a single observation.
 11. [`email_health_report` measures a different population](#11-email_health_report-measures-a-different-population)
 12. [A tool that is not available reads three different ways](#12-a-tool-that-is-not-available-reads-three-different-ways)
 13. [Numbers from two different tools are not added together](#13-numbers-from-two-different-tools-are-not-added-together)
+14. [The run-close date is a lower bound — the register of unreliable figures](#14-the-run-close-date-is-a-lower-bound--the-register-of-unreliable-figures)
 
 ---
 
@@ -91,6 +94,10 @@ So an opaque failure immediately after a goal name is introduced is **the goal, 
 otherwise**. Re-run the call once with `goalName` omitted before spending a retry on the transport.
 And because there is no goal catalogue to check a name against (`metrics-map.md`, T4), a name the
 user supplies can only be tested by using it.
+
+**One goal per figure.** A call counts money against exactly one goal, and two goals are never added
+or set side by side as one series: the same order is attributed under each. A report that needs two
+goals prints two figures, each with its goal named.
 
 ## 7. An unknown channel returns an empty report, not an error
 
@@ -173,3 +180,15 @@ a figure the audit may print — not even when both numbers are right.
 
 Where the reader needs the two side by side, print them side by side, each with its own window and
 scope in the reader's words (`SKILL.md`, rule 1), and say what the comparison can and cannot settle.
+
+## 14. The run-close date is a lower bound — the register of unreliable figures
+
+`[upstream]` The closing edge of a version's run in `flows_get` is set by the next history entry of
+any version, whether or not that entry is a stop — so a version still executing can print a closed
+range, and a printed close is a lower bound on when the version stopped, not the date it stopped
+(`calling-the-tools.md`, "Version run timelines — observed behaviour", with the expiry check).
+
+That date is the one figure in this audit's reach that is **quotable for nothing**: an established
+cause never rests on it, when a scenario stopped is bounded by the last month with sends in the
+reporting data instead, and whether it is running is read from the version statuses. The opening
+edge of a run is sound and dates a change of version.

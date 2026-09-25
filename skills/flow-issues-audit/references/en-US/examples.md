@@ -1,25 +1,14 @@
+<!-- locale: en-US. Parallel variant of ../ru-RU/examples.md. Keep both in step. -->
+
 # Audit examples — calibration
 
 Real captures of flow structure, the internal reasoning, and the **user-facing report**. These calibrate
 recall (find real problems), precision (don't flag healthy or merely-debatable patterns), **and the report style**.
 
-Two distinct things per example:
+Each example carries the internal reasoning and then the report as the user would see it —
+shown in English here; in practice write it in the user's language.
 
-- **Reasoning (internal)** — how you decide. Case numbers/field names are fine *here*; this is your own thinking and
-  is **never shown to the user**.
-- **Report to the user** — what you actually output. Plain business language, **problems** vs optional **suggestions**
-  kept distinct, no block ids, no internal field names, no checklist numbers. Shown in English here; **in practice
-  write it in the user's language.** Style: short, actionable, mentions only what to change (firm problems) or what
-  could be improved (soft, optional).
-
-Block names inside the skeletons are shown as captured (real flows are often named in the tenant's language).
-
-## Contents
-
-- [Example 1 — abandoned cart (clean)](#example-1--abandoned-cart-clean)
-- [Example 2 — merged abandoned flow with branching (clean)](#example-2--merged-abandoned-flow-with-branching-clean)
-- [Example 3 — scheduled reactivation (restraint on advisory items)](#example-3--scheduled-reactivation-restraint-on-advisory-items)
-- [Example 4 — welcome with a split block (problems + one suggestion)](#example-4--welcome-with-a-split-block-problems--one-suggestion)
+Block names inside the skeletons are rendered in English here; real flows are often named in the project's language.
 
 ---
 
@@ -29,7 +18,7 @@ Skeleton:
 
 ```
 B_4c2df28 [inboundEventBlock] B_4c2df28:default --> B_e054f9c [delayBlock "Wait 30 minutes"]
-B_e054f9c [delayBlock "Wait 30 minutes"] B_e054f9c:default --> B_1de3b56 [conditionBlock "No orders, no sends. Subscribed to Email"]
+B_e054f9c [delayBlock "Wait 30 minutes"] B_e054f9c:default --> B_1de3b56 [conditionBlock "No orders, no mailings. Email subscription present"]
 B_1de3b56 [conditionBlock "…"] B_1de3b56:positive --> B_00b9338 [operationStepsBlockSettings "Email - abandoned cart"]
 ```
 
@@ -43,30 +32,13 @@ n/a). Nothing to flag.
 
 > No issues found — the flow looks correct.
 
----
-
-## Example 2 — merged abandoned flow with branching (clean)
-
-Skeleton:
-
-```
-B_65dbaee [inboundEventBlock] --> B_d3ab0d1 [delayBlock "Wait 30 minutes"] --> B_a67e693 [conditionBlock "No orders, no sends. Subscribed to Email"]
-B_a67e693 :positive --> B_8d3a453 [conditionBlock "Cart + in stock"]
-B_8d3a453 :positive --> B_de9496b [operationStepsBlockSettings "Email - abandoned cart"]
-B_8d3a453 :negative --> B_fa078b2 [conditionBlock "Wishlist + in stock"]  (and so on: view, category)
-```
-
-**Reasoning (internal):** session-scoped mechanic conditions branch (both outputs used) → priority routing, not a
-long single-output chain (case 3 n/a); first condition is a post-wait re-check (case 2 n/a); window + validity +
-channel subscription present (cases 6, 7, 8 ok). Nothing to flag.
-
-**Report to the user:**
-
-> No issues found — the flow looks correct.
+Same flow merged with the favourites / view / category variants stays clean too: its mechanic
+conditions branch (both outputs used), so it is priority routing, not a long single-output
+narrowing chain — case 3 does not apply.
 
 ---
 
-## Example 3 — scheduled reactivation (restraint on advisory items)
+## Example 2 — scheduled reactivation (restraint on advisory items)
 
 Skeleton:
 
@@ -90,7 +62,7 @@ note, not a problem. Subscription/validity checks are correct (6, 7 ok). No dela
 
 ---
 
-## Example 4 — welcome with a split block (problems + one suggestion)
+## Example 3 — welcome with a split block (problems + one suggestion)
 
 Skeleton:
 
@@ -100,7 +72,7 @@ B_b81d911 :1(50%) --> B_2c5b5fd [operationStepsBlockSettings "Steps 2"]   (SMS)
 B_b81d911 :2(50%) --> B_ab3b00f [conditionBlock] :positive --> B_0d8f573 [operationStepsBlockSettings "Copy of Steps 2"]   (Email)
 ```
 
-**Reasoning (internal):** split 50/50 across SMS vs Email variants, no per-customer limit → **problem** (case 1); Email
+**Reasoning (internal):** split 50/50 across SMS vs Email variants, so a returning customer is re-randomised → **problem** (case 1; the version's own re-entry setting, not a limit block, is what says whether they can return); Email
 gated only by brand-level subscription and SMS by none → **problem** (case 6); no valid-email/valid-phone checks →
 **problem** (case 7). Delay has a 10:00–20:00 window → case 8 ok. Segment-membership filter after start + 1-day wait,
 single-output → **advisory suggestion** (case 2), not a firm problem.
@@ -116,7 +88,9 @@ single-output → **advisory suggestion** (case 2), not a firm problem.
 >   checked (not the email channel); before the SMS there's no subscription check at all. Check the subscription for the
 >   actual channel — email before the email, SMS before the SMS.
 > - **Contact validity isn't checked before sending.** Add a "valid email" check before the email and a "valid phone"
->   check before the SMS, to avoid bounces and protect deliverability.
+>   check before the SMS. Without it, customers with no usable contact still enter the send step, so the
+>   branch's numbers overstate reach — and on a transactional mailing the message really goes to an invalid
+>   contact and costs the channel's reputation.
 >
 > _Optional (load vs clarity):_ the segment filter sits after the start and past a 1-day wait, so customers who don't
 > match wait a day only to be cut. Moving it into the launch conditions would save load — but if it's kept separate for

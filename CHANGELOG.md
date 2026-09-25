@@ -1,5 +1,64 @@
 # CHANGELOG
 
+## 1.4.0 — 2026-09-24
+
+The four flow skills re-ported in full from the upstream `flow` plugin **2.1.0** (author "AI tribe";
+the previous port was 1.27.0). Upstream 2.0.0 was a rewrite, not a patch — every file changed — so
+the Maestra copies were rebuilt from the new text rather than patched, with the standing Maestra
+adaptations re-applied. Skill versions now mirror upstream: `flow-create` 17.1.0,
+`flow-business-audit` 8.0.0, `flow-summary` and `flow-issues-audit` 1.0.0.
+
+New in `flow-create`:
+
+- **Builds into a flow that is already running.** A flow launched from the interface has no
+  editable version; the skill now creates the draft itself with `flows_create_draft`, copied from
+  the running or paused version the user names, waits until the copy is editable, takes a fresh
+  row version, and continues as usual. A flow keeps at most one draft, and the refusal names it.
+  Measured on a live project: the copy of a running version lands as `ReadyForExecution`, which is
+  editable; the create's own row version is stale at once — both are written into the skill.
+- **No more copied contract.** Field names, status spellings, presets, output tokens and defaults
+  are no longer carried in the skill; they are read live from the tool schema and the wiki's
+  write-path sub-folder (`writing.*`), so the skill cannot go stale against the platform. The
+  SKILL.md is a third shorter for it.
+- Every write is verified on two halves — the fields sent, and what the block held before the write
+  and the body never mentioned — with the pre-write read kept as the baseline; opaque fragments go in
+  complete; a session budget of six non-advancing writes ends the run with a decision put to the
+  user, never with a manual step handed over.
+- One research pass, one question batch: the project is fixed first when several are reachable,
+  folder and brand are asked together and checked against each other before the create, the admin
+  URL is derived from the project's system name (`https://<system name>.maestra.io`) rather than
+  asked, and a batch of flows is one question round.
+
+New in `flow-summary`, `flow-issues-audit`, `flow-business-audit`:
+
+- **Locale files.** The wording each report prints — headings, verdicts, table headers, fixed
+  phrases, urgency labels — lives in `references/<locale>/terminology.md` (en-US and ru-RU), with
+  the worked examples and the themed HTML pages in the same two variants. A report is written in the
+  reader's language from the matching variant; a language with no variant takes en-US and translates.
+- `flow-issues-audit`: the per-flow checklist no longer names block tags or field names — each check
+  points at the wiki document that carries them; a project-wide sweep keeps a findings file and can
+  run in batches of sub-agents; running-only scope is filtered by the listing's own status vocabulary.
+- `flow-business-audit`: form F (the burnt attempt) gets a read allowance of its own — one
+  single-block settings read per scenario that reached level 2 — and is reported as "not checked"
+  where unspent, never asserted from the skeleton; `flows_list` pages are a cost line of their own;
+  whether a scenario is running is read from the set of version statuses (case-insensitive, an
+  unknown value is "not established"), never from the `active version` line, and the run-close date
+  is in the register of unreliable figures; the deck is the "proposal deck" with separate presenter
+  notes, its labels "Decide today" / "Fix" / "Idea" per locale.
+
+Kept from the Maestra port, and re-applied on the new text:
+
+- **`flow-business-audit` still runs on `flow_report`, not on SQL.** Upstream 2.x still computes its
+  figures over two scenario datamarts that this platform's catalogue does not carry; the numeric
+  layer (`metrics-map.md`, `rates.md`, `beyond-the-overview.md`, `invariants.md`,
+  `calling-the-tools.md`) is the Maestra edition, extended with upstream's version-status and
+  run-timeline readings. Upstream's new attributable-deliveries denominator maps to the platform's
+  own `ConversionRate`; its reach marts map to `flow_report`'s per-customer family, printed only where
+  the platform populates it. The metric names behind the locale wording are listed per key in
+  `terminology.md`.
+- Cross-skill references point at `maestra:`; the HTML examples print US dollars in both locales;
+  flow links build on `https://<system name>.maestra.io/scenarios/<id>`.
+
 ## 1.3.0 — 2026-09-22
 
 `filter-build` + `filter-explain` re-ported in full from the upstream `filters` plugin 1.3.0 (author

@@ -22,7 +22,7 @@ disagreement goes in the run log.
 1. [The map](#the-map) — which audit question is answered by which call
 2. [The metric vocabulary](#the-metric-vocabulary) — every metric name the report accepts
 3. [T1 / T1p / T2 / T2p / T8 — the overview, in one call](#t1--t1p--t2--t2p--t8--the-overview-in-one-call)
-4. [T1m — one flow's twelve months, one row per month](#t1m--one-flows-twelve-months-one-row-per-month)
+4. [T1m — one flow's thirteen months, one row per month](#t1m--one-flows-thirteen-months-one-row-per-month)
 5. [T1t — the transactional share](#t1t--the-transactional-share) — what replaced the by-mailing-type row
 6. [T4 — which goal is being counted](#t4--which-goal-is-being-counted)
 7. [Retired handles](#retired-handles) — T6, T7, T9, and why nothing replaces them
@@ -100,7 +100,7 @@ flow_report(
   startDate  = <period start, ISO>,
   endDate    = <period end, ISO>,
   metrics    = "Revenue,Orders,Sends,Deliveries,Opens,Clicks,Conversions,
-                OpenRate,ClickRate,ConversionRate,UnsubscribeRate,SpamRate,BounceRate,
+                OpenRate,ClickRate,CTOR,ConversionRate,UnsubscribeRate,SpamRate,BounceRate,
                 AverageOrderValue,ScenarioExecutionsCount",
   topN       = 200,
   mode       = "Full"
@@ -113,8 +113,8 @@ The answer has two sections and they are two different handles:
   money and volume lines and **T2p** for the rate lines. It costs no extra call and it is the level
   a verdict falls back to when no single flow clears the materiality floor (`SKILL.md` step 5).
 - **`## Flows (top N of M by <sort metric>)`** — one row per flow. Money and volume columns are
-  **T1**; `OpenRate` / `ClickRate` / `UnsubscribeRate` are **T2**; `BounceRate` / `SpamRate` are
-  **T8**. There is no join to get wrong and no grain to choose: the platform has already decided
+  **T1**; `OpenRate` / `ClickRate` / `CTOR` / `UnsubscribeRate` are **T2**; `BounceRate` / `SpamRate`
+  are **T8**. There is no join to get wrong and no grain to choose: the platform has already decided
   what a flow's row means.
 
 **`topN` decides your coverage, and the default hides it.** The default is 20 and the maximum is
@@ -139,16 +139,17 @@ earned, and dropping it silently rewrites the period's money. Leave it off; read
 
 ---
 
-## T1m — one flow's twelve months, one row per month
+## T1m — one flow's thirteen months, one row per month
 
 The level a year-on-year delta is stated beside: is the audited month normal *for this flow*, or is
-one end of the comparison the outlier?
+one end of the comparison the outlier? The series is the twelve closed months before the audited
+one — the flow's level — plus the audited month itself, thirteen rows.
 
 ```
 flow_report(
   tenant         = <project>,
-  startDate      = <first day of the month twelve months back>,
-  endDate        = <last day of the last closed month>,
+  startDate      = <first day of the month twelve months before the audited one>,
+  endDate        = <last day of the audited month>,
   metrics        = "Revenue,Orders,Sends,Deliveries,ConversionRate",
   includeFlowIds = [<flowId>],
   timelineBucket = "Month",
@@ -157,14 +158,14 @@ flow_report(
 ```
 
 The `## Timeline (month)` section is the series, one row per month, `startDate` naming the bucket.
-`## Summary` is the twelve-month total for that flow, and the one-row `## Flows` section confirms the
-pin landed on the flow you meant.
+`## Summary` is the thirteen-month total for that flow, and the one-row `## Flows` section confirms
+the pin landed on the flow you meant; the level itself is read off the twelve closed rows.
 
 **Pin by id, not by name.** `includeFlowIds` names one flow exactly; `flowNameContains` is a
 substring match that will happily return three flows and a total across them. Use the name filter
 only when the id is not yet known, and check the `## Flows` section says `top 1 of 1`.
 
-**Read the shape, not the average.** Twelve months exist so a fall can be told from a season, a
+**Read the shape, not the average.** Thirteen months exist so a fall can be told from a season, a
 launch or a single burst month. A series with one month carrying most of the year is not a level to
 compare against — say so and rest the verdict elsewhere (`findings-and-failures.md`, "against an
 unexamined base").
@@ -177,9 +178,12 @@ Earlier editions read the project's revenue split by mailing type straight from 
 **`flow_report` has no mailing-type dimension, and nothing else exposes that split**, so the question
 is answered from construction instead of from a column, and the answer is coarser. Say which it was.
 
-Per flow, at level 1 of the construction reading (`structural-causes.md`): read the send steps with
-`flows_lookup(detail="Full")` and the wiki's `flow_types` document, which is what settles whether a
-flow's sends run on a transactional mailing profile. A flow whose sends are all transactional
+Per flow with rows in the period, before the money ranking: the skeleton (`flows_lookup`, cheap
+detail) names the send steps, a full-detail read restricted to those blocks gives each mailing's
+profile, and the wiki's `flow_types` document is what settles whether a send runs on a transactional
+mailing profile. It is a construction read of its own, outside the level 1–3 budget of
+`structural-causes.md`, and it is counted as its own line in the log — one skeleton and one
+restricted full-detail read per flow with rows. A flow whose sends are all transactional
 **gets no money verdict and is not in the money ranking** — its row keeps its revenue with the words
 «revenue on a confirmation message follows the order, not the message» (`business-rules.md`, "What is
 never judged on money"). A mixed flow is ranked with that caveat on its line.

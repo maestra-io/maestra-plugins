@@ -10,7 +10,7 @@ Skills that let Claude work in your [Maestra.io](https://maestra.io) account: se
 |---|---|
 | **Emails** | Create and edit emails in the visual editor from a text description: layout, images, personalization chips, product recommendation rows, letter styles, preview, saving into your campaign, test sends to your staff test recipients. Live sending stays in Maestra. |
 | **Filters** | Build a filter from a request in plain words and get a link to the list in your account; edit an existing filter without losing its conditions; explain a filter your account already stores. It can't save or change anything. |
-| **Flows** | Summarize what an existing flow does; audit one flow or all of them for known anti-patterns, with a fix per finding; audit them on business results — revenue, orders, funnel and rates per flow — and get back what to change in the flow. Build a new draft flow from a request in plain words. Launching stays with you. |
+| **Flows** | Summarize what an existing flow does; audit one flow or all of them for known anti-patterns, with a fix per finding; audit them on business results — revenue, orders, funnel and rates per flow — and get back what to change in the flow. Build a new draft flow from a request in plain words, or build into a flow that is already running — a draft is created from it. Launching stays with you. |
 
 The skills see only what you can see in Maestra.
 
@@ -52,6 +52,7 @@ Phrases like "create an email" or "build a filter" wake the right skill:
 - "Audit our flows and tell me what to fix."
 - "Which flows earned the most last month, and what should we change in the ones that did not?"
 - "Build an abandoned cart flow: wait 30 minutes, skip anyone who ordered, then one email and an SMS a day later."
+- "Add an SMS a day after the email to our running Welcome flow — keep it as a draft."
 
 ## Other AI tools
 

@@ -1,0 +1,343 @@
+<!-- locale: ru-RU. Parallel variant of ../en-US/html-proposal-deck-example.html. Keep both in step. -->
+
+<!--
+  Example / template for the flow-business-audit PROPOSAL DECK — built only when the report form
+  chosen at `../../SKILL.md § Inputs` is the deck, after step 8 has selected what goes on the slides.
+
+  Reproduce this STRUCTURE and STYLING as-is (the theme is the one html-report-example.html uses).
+  Replace only the CONTENT — and only with figures and claims that are already in the full report.
+
+  THE RULES OF THIS FORMAT, decided once here and never per run:
+
+  1.  The deck is READY TO PRESENT AS IT STANDS. Nothing on it is addressed to the presenter:
+      no "how to say it", no "what not to say", no note to whoever speaks. All of that goes to the
+      separate presenter notes (`../writing-the-report.md`, "The presenter notes") — a Markdown file
+      beside this one, one section per proposal slide. Handover count 13
+      (`../findings-and-failures.md`) is the number of such notes found in this file: 0.
+  2.  Slides: one overview (mandatory) + three to seven proposals — as many as have a figure and a
+      construction reading behind them. Never padded to seven, never cut to a round number. When the
+      selection left findings out, the overview carries the `deck.overview.more` line.
+  3.  Which findings get a slide: `../../SKILL.md` step 8 — «problem» findings plus at most one
+      project-level finding; several scenarios with one cause share one slide; «can't judge», «fine»
+      and «did not send» never get one.
+  4.  The frame of a proposal slide — six elements in this order: the context line (number,
+      scenario name(s) as links, urgency label right); the heading — a business statement, no
+      metric names, no identifiers, up to 19 words; one large figure with its window under it;
+      one paragraph; a table only when the slide is about several scenarios (up to five rows, the
+      project's line last and marked `dead`, the worst row marked `worst`); then the disclosures.
+      A slide carrying a table carries no large figure: the table is the figure.
+  5.  Disclosures — exactly three, in this order: the EVIDENCE, headed by what it shows
+      (`deck.heading.whereLost`, `deck.heading.whatChecked`, `deck.heading.whatThisDoesNotExplain` in
+      terminology.md) — never a self-assessing heading such as "Why the comparison is fair";
+      then `deck.heading.inTheScenario` (blocks by their own names in quotes, settings as set,
+      counts with their window); then `deck.heading.whatToDo` (the steps verbatim from the full
+      report's "What to do", each naming a place, an action and an addressee).
+  6.  Labels — a closed set of three, `urgency.now` / `urgency.fix` / `urgency.idea` in
+      terminology.md, carried by the classes b-now / b-fix / b-idea. They say how soon, not what
+      state; none of the four verdict words appears anywhere in the deck.
+  7.  Identifiers: never in the visible text, in any position, unless the user asked. The name in the
+      context line is the link, and the link carries the id.
+  8.  Charts are optional. Where a series carries the slide, draw it inline in the deck's own
+      colours (an SVG or the `.bars` strip below) with the same window and origin a figure carries,
+      from figures already in the full report. A slide without a chart is complete.
+  9.  The footnote under the navigation is mandatory: the data windows, the goal, the money sentence
+      (`../writing-the-report.md`, "Money"). It is the whole of `## What we do not know` the deck carries.
+  10. Navigation: prev/next, dots, Home/End, ←/→, hash routing. No notes pane to switch on — there
+      are none.
+  11. Counts taken on the finished file and written to the log (`../findings-and-failures.md`, counts
+      11–13): every figure and claim on the slides found verbatim in the full report (U = 0);
+      proposal slides = sections in the presenter notes; notes to the presenter in this file = 0; bare
+      identifiers in the visible text = 0 unless asked.
+
+  Every figure, name and link below is an INVENTED calibration example, drawn from the same invented
+  project as html-report-example.html, and every one of them stands in that page too — the two
+  examples are one run. A real audit's numbers are never pasted in here. The wording of the labels,
+  the disclosure headings and the footnote is `terminology.md` in this folder; the deck is written in
+  the language of the report.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пример: предложения по сценариям</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#eef4f5; --card:#ffffff; --surface-muted:#ebeff0; --table-bg:#fdfdfc;
+    --ink:#282a2f; --muted:#637076;
+    --line:#dae3e8; --line-strong:#bfccd4; --focus:#b8e5d6;
+    --accent:#028f69; --accent-hover:#00664b; --accent-soft:#f2faf7;
+    --high:#db3309; --high-bg:#ffefeb; --high-border:#ffbbad;
+    --med:#cc8100; --med-bg:#fff5db; --med-border:#f6e0a4;
+    --info:#402f9e; --info-bg:#f0eef9; --info-border:#9d91da;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,"PT Sans","Trebuchet MS",system-ui,sans-serif;
+    font-size:17px;line-height:25px;-webkit-font-smoothing:antialiased;
+    padding-block:24px 20px;padding-left:20px;padding-right:20px}
+  .deck{max-width:960px;margin:0 auto}
+
+  .slide{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:38px 44px 34px;min-height:520px;display:flex;flex-direction:column}
+  .slide[hidden]{display:none}
+  .eyebrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+  .num{font-size:14px;font-weight:600;letter-spacing:.12em;color:var(--accent)}
+  .scope{font-size:14px;color:var(--muted)}
+  .scope a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-strong)}
+  .scope a:hover{color:var(--accent-hover);border-color:var(--accent)}
+  .eyebrow .sp{flex:1}
+  .badge{display:inline-flex;align-items:center;min-height:26px;padding:2px 12px;
+    border:1px solid transparent;border-radius:999px;font-size:13px;font-weight:500;
+    letter-spacing:.04em;white-space:nowrap}
+  .b-now{color:#fff;background:var(--high);border-color:var(--high)}
+  .b-fix{color:var(--high);background:var(--high-bg);border-color:var(--high-border)}
+  .b-idea{color:var(--info);background:var(--info-bg);border-color:var(--info-border)}
+
+  .slide h2{margin:0 0 20px;font-size:38px;line-height:45px;font-weight:600;
+    letter-spacing:-.02em;text-wrap:balance;max-width:19ch}
+  .lede{font-size:19px;line-height:29px;margin:0 0 26px;max-width:62ch}
+  .lede b{font-weight:600}
+
+  .figure{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+    padding:22px 26px;background:var(--accent-soft);border:1px solid var(--focus);
+    border-radius:12px;margin-bottom:26px}
+  .figure .big{font-size:56px;line-height:1.05;font-weight:600;color:var(--accent);
+    font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+  .figure .cap{font-size:17px;line-height:24px;max-width:34ch}
+  .figure .cap span{display:block;color:var(--muted);font-size:14px;line-height:20px;margin-top:3px}
+
+  /* optional inline chart: a bar strip, one <i> per point, height = --v (0..100) */
+  .bars{display:flex;align-items:flex-end;gap:6px;height:72px;margin:0 0 6px}
+  .bars i{flex:1;display:block;background:var(--accent);border-radius:3px 3px 0 0;height:calc(var(--v) * 1%);min-height:2px;opacity:.85}
+  .bars i.hi{background:var(--high)}
+  .chart-cap{font-size:13px;line-height:18px;color:var(--muted);margin-bottom:22px}
+
+  .grow{flex:1}
+
+  .reveals{border-top:1px solid var(--line);padding-top:6px}
+  details.rv{border-bottom:1px solid var(--line)}
+  details.rv:last-child{border-bottom:none}
+  details.rv > summary{list-style:none;cursor:pointer;padding:12px 2px;
+    display:flex;align-items:center;gap:11px;font-size:16px;font-weight:500}
+  details.rv > summary::-webkit-details-marker{display:none}
+  details.rv > summary:hover{color:var(--accent-hover)}
+  details.rv > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .tri{flex:none;color:var(--accent);font-size:13px;transition:transform .13s}
+  details.rv[open] .tri{transform:rotate(90deg)}
+  .rv .in{padding:2px 2px 16px 24px;font-size:16px;line-height:24px;max-width:72ch}
+  .rv .in p{margin:0 0 10px}
+  .rv .in p:last-child{margin-bottom:0}
+  .rv .in .win{color:var(--muted);font-size:14px;line-height:20px}
+
+  .scroll{overflow-x:auto;margin-bottom:26px}
+  table{border-collapse:collapse;width:100%;font-size:16px;background:var(--table-bg);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line)}
+  th{font-size:13px;color:var(--muted);font-weight:600;background:var(--surface-muted);
+     text-transform:uppercase;letter-spacing:.05em}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  tr.worst td{background:var(--high-bg);font-weight:600}
+  tr.dead td{color:var(--muted)}
+
+  .ov{display:grid;gap:10px;margin-top:4px}
+  .ov button{display:flex;align-items:center;gap:16px;width:100%;text-align:left;
+    background:var(--table-bg);border:1px solid var(--line);border-radius:10px;
+    padding:15px 18px;font:inherit;color:inherit;cursor:pointer}
+  .ov button:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .ov button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ov .k{flex:none;font-size:14px;font-weight:600;color:var(--accent);letter-spacing:.1em;width:24px}
+  .ov .tx{flex:1;font-size:17px;line-height:23px;font-weight:500}
+  .ov .tx em{display:block;font-style:normal;font-size:14px;line-height:20px;
+    color:var(--muted);font-weight:400;margin-top:2px}
+  .ov-more{font-size:14px;color:var(--muted);margin-top:14px}
+
+  .nav{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .nav button{border:1px solid var(--line-strong);background:var(--card);color:var(--ink);
+    border-radius:999px;min-height:40px;padding:0 20px;font:inherit;font-size:15px;
+    font-weight:500;cursor:pointer}
+  .nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .nav button:disabled{opacity:.4;cursor:default}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .dots{display:flex;gap:7px;flex:1;justify-content:center}
+  .dots button{min-height:0;padding:0;width:10px;height:10px;border-radius:50%;
+    border:1px solid var(--line-strong);background:var(--card)}
+  .dots button[aria-current="true"]{background:var(--accent);border-color:var(--accent)}
+  .pos{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+  .hint{text-align:center;font-size:13px;line-height:19px;color:var(--muted);margin-top:12px;
+    max-width:76ch;margin-left:auto;margin-right:auto}
+
+  @media (max-width:760px){
+    body{font-size:16px;padding-left:14px;padding-right:14px}
+    .slide{padding:26px 22px 24px;min-height:0;border-radius:12px}
+    .slide h2{font-size:27px;line-height:34px;max-width:none}
+    .lede{font-size:17px;line-height:26px}
+    .figure{padding:18px 20px;gap:12px}
+    .figure .big{font-size:40px}
+    .nav button{padding:0 15px}
+    .dots{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){.tri{transition:none}}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ================= 0 · обзор ================= -->
+<section class="slide" id="sl0">
+  <div class="eyebrow"><span class="scope">проект Example · август 2026 · цель «Заказы»</span></div>
+  <h2>Предложения по текущим сценариям</h2>
+  <div class="ov">
+    <button type="button" data-go="1"><span class="k">01</span><span class="tx">Самая доходная механика теряет подписчиков вчетверо быстрее остальных<em>«Брошенная корзина» · 70 из 114 отписок проекта за месяц</em></span></button>
+    <button type="button" data-go="2"><span class="k">02</span><span class="tx">Каждое шестое письмо проекта — поздравление, которое почти не приносит денег<em>«День рождения» · 15 % доставок и 5,6 % выручки</em></span></button>
+    <button type="button" data-go="3"><span class="k">03</span><span class="tx">За год писем стало на треть больше, а читают их заметно меньше<em>весь проект · доставки +37 %, открытия −21 %</em></span></button>
+  </div>
+  <p class="ov-more">Ещё 1 находка — в полном разборе.</p>
+  <div class="grow"></div>
+</section>
+
+<!-- ================= 1 ================= -->
+<section class="slide" id="sl1" hidden>
+  <div class="eyebrow"><span class="num">01</span>
+    <span class="scope"><a href="https://example.com/scenarios/1234">«Брошенная корзина»</a></span>
+    <span class="sp"></span><span class="badge b-now">Решить сегодня</span></div>
+  <h2>Самая доходная механика теряет подписчиков вчетверо быстрее остальных</h2>
+  <div class="figure">
+    <span class="big">0,48 %</span>
+    <span class="cap">% отписок (Email) — против 0,12 % по проекту<span>август 2026, 14 550 доставок; из отчётных данных проекта</span></span>
+  </div>
+  <div class="bars" aria-hidden="true"><i style="--v:38"></i><i style="--v:41"></i><i style="--v:44"></i><i style="--v:47"></i><i style="--v:52"></i><i style="--v:58"></i><i style="--v:63"></i><i style="--v:70"></i><i style="--v:77"></i><i style="--v:84"></i><i style="--v:91"></i><i style="--v:100" class="hi"></i></div>
+  <div class="chart-cap">% отписок (Email) по месяцам, сентябрь 2025 — август 2026 · из отчётных данных проекта</div>
+  <p class="lede">Сценарий приносит больше всех — <b>1 185 769,20 $</b> за август — и даёт 70 из 114 отписок проекта с 15 % его доставок. Год назад доля была вдвое ниже: 0,24 %. Проект за тот же год вырос на 40 %, этот сценарий — вдвое.</p>
+  <div class="grow"></div>
+  <div class="reveals">
+    <details class="rv"><summary><span class="tri">▸</span>Где именно теряется</summary>
+      <div class="in"><p>Из 70 отписок 58 приходятся на два письма из пяти: третье (34) и пятое (24). Остальные три письма вместе дают 12.</p>
+      <p class="win">Август 2026, разбор сценария по сообщениям; тот же месяц и та же цель, что у цифры на слайде.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>Что в сценарии</summary>
+      <div class="in"><p>Пять отправок на одном пути с паузами 1 час, 1 день, 1 день, 2 дня и 2 дня. Одна проверка перед первым письмом — «Подписан и валиден» — и ни одной повторной проверки после пауз. Ограничения на повторный вход у сценария нет.</p>
+      <p class="win">Структура сценария и прохождения за последние 30 дней (18 августа — 17 сентября), не за август: вошло 12 410 прохождений, проверку прошли 9 880, до пятого письма дошли 9 865.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>Что сделать</summary>
+      <div class="in"><p>Удлинить паузы перед третьим и пятым письмом с одного дня до двух и повторять проверку «Подписан и валиден» после каждой паузы — для того, кто ведёт проект в платформе. Покажет результат: % отписок третьего и пятого письма за следующий полный месяц против 0,48 % сейчас.</p>
+      <p>Гипотеза, которую это проверит: отписки идут с писем, приходящих раньше всего после предыдущего, — третье и пятое стоят за однодневными паузами. Если отписки распределятся ровно по серии — причина не в паузах.</p></div></details>
+  </div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section class="slide" id="sl2" hidden>
+  <div class="eyebrow"><span class="num">02</span>
+    <span class="scope"><a href="https://example.com/scenarios/1263">«День рождения»</a></span>
+    <span class="sp"></span><span class="badge b-fix">Чинить</span></div>
+  <h2>Каждое шестое письмо проекта — поздравление, которое почти не приносит денег</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Сценарий</th><th class="num">Доставлено</th><th class="num">Доля доставок</th><th class="num">Выручка</th></tr></thead>
+      <tbody>
+        <tr><td>Брошенная корзина</td><td class="num">14 550</td><td class="num">15 %</td><td class="num">1 185 769,20 $</td></tr>
+        <tr><td>Приветственная серия</td><td class="num">31 004</td><td class="num">32 %</td><td class="num">402 118,00 $</td></tr>
+        <tr class="worst"><td>День рождения</td><td class="num">14 880</td><td class="num">15 %</td><td class="num">118 402,00 $</td></tr>
+        <tr class="dead"><td>Проект целиком</td><td class="num">96 500</td><td class="num">100 %</td><td class="num">2 104 890 $</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="lede">«День рождения» занимает столько же доставок, сколько самая доходная механика проекта, — 15 % — и приносит <b>5,6 %</b> выручки против её 56 %. Кликают по нему втрое реже, чем по среднему письму проекта: 0,62 % против 1,74 %. Год назад было 1,10 %: проект за тот же год потерял 15 %, этот сценарий — 44 %.</p>
+  <div class="grow"></div>
+  <div class="reveals">
+    <details class="rv"><summary><span class="tri">▸</span>Что проверено</summary>
+      <div class="in"><p>Доля кликов 0,62 % против 1,74 % по проекту за тот же месяц, знаменатель — 14 880 доставок, выше порога. Денежного вердикта нет: 22 заказа при пороге в 50; его дала бы та же картина за июнь — август, где заказов набирается 64.</p>
+      <p class="win">Август 2026, из отчётных данных проекта; сравнение с собой — август 2025.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>Что в сценарии</summary>
+      <div class="in"><p>Запуск по расписанию, ежедневно, по клиентам, у которых день рождения через семь дней. Одна проверка — «Подписан на email», затем одна отправка — «Поздравление с днём рождения», без паузы и без окна выхода. Рассылка маркетинговая и уходит в момент срабатывания расписания — в 06:00 по времени проекта.</p>
+      <p class="win">Структура сценария и прохождения за последние 30 дней (18 августа — 17 сентября), не за август: вошло 15 120 прохождений, проверку прошли и дошли до отправки 14 900.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>Что сделать</summary>
+      <div class="in"><p>Между условием «Подписан на email» и отправкой «Поздравление с днём рождения» поставить паузу с окном выхода 10:00—20:00 по времени клиента. Для того, кто ведёт проект в платформе. Покажет результат: доля кликов «Поздравления с днём рождения» за следующий полный месяц против 0,62 % сейчас.</p>
+      <p>Гипотеза, которую это проверит: письмо уходит в шесть утра, а поздравление, прочитанное за завтраком, не кликают. Если доля кликов не сдвинется — причина не в часе отправки.</p></div></details>
+  </div>
+</section>
+
+<!-- ================= 3 ================= -->
+<section class="slide" id="sl3" hidden>
+  <div class="eyebrow"><span class="num">03</span>
+    <span class="scope">весь проект · частота контактов</span>
+    <span class="sp"></span><span class="badge b-idea">Идея</span></div>
+  <h2>За год писем стало на треть больше, а читают их заметно меньше</h2>
+  <div class="figure">
+    <span class="big">+37 %</span>
+    <span class="cap">доставок за год — при том что открытий стало на 21 % меньше<span>август 2026 против августа 2025, 96 500 доставок; из отчётных данных проекта</span></span>
+  </div>
+  <p class="lede">Доставок за год стало больше на 37 %, а показатели вовлечения ухудшились разом: открытия −21 %, клики −15 %, отписки +40 %, bounce вырос в 1,8 раза. Так двигаются почти все сценарии сразу — значит, дело не в одном из них. <b>Доход на сообщение</b> за тот же год упал с 25,50 $ до 21,81 $.</p>
+  <div class="grow"></div>
+  <div class="reveals">
+    <details class="rv"><summary><span class="tri">▸</span>Что это не объясняет</summary>
+      <div class="in"><p>Само по себе это не говорит, что писем стало слишком много: сколько сообщений получает за месяц один клиент, в отчётных данных проекта не хранится. Эту цифру даёт счётчик платформы по уникальным клиентам, а для этого проекта он не заполнен, — поэтому нужна выгрузка.</p>
+      <p class="win">Август 2026 против июля 2026 и августа 2025; из отчётных данных проекта.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>Что в сценарии</summary>
+      <div class="in"><p>Ограничения частоты контактов нет ни в одном из разобранных сценариев: у «Брошенной корзины» нет ограничения на повторный вход, «День рождения» уходит по расписанию без окна выхода, и обе серии пишут по одной и той же базе email.</p>
+      <p class="win">Структура сценариев, прочитанная в этом разборе, и прохождения за 18 августа — 17 сентября.</p></div></details>
+    <details class="rv"><summary><span class="tri">▸</span>Что сделать</summary>
+      <div class="in"><p>Поставить ограничение частоты контактов на сценарии, которые делят одну базу email, — начать с трёх, выросших за год сильнее всех. Значение ограничения — решение проекта. Для того, кто ведёт проект в платформе. Покажет результат: % отписок по проекту за следующий месяц против 0,1187 % сейчас.</p>
+      <p>Гипотеза, которую это проверит: клиенты стали получать больше писем, чем раньше. Если ограничение не сдвинет ни отписки, ни открытия — причина в другом.</p></div></details>
+  </div>
+</section>
+  <div class="nav">
+    <button type="button" id="prev">← Назад</button>
+    <div class="dots" id="dots"></div>
+    <span class="pos" id="pos"></span>
+    <button type="button" id="next">Вперёд →</button>
+  </div>
+  <div class="hint">Данные: август 2026 целиком, сравнение с июлем 2026 и августом 2025; собственные ряды сценариев — 13 месяцев; прохождения по шагам — 18.08 — 17.09.2026, глубже 30 дней они не хранятся. Цель «Заказы». Выручка здесь — «Выручка из доставленных сообщений в выбранном периоде», по дате отправки; она не сойдётся с «Выручкой за период» отчёта по сценариям, которая считается по дате заказа. Ссылки ведут на https://example.com — адрес выведен из системного имени проекта.</div>
+
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var TOTAL = slides.length;
+  var prev = document.getElementById('prev'),
+      next = document.getElementById('next'),
+      pos  = document.getElementById('pos'),
+      dots = document.getElementById('dots');
+  var dotBtns = [], i;
+  for (i = 0; i < TOTAL; i++) {
+    var d = document.createElement('button');
+    d.type = 'button';
+    d.setAttribute('aria-label', i === 0 ? 'Обзор' : 'Предложение ' + i);
+    (function(n){ d.addEventListener('click', function(){ go(n); }); })(i);
+    dots.appendChild(d); dotBtns.push(d);
+  }
+  var cur = 0;
+  function go(n){
+    if (n < 0 || n >= TOTAL) return;
+    cur = n;
+    for (var k = 0; k < TOTAL; k++) {
+      slides[k].hidden = (k !== n);
+      dotBtns[k].setAttribute('aria-current', String(k === n));
+    }
+    prev.disabled = (n === 0);
+    next.disabled = (n === TOTAL - 1);
+    pos.textContent = n === 0 ? 'Обзор' : n + ' / ' + (TOTAL - 1);
+    try { history.replaceState(null, '', '#' + n); } catch(e){}
+    window.scrollTo(0, 0);
+  }
+  prev.addEventListener('click', function(){ go(cur - 1); });
+  next.addEventListener('click', function(){ go(cur + 1); });
+  Array.prototype.forEach.call(document.querySelectorAll('.ov button[data-go]'), function(b){
+    b.addEventListener('click', function(){ go(parseInt(b.getAttribute('data-go'), 10)); });
+  });
+  document.addEventListener('keydown', function(e){
+    var t = e.target || {};
+    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(cur - 1); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(TOTAL - 1); }
+  });
+  var start = 0;
+  try { var h = parseInt((location.hash || '').replace('#', ''), 10); if (!isNaN(h) && h >= 0 && h < TOTAL) start = h; } catch(e){}
+  go(start);
+})();
+</script>
+</body>
+</html>

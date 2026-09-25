@@ -17,10 +17,11 @@ tool id or a frozen signature from this document into a call.
 1. [`tenant` — the argument every call takes](#tenant--the-argument-every-call-takes)
 2. [`flow_report` — call arguments](#flow_report--call-arguments)
 3. [`campaign_report` — call arguments](#campaign_report--call-arguments)
-4. [`flows_list`, `flows_get`, `flows_lookup`](#flows_list-flows_get-flows_lookup)
+4. [Call arguments: `flows_list`, `flows_get`, `flows_lookup`](#call-arguments-flows_list-flows_get-flows_lookup)
 5. [`email_health_report`, `entities_list`, `wiki`](#email_health_report-entities_list-wiki)
 6. [Failures dressed as successes](#failures-dressed-as-successes)
 7. [The retry budget](#the-retry-budget)
+8. [Version run timelines — observed behaviour](#version-run-timelines--observed-behaviour)
 
 ---
 
@@ -67,20 +68,39 @@ Same window, mode, goal, brand and channel arguments. Its own two:
 The breakdown **paginates up to 200 items** and its header reports the total and whether the list is
 capped, exactly as `flow_report`'s does.
 
-## `flows_list`, `flows_get`, `flows_lookup`
+## Call arguments: `flows_list`, `flows_get`, `flows_lookup`
 
 **`flows_list`** — id, name, active version number and status, sorted by id, paginated (`page`,
 `pageSize`, default 50, max 200). **Read it to the last page**; the count is what this account can
 see, and folder-level access control is applied server-side, so report the number with the tool
-beside it. There is no search by name or description.
+beside it. There is no search by name or description. Upstream measured a page size above the
+ceiling as **clamped, not refused** — the answer comes back short inside a successful reply — so
+the page header, not the row count, says whether the list is finished. **The pages are a cost line
+of their own** in the log: how many there are is the size of the project, not the depth of the audit.
 
-**`flows_get`** — one flow by id, with its versions and their statuses. Two uses: resolving a name
-the breakdown clipped, and resolving an id that appears in a report and not in the list.
+**`flows_get`** — one flow by id, with its versions and their statuses. Three uses: resolving a name
+the breakdown clipped, resolving an id that appears in a report and not in the list, and reading
+**whether a scenario is running**. That last reading is made from the **set of version statuses** in
+the versions block — a scenario is running when **any** of its versions carries a running status —
+never from the `active version` line (it is not necessarily the newest version, and it can be empty
+without the scenario having stopped) and never from send dates. Which values mean running is the
+live `flows_list` schema's (`Execution` and `Testing` today; `Paused`, `InDevelopment`,
+`ReadyForExecution` and the like are not running); what each status means is the wiki's (`urls`).
+Two readings the audit adds: **match a status ignoring case** — the same value reaches you as the
+wire string or as a flattened enum name depending on the call; and **an unrecognised status value is
+*not established*, never "not running"**. When a scenario stopped is bounded by the last month with
+sends in the reporting data, not by the version timeline ("Version run timelines" below).
 
 **`flows_lookup`** — the structure of one flow version. The arguments that matter to this audit:
 
-- `flowId` + `versionNumber` — both required. The version number comes from `flows_list` (the
-  currently active one) or from `flows_get` (a specific one).
+- `flowId` + `versionNumber` — both required, and **the version number has no default. This is the
+  one home of that choice**; every step that needs a version points here. Its source is the active
+  version column of `flows_list`. For a paused flow, or a window in which an older version was live,
+  the source is `flows_get`: the version whose run overlaps the audited window. That overlap is read
+  off the run-close date, which is a lower bound ("Version run timelines" below), so it can find no
+  overlapping version for a scenario that demonstrably ran; the fallback is then the active version
+  from `flows_list`, **with which one was used said out loud**, and it is never presented as the
+  version that was live in the window. Ask the user only when neither answers.
 - `detail` — `Skeleton` (arrow lines, the navigation map — **start here**) or `Full` (JSON with each
   block's resolved properties, plus the flow's own `settings`: `repeatSettings` and
   `launchSettings`).
@@ -143,3 +163,28 @@ is not a retry.
 **Every call goes in the log — the ones that failed too**, with the arguments, the answer or the
 error text, and what was concluded. The log exists before the first call and is appended as the run
 goes (`SKILL.md`, "The run has two outputs").
+
+## Version run timelines — observed behaviour
+
+> Observed upstream on the same version-history mechanism, kept because it is expected to be fixed.
+> **Expiry, checkable from inside this skill:** take a flow whose status is the running one and
+> which has rows in the reporting data this month, and call `flows_get` on it. If its last run entry
+> is still open (`ran: <date> - now`), this entry is stale for that flow; if the entry below still
+> reproduces on a flow like it, it is current. Measured on this platform 2026-09-24: running
+> versions with no later history entry printed open-ended runs (`ran: <date> - now`), which is
+> consistent with the entry; the closed-range case was not reproduced, so re-check it on a flow
+> with several versions before resting anything on it.
+
+Each version line carries the period it ran, open-ended for a run that is still open. **A printed
+closing edge — the run-close date — is a lower bound on when the version stopped, not the date it
+stopped.** A run is closed by the next history entry of any version, and an entry that is not a stop
+closes it just the same, so a version that is still executing can print a closed range ending on the
+day it started. The run-close date is therefore in the register of unreliable figures
+(`invariants.md`, 14) and is quotable for nothing.
+
+**The opening edge is sound**: a run opens on the history entry that puts *that* version into
+execution, so the start of the run is the date this version took over — the date to use when the
+question is when a scenario changed. The creation date is not: upstream measured a version created
+two months before it first ran, so the creation date is a last-resort fallback and the gap is said
+out loud. Where the history is empty or does not come back, the change cannot be dated at all: that
+is a line in `## What we do not know`, not a silent substitution of the creation date.

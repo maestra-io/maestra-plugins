@@ -20,32 +20,20 @@ scenario path, and the marker that names the version you built rather than which
 platform would pick. **A link without an explicit version marker is not guaranteed to open the
 version you built**, so it is not a hand-over on its own.
 
-**The path shape is a platform value, so take it from the reference — never assemble one.** A URL
-built from a pattern you have seen sends the user to a page that is not their flow, or to none.
-**The `flows` domain has a document of its own for the address of a flow version** — the path, the
-mode and the version markers, with what each one opens; navigate to it from the domain index, whose
-term map lists it under the user's own words for a link (its id is `urls` in today's index — take the
-id from the index, not from here). Read it before you build the address. If the reference does not
-print it — a document can go missing again — treat it as the
-documentation gap it is (`SKILL.md` → `## CRITICAL` 2): say you cannot produce a link, name the flow
-and the version number you built so they can open it, and carry the gap into the shortfall list as a
-limitation on your side.
+**The path shape is a platform value:** read it in the `flows` domain's flow-address document
+(`urls`), navigating to it from the domain index, and **never assemble one** from a pattern you have
+seen. If it is missing, say you cannot produce a link, name the flow and the version number so they
+can open it, and rank the gap (CRITICAL 2).
 
-**Check which kind of marker your link carries — then say almost nothing about it.** The reference
-distinguishes a marker that selects a version **by state** from one that names a version **by
-identity**, and the difference is worth one clause of text, never a paragraph:
+If the link names the version **by identity**, say nothing about it; if it selects **by state**, one
+clause — the link opens the draft *now*, since re-opened after launch the same address can show the
+running version with nothing saying it switched.
 
-- **It names the version by identity** — say nothing at all. The link works; how it is built is not
-  something the user can act on.
-- **It selects by state** — one clause: the link opens the draft *now*. That much is actionable,
-  because re-opened after the flow is launched the same address can show the running version with
-  nothing saying it switched.
+Put the version number in the same line as the link, and stop there. Where the draft was copied from a
+launched version (step 1b (iii)), that number is the **new draft version's**, never the source's.
 
-Put the version number in the same line as the link, and stop there.
-
-You cannot derive the admin base URL from any tool. **Ask for it in the step-3 batch**, with the
-rest of your questions — never at hand-over, where a question is a broken promise (or reuse one
-the user has already given you in this session).
+The admin base URL comes from the step-3 batch (`references/questions.md`) — on this platform
+`https://<system name>.maestra.io` unless the user gave another address — and is never asked here.
 
 ## The three parts
 
@@ -53,11 +41,9 @@ Exactly three, in this order, and nothing else.
 
 ### 1. What was built
 
-**Reuse the `maestra:flow-summary` skill's own output format** — its three sections, in the language the
-user is working in, dash bullets, never a wall of text. Take the section names and the rules from that
-skill rather than from here; if it is not available in your session, keep to the same three parts (what
-starts the flow, what it does step by step, what it is for). Keep it compact, and expand only if the
-user asks for more.
+**Reuse the flow-summary skill's output format**, in the language the user is working in, taking its
+name from your skill listing; if it is not listed, keep to its three parts — what starts the flow,
+what it does step by step, what it is for. Keep it compact, and expand only if the user asks.
 
 Refer to a block by its name in quotes or by its role ("the 3-day wait", "the email step"). No block
 ids, no type tags, no row versions, no field or value names.
@@ -82,18 +68,21 @@ Rules for the items:
 - **What did not land is stated as a limitation on your side, not as a chore you are handing over** —
   and say what the flow does *instead* right now, so they can judge the risk ("the condition passes
   everyone").
-- **Choose the checklist form the client supports** — a markdown file, an artifact, a checklist in the
-  message. Any of them is right; picking the one that suits where you are running is yours to do, and
-  nothing here prescribes it.
-- **If there is nothing to do, say so in one line.** Do not pad the section.
+- **The last item always asks them to look at the result and say whether it is what they wanted** —
+  the trigger, the steps and their order, the audience each condition selects, and each mailing. That
+  look is what acceptance means, and nothing in *Suggestions* happens before it.
+- **Beyond that one, if there is nothing to do, say so in one line.** Do not pad the section.
 
 ### 3. Suggestions
 
-**How the flow could go further — as offers, and only as offers.** *"If you want, I can: add an A/B
-test between the branch condition and the send; …"*. Never half statement and half offer: *"I didn't
-do an A/B test — you didn't ask. Its place would be …"* is a note about your own reasoning, and there
-is nothing in it to act on. Drop the note, keep the offer. If you have nothing to offer, omit the
-section.
+**Offers only** — *"if you want, I can add an A/B test between the condition and the send"*. A note
+about what you did not do and why is not an offer: drop the note, keep the offer. Nothing to offer,
+no section.
+
+**Where the flow validated clean, the first offer is the test run**: say that once they are happy with
+it you can switch the flow to testing mode, so the platform runs it as a test without launching it for
+real. It is an offer, never a step you take on your own — you act on an explicit yes and on nothing
+else, and you never launch, pause, stop or delete the flow (`SKILL.md`, top and step 8).
 
 ## Reporting a stop under CRITICAL 6
 
@@ -103,17 +92,15 @@ put the choice in **Actions** as something they decide, never as work they perfo
 
 Three things belong in it and nowhere else:
 
-- **The objection verbatim**, where there was one. This is the same exception the tool-behaviour
-  bullet below carries for an incomplete validation: a message the procedure tells you to pass on
-  goes through unedited, platform vocabulary included.
+- **The objection verbatim**, where there was one — platform vocabulary included (the exception to
+  *What never goes in*).
 - **What you tried**, in one line — enough that nobody repeats it, not a log of calls.
 - **The choices you can see**, as choices. "This needs a value no write of mine can set — do you
   want it set another way, or the flow handed over without it?" is an Action. "Please open the editor
-  and fill it in" is not: that is handing them the job, which CRITICAL 6 does not license
-  (`SKILL.md` step 1b, step 2).
+  and fill it in" is not: that is handing them the job, which CRITICAL 6 does not license.
 
-**Do not report the budget, the count, or the rule's name.** That it stopped at six calls is our
-business; that the branch is unfinished and why is theirs.
+**Do not report the budget, the count, or the rule's name.** That it stopped at six calls belongs
+to the run; that the branch is unfinished and why belongs to the reader.
 
 ## What never goes in
 
@@ -121,14 +108,10 @@ Cut it, whatever else is true of it, if the user cannot act on it:
 
 - **System names, ids, type tags, row versions, field names, discriminators** — anything from the
   platform's own vocabulary.
-- **Tool behaviour.** How a write answered, that a call reported nothing applied and applied
-  everything, that a listing had to be re-queried. If it is worth reporting it is worth reporting **to
-  us, not to them** — where the session has a feedback capability connected, that is where it goes;
-  otherwise it goes nowhere.
-  > **One exception: a message the procedure tells you to pass on verbatim.** Where step 7 could not
-  > complete a validation, CRITICAL 5 requires saying plainly that the flow is unvalidated **and
-  > giving the message as it came** — platform vocabulary included. That outranks this bullet: never
-  > tidy such a message out of the hand-over, and never paraphrase it into something acceptable.
+- **Tool behaviour** — how a write answered, that a listing had to be re-queried. If it is worth
+  reporting, it goes to the `feedback` tool, not to the reader.
+  > **One exception: a message step 7 tells you to pass on verbatim (CRITICAL 5) outranks this.**
+  > Never tidy such a message out of the hand-over, and never paraphrase it into something acceptable.
 - **A platform quirk with no user-side move.** A value the read path regenerates and nothing can
   confirm (`SKILL.md` step 6) is the standing example: naming it buys them nothing.
 - **Explanations of how the link is built**, of why a rule is what it is, or of a constraint that no
@@ -138,10 +121,8 @@ Cut it, whatever else is true of it, if the user cannot act on it:
 
 ## A filled example
 
-One shape that satisfies the three parts. The link stands in as `‹link›` here **only** because this
-file must not carry a path shape — build the real one from `## The link`. Write yours in the language
-the user is working in, with the section names in that language; this one is English. The first part
-is shortened to a line per section; the real one follows the `maestra:flow-summary` format.
+One shape that satisfies the three parts; `‹link›` stands in because this file must not carry a path
+shape. Write yours in the language the user is working in.
 
 > Draft of the "Abandoned cart reminder" scenario, version 3: ‹link›
 >
@@ -151,26 +132,28 @@ is shortened to a line per section; the real one follows the `maestra:flow-summa
 > **Goal** — bring the customer back to an unfinished order.
 >
 > **What to do**
-> - Name the mailing for the send step: I couldn't pick one, and without it the flow won't run.
-> - Activate the "Come back to your cart" mailing in the interface — until you do, the flow prepares
->   the message and sends nothing, and there is no way for me to activate it.
+> - Fill in the "Come back to your cart" mailing with me — I created it and gave it a name and a
+>   purpose, but its content still needs your choices.
+> - Then activate it — until someone does, the flow prepares the message and sends nothing, and there
+>   is no way for me to activate it.
 > - Check that the filters use the right product lists — Cart and Favourites.
 > - Tell me whether an order in any status counts as a purchase, or only a paid one: for now the
 >   condition passes everyone.
+> - Look the flow over and tell me whether this is what you wanted.
 >
 > **If you want, I can**
+> - switch the flow to testing mode once you're happy with it, so it runs as a test without going live;
 > - add an A/B test between the condition and the send;
 > - add an SMS to anyone who hasn't opened the email within a day.
 
-Note what the example does **not** do: no ids, no field names, no explanation of the link, no account
-of how the tools behaved, no paragraph about folders. The blocking item comes first and says what
-happens without it, and every line under *What to do* starts with something to do.
+No ids, no field names, no account of the tools, no folder essay; the blocking item comes first and
+every line under *What to do* starts with something to do.
 
 # References
 
 - `SKILL.md` → CRITICAL 6 — when a run stops short, and what the exit is
-
-- `SKILL.md` → step 8 — the rule this file serves
+- `SKILL.md` → step 8 — the rule this file serves, and testing mode after acceptance
 - `SKILL.md`, top — the two kinds of shortfall, and why the ranking carries the message
 - `references/questions.md` — what belongs in the question rather than in the hand-over
-- `maestra:flow-summary` → `## Output format` — the format part 1 reuses
+- the flow-summary skill → `## Output format` — the format part 1 reuses; take its name from your
+  skill listing

@@ -1,3 +1,5 @@
+<!-- locale: en-US. Parallel variant of ../ru-RU/html-report-example.html. Keep both in step. -->
+
 <!--
   Example / template for the flow-business-audit HTML report (produced only on request).
 
@@ -18,18 +20,17 @@
      block that has one. Pretty tiles are exactly where the footnote gets dropped.
      **On this page the source is written in words, always — never a template handle (T1, T2p,
      T8, …), never a tool name, never a column name of the reporting data.** This page has exactly
-     one reader, the client, and none of those mean anything to them. The same now binds the
+     one reader, a person outside this run, and none of those mean anything to them. The same now binds the
      terminal report, which is read by a person too: what produced a figure is checkable in the run
-     log, not printed beside the number (`writing-the-report.md`, "One reader, and the proof
-     is the log"). Measured on two live projects, tile captions, column headings and finding reasons
-     all reached clients carrying our handles. Our vocabulary goes with them — no "rollup", no "grain", no "floor":
-     `findings-and-failures.md`, "Our words and the reader's". The same binds every action in
-     «What to do»: name what to ask for and who to ask, never "switch on <tool>", which is not an
+     log, not printed beside the number (`../writing-the-report.md`, "One reader, and the proof
+     is the log"). The skill's own vocabulary goes with them — no "rollup", no "grain", no "floor":
+     `../findings-and-failures.md`, "Our words and the reader's". The same binds every action in
+     "What to do": name what to ask for and who to ask, never "switch on <tool>", which is not an
      action the reader has.
   2. `## What we do not know` is a section of this file, always, even when empty — the last
      section before the footer, never folded away and never shortened for looks. Empty means one
      explicit line, not a missing block.
-     **Which sections the page owes and in what order is `writing-the-report.md`'s frame**, the same
+     **Which sections the page owes and in what order is `../writing-the-report.md`'s frame**, the same
      one the answer in the chat carries, and it is not restated here. The example below fills the
      sections an example can fill and omits the ones it cannot — a funnel it never read, a year with
      no pairs to compare, the hypothesis table for the problem scenarios beyond the ones taken in
@@ -38,16 +39,15 @@
   3. The HTML adds nothing — no figure and no statement. Every number on the page is already in
      the terminal report, to the digit, and so is every claim the prose makes: a sentence the
      terminal report does not contain is a defect even when it adds no number, because nobody
-     reviewed it. Measured: a page explained one flow's missing
-     year-on-year comparison in a sentence its terminal row did not contain. That is also why the
-     example's «revenue per delivery» tile stays out of a page whose terminal report has no such line.
+     reviewed it. That is also why the
+     example's "revenue per delivery" tile stays out of a page whose terminal report has no such line.
      **The verdict in a table cell and in a card badge is the string the terminal report used,
      copied — never re-derived while writing the page.** Re-deriving is how two halves of one run
-     came to call the same scenario two different things, three times on three projects. The footer
-     sentence promising the client that the two halves match is printable because the handover check
+     come to call the same scenario two different things. The footer
+     sentence promising the reader that the two halves match is printable because the handover check
      was run and its numbers are in the log; without it that sentence is a claim with nothing behind
      it.
-  4. Scenario links: the rule is `writing-the-report.md`, "A scenario is a name" — it binds
+  4. Scenario links: the rule is `../writing-the-report.md`, "A scenario is a name" — it binds
      both halves of the report, so it is stated once, there, and not restated here. What this file
      adds is only where it lands on the page: the scenario cell and each card heading carry the
      name as the link, the page carries the one sentence naming the base the links were built from,
@@ -56,74 +56,59 @@
      section, and it is a per-run answer from the user, never a property of this template.
      **An unanswered question is a No**: silence, "decide for yourself", and anything inferred from
      the wording of the request rather than said by the user all mean no identifiers
-     (`writing-the-report.md`, the second named case — the fallback is stated there).
+     (`../writing-the-report.md`, the second named case — the fallback is stated there).
      **That is also why this file carries no style for an identifier beside a name, and must not be
-     given one.** A ready-made class invites the next run to fill it; the run that printed 18 of
-     them wrote its own `.idtag` rule into the copy. On the run where the user
+     given one.** A ready-made class invites the next run to fill it. On the run where the user
      does ask, the identifier is written inline on that page, in the muted 11px the `.src` slots
      already use, and nothing comes back into this template.
      **This rule is counted on the finished file, not read for.** An identifier is legitimate inside
      an address and forbidden in what the reader sees, so searching for digits finds both at once
-     and drowns the one in the other — which is why three runs read their own pages and called them
-     clean. **Count it positionally: take the finished file, drop everything between `<` and `>`,
-     and count the runs of five or six digits left in what remains. Zero, or the page is not
+     and drowns the one in the other. **Count it positionally: take the finished file, drop
+     everything between `<` and `>`, and count the runs of five or six digits left in what remains.
+     Zero, or the page is not
      finished** — and the number goes in the log with the other counts of rule 8, zero included.
-     Measured on a page whose run had declared its surface clean: six of them stood in the visible
-     text — one scenario named twice in prose, three more inside a sentence about sibling scenarios
-     — while every link on the same page carried its identifier correctly, exactly where it belongs
-    . The fixture was silent that run, and silence is a No.
-  5. Checkboxes belong to actions only. There is one in every «What to do» item and nowhere
-     else: a checkbox beside «revenue fell 18 %» claims the reader can tick a measurement off.
+
+  5. Checkboxes belong to actions only. There is one in every "What to do" item and nowhere
+     else: a checkbox beside "revenue fell 18 %" claims the reader can tick a measurement off.
   6. The flow table is shorter than the terminal report's, and BY A RULE — never by a number the
      run picks for itself. The page is a presentation, so it carries AT MINIMUM the rows a reader
      is meant to act on. **The rule is a set, and the set is mechanical — no judgement enters it.**
      A flow is in the table when ANY of these is true:
-       (a) its verdict is «problem» — no exception, whatever the count;
+       (a) its verdict is "problem" — no exception, whatever the count;
        (b) the report discusses it in prose anywhere;
        (c) it is over EITHER provability floor in the window — 1,000 deliveries or 50 orders.
      **Read (c) literally: it is the floors that qualify a flow, not its verdict.** A flow over a
-     floor whose verdict came out «can't judge» is in the table like any other. This used to read
-     "every flow that carries a confident verdict at all — that is, every flow over the provability
-     floors", which is two different sets joined by a dash; a run took the first half, and the
-     project's single largest earner — about a third of all scenario revenue, the only flow clearing
-     the money floor with room to spare, «can't judge» only because it was five months old — was
-     not on the page a client saw. More rows than the set are allowed (the
+     floor whose verdict came out "can't judge" is in the table like any other. More rows than the
+     set are allowed (the
      example below keeps two below-floor ones because they illustrate a dash and a probe); fewer
      are not. The flows the
      audit declined to judge are NOT dropped and NOT silently cut: one line under the table says
-     how many of how many they are, that their verdict is «can't judge», and that their rows
-     with their figures are in the terminal report. The heading says «N of M» so the cut is
+     how many of how many they are, that their verdict is "can't judge", and that their rows
+     with their figures are in the terminal report. The heading says "N of M" so the cut is
      visible without reading the line. No flow with
-     «problem» is ever left out, whatever the count. A run that picks its own cap — «half the
-     rows, the rest are in the terminal report» — has invented a rule; a run that prints every row
-     has turned the presentation back into the report. Measured twice on live runs: one wrote its
-     self-chosen cap into its log as invented, the next printed a heading that named no count at
-     all, and neither reader could tell what was missing.
+     "problem" is ever left out, whatever the count. A run that picks its own cap — "half the
+     rows, the rest are in the terminal report" — has invented a rule; a run that prints every row
+     has turned the presentation back into the report.
      **The rule is checked, not just stated, and the page is what carries the check.** Before
      writing the table, list the qualifying flows by name in the run log and count them — that
      count is the N the heading prints, and the heading is the page saying how many rows it owes.
      After the file is written, count the rows it actually has — the `<td class="name">` cells of
      the tbody — and compare with N. **Equal, or the page is not finished.** Both numbers go in the
-     log. Every rule above this one is enforced by a person reading the page; this one is not, and
-     the run that broke it published a heading stating the very count it had failed to meet.
+     log. Every rule above this one is enforced by a person reading the page; this one is not.
 
-  7. **A card's section IS its verdict, and its badge says the same word as its row.** «The
-     scenarios with a problem» holds flows whose verdict is «problem», and nothing else. A flow
-     whose verdict is «can't judge» never takes the red badge and never stands under that heading:
+  7. **A card's section IS its verdict, and its badge says the same word as its row.** "The
+     scenarios with a problem" holds flows whose verdict is "problem", and nothing else. A flow
+     whose verdict is "can't judge" never takes the red badge and never stands under that heading:
      it goes under the heading of its own class. The classes with a home on this page are the
-     verdicts of `SKILL.md § 5` plus one — **«silent, but still taking people in»**: a flow that
+     verdicts of `../../SKILL.md § 5` plus one — **"silent, but still taking people in"**: a flow that
      sent nothing in the period whose entry counter shows people arriving anyway. That class has
-     its own section below, its own amber tile, and the «can't judge» badge, because «can't judge»
+     its own section below, its own amber tile, and the "can't judge" badge, because "can't judge"
      is the verdict the audit gave it. **The red accent inside a card belongs to that heading too**:
-     the observation group of a card outside «The scenarios with a problem» takes the neutral
-     `grp man`, never `grp prob`, or the card says «can't judge» in its badge and «problem» in its
+     the observation group of a card outside "The scenarios with a problem" takes the neutral
+     `grp man`, never `grp prob`, or the card says "can't judge" in its badge and "problem" in its
      colour. **A class with a tile but no section is the dangerous
      shape** — the tile counts the flow, and the flow itself then lands wherever a badge is
-     available. Measured: with no home of its own it was filed under «problem» in red while its own
-     table row two screens up said «can't judge», the tile said four problems and five cards
-     followed, and the client was handed a diagnosis the audit had refused out loud to make
-     [2026-09-08]. This template made that mistake first, in its own example, which is where the
-     run copied it from.
+     available.
 
   8. **Every count on the page comes from the terminal report, is written in one place, and the
      finished file is counted against four equalities before it is handed over — the last of them
@@ -131,61 +116,59 @@
        - rows shown + the "another N" line under the table = M, the flows-that-sent count in the
          heading. **The silent-but-live flow is not one of the M and not one of the rows shown** —
          it did not send; it is counted in its own section (rule 7);
-       - the red tile = the number of «problem» badges in the table = the number of cards under
-         «The scenarios with a problem»;
-       - confident verdicts + «can't judge» = the number of scenarios that got a row of their own
+       - the red tile = the number of "problem" badges in the table = the number of cards under
+         "The scenarios with a problem";
+       - confident verdicts + "can't judge" = the number of scenarios that got a row of their own
          with figures — **the flows that sent PLUS the silent-but-live ones**, which is larger than
          the M above by exactly that class. Two denominators live on this page and they differ by
          that one class: say beside each which it is, and never check one against the other.
-       - the number of «What to do» items on this page = the number in the terminal report's own
-         «What to do» section. Both halves owe that section and owe it the same items
-         (`writing-the-report.md`); a page with four and a chat answer with one is the
-         split this equality exists to catch, and it was measured [2026-09-09].
+       - the number of "What to do" items on this page = the number in the terminal report's own
+         "What to do" section. Both halves owe that section and owe it the same items
+         (`../writing-the-report.md`); a page with four and a chat answer with one is the
+         split this equality exists to catch.
      **Counting is not the whole cross-half check, and this equality passed over the split it was
      meant to catch** — two halves can carry the same number of rows and cards while one calls a
-     scenario "has a problem" and the other "can't judge". What pairs the halves item by item
-     is the handover check (`findings-and-failures.md`, "The handover check"), run once before
+     scenario "problem" and the other "can't judge". What pairs the halves item by item
+     is the handover check (`../findings-and-failures.md`, "The handover check"), run once before
      either half is handed over; this equality is one of its counts, not a substitute for it.
      Every one of those numbers except one already stands in the terminal report, so the page copies
      it rather than counting it again (rule 3). **The exception is N, how many rows this page shows**
      — a fact about the page and nowhere else, so it is the one count the page derives, and it is
-     derived by counting its own rows, never by remembering how many were meant to go in. Measured:
-     one page said «13 of 47» over its table, «another 33 of 47» under it and «36 of 48» in its
-     header — three counts typed in three places, no two of which added up [2026-09-08].
+     derived by counting its own rows, never by remembering how many were meant to go in.
 
-  9. **A scenario card carries five things, in the order `writing-the-report.md` fixes:**
+  9. **A scenario card carries five things, in the order `../writing-the-report.md` fixes:**
      what is observed, what it costs, **what is in the scenario** (the blocks by their own names in
      quotes, the counts with their own window, the settings as they are set — the group that shows
-     the run opened the scenario; a «problem» card without it is unfinished), **why it moved**, and
+     the run opened the scenario; a "problem" card without it is unfinished), **why it moved**, and
      the steps — each naming a block, a setting, a condition or a data source, and an action. The
-     «why it moved» group
+     "why it moved" group
      shows one of exactly two shapes — a cause established in the run's own figures, printed as a
      fact with its window; or a supposition, said to be one, with the probe that would settle it
      written as **what someone would look at and what it would show**. **The page never carries a
      standing statement that causes are not established**, and no group is headed with one: that is
-     a property of one finding on one run, never of this format. The template taught the opposite
-     until 6.0.0 — a group headed «The cause is not established» and a line in «What we do not know»
-     announcing it for every finding in advance — and a run reproduces this file's structure, so it
-     would have reproduced those too. Where a question really does belong to the reader's Maestra
-     manager, it goes with its evidence beside it (the step people stop at, the messages that
-     changed), never as a bare handover. **«What to do» items are actions**: "Reconsider X" is not
+     a property of one finding on one run, never of this format. Where a question really does
+     belong to the reader's Maestra manager, it goes with its evidence beside
+     it (the step people stop at, the messages that changed), never as a bare handover.
+     **"What to do" items are actions**: "Reconsider X" is not
      one — it names no act. **A probe the reader performs IS an action and belongs here** — "look at
      how many days apart the sequence sends" is something they do and see. What does not belong is a
      reading the run owed itself: "go through it message by message" is the run's own first cause,
-     spent before the page is built, not homework for the client.
-     **The «What to do» heading never states an order the run did not compute.** It carries a source
+     spent before the page is built, not homework for the reader.
+     **The "What to do" heading never states an order the run did not compute.** It carries a source
      line naming the key or keys the items were actually ranked on, the way every other figure on
-     this page carries its origin. The heading used to read «most costly first» while three of its
+     this page carries its origin. The heading used to read "most costly first" while three of its
      four items had no money figure at all — an ordering claimed on the
-     surface and not made. The keys themselves are `SKILL.md § From "what" to "why"`.
+     surface and not made. The keys themselves are `../../SKILL.md § From "what" to "why"`.
 
   Every figure, name, id and link below is an INVENTED calibration example, not one project's:
-  the same set `html-client-deck-example.html` draws its slides from. Keep it that
+  the same set `html-proposal-deck-example.html` in this folder draws its slides from, figure for
+  figure. Keep it that
   way — a real audit's numbers must never be pasted in here, not even as a nicer-looking sample:
   a combination of values identifies a project as surely as its name does.
-  The example below is written in English because every file of this skill is; **the page you build
-  is written in the language of the report**, `lang` attribute included
-  (`writing-the-report.md`).
+  This file is the en-US variant; `../ru-RU/html-report-example.html` is the same page in Russian,
+  and the two are kept in step. **The page you build is written in the language of the report**,
+  `lang` attribute included, and takes its metric names, verdicts and headings from
+  `terminology.md` in the folder of that locale (`../writing-the-report.md`).
   Base URL is shown as https://example.com — a real report uses the base the link rule arrives at,
   and says in the page which base that is.
 -->
@@ -196,13 +179,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scenario audit — money</title>
 <style>
-  /* No @font-face here, deliberately. The three faces this
-     block used to declare were fetched from an internal staging CDN, and the page travels to the
-     client: the internal hostname went out with it, and staging's content-hashed filenames stop
-     resolving at the next build, so the faces would have died silently anyway. Inter is now used
-     only where the reader already has it, and the stack below falls back on its own. Do not
-     restore a remote font here — a font that has to be fetched does not belong on a page that
-     leaves the building. */
+  /* No @font-face here, deliberately: the page travels to its readers, so Inter is used only where
+     the reader already has it and the stack below falls back on its own. Do not restore a remote
+     font here — a font that has to be fetched does not belong on a page that is sent out. */
 
   :root{
     /* Surfaces */
@@ -211,7 +190,7 @@
     --ink:#282a2f; --muted:#637076; --disabled:#a9aaac;
     /* Borders */
     --line:#dae3e8; --line-strong:#bfccd4; --focus:#b8e5d6;
-    /* Maestra accent */
+    /* accent */
     --accent:#028f69; --accent-hover:#00664b; --accent-active:#004d38; --accent-soft:#f2faf7;
     /* Error / High */
     --high:#db3309; --high-bg:#ffefeb; --high-border:#ffbbad;
@@ -228,7 +207,7 @@
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:Inter,"PT Sans","Trebuchet MS",sans-serif;font-size:14px;line-height:20px;
+    font-family:Inter,"PT Sans","Trebuchet MS",system-ui,sans-serif;font-size:14px;line-height:20px;
     -webkit-font-smoothing:antialiased;padding:32px 20px 80px}
   .wrap{max-width:1080px;margin:0 auto}
   header.top{margin-bottom:22px}
@@ -319,11 +298,10 @@
   </header>
 
   <div class="note">
-    <p><b>Reporting data recalculated through 2026-08-31.</b> It does not lag the end of the period.</p>
-    <p><b>No consistency check on the project's reporting data in this edition of the audit.</b> The check earlier editions opened with tested a shape of the data that no longer exists, and nothing replaces it yet — this narrows what the audit can vouch for.
-       <b>Money and deliveries, matched by scenario:</b> 12 scenarios have both money and delivery rows for the month, 0 have money alone, 0 have deliveries alone.</p>
-    <p><b>Goal.</b> The project has two goals carrying revenue in August; “Orders” was taken as the larger — a mechanical rule,
-       not a judgement about what the project measures itself by. <b>Under the other goal every money figure in this report would be different.</b></p>
+    <p><b>How fresh the reporting data is could not be measured</b> — nothing available to this audit reports it, which is why a closed month was audited rather than a running one.</p>
+    <p><b>Consistency check:</b> the project's own line agrees with the sum of the 12 scenario rows, and the breakdown was not capped — every scenario that sent in the month is in the table. Money and deliveries arrive on one row per scenario, so there is nothing to match between them.</p>
+    <p><b>Goal.</b> Money is counted against the goal “Orders”, as the platform's own scenario report names it. Nothing available to this audit lists
+       the project's other goals, so whether another one is worth counting is a question for the project — <b>under a different goal every money figure in this report would be different.</b></p>
     <p><b>What the verdicts are measured against:</b> the same month a year earlier. Nobody asked for a
        basis, so this is the one the audit falls back to — it is the safer of the two on scenarios that send in bursts.
        August against July is shown beside it throughout, as context.</p>
@@ -331,7 +309,7 @@
        Here every figure is counted on the date the message went out; the platform's business reports count the same
        money on the date the order was placed, so one order can fall in a different month on each. The comparison to
        make is between scenarios inside this report, not between this report and that screen.</p>
-    <p><b>Not available for this audit:</b> the platform's own scenario report, and the email health benchmark. What that cost is in “What we do not know”.</p>
+    <p><b>Not available for this audit:</b> the email health benchmark (the brand could not be resolved), and per-customer figures — the platform returns them as zero on this project. What that cost is in “What we do not know”.</p>
     <p><b>Coverage:</b> 60 of the 60 scenarios on the project's list were classified — 12 sent in the period, 1 is silent but still taking people in, 47 did not send. Scenarios present in the reporting data but missing from the list: 0.</p>
     <p><b>Confidence:</b> a confident verdict (“problem” or “fine”) on 3 of the 13 scenarios that got a row of their own with figures — the 12 that sent, plus the 1 that is silent and still taking people in; the remaining 10 are “can't judge”. What divides them is the provability threshold: 1,000 deliveries for a rate, 50 orders for a money verdict.</p>
   </div>
@@ -340,7 +318,7 @@
     <div class="stat"><div class="n">$2,104,890</div><div class="l">Scenario revenue</div>
       <div class="src">August 2026 · goal “Orders” · project reporting data</div></div>
     <div class="stat"><div class="n">96,500</div><div class="l">Deliveries</div>
-      <div class="src">August 2026 · project reporting data, cross-checked</div></div>
+      <div class="src">August 2026 · project reporting data</div></div>
     <div class="stat amber"><div class="n">$21.81</div><div class="l">Revenue per delivery</div>
       <div class="src">August 2026 · revenue ÷ deliveries, same source</div></div>
     <div class="stat"><div class="n">12 of 60</div><div class="l">Scenarios that sent</div>
@@ -391,8 +369,8 @@
       on its own, a finding about that scenario.</p>
     <p><b>Supposed: people are being contacted more often than they were.</b> This is a supposition, and it is written
       as one — nothing in this audit measures it. What would settle it: look at how many messages one customer receives
-      in a month, and whether that number grew over the year. The project's reporting data does not hold it, so it needs
-      either the platform's own scenario report (switched off for this project) or an export.</p>
+      in a month, and whether that number grew over the year. The platform's per-customer figures would settle it, and on this project
+      they are not populated, so it needs an export of messages per customer for the month.</p>
   </div>
 
   <!-- ============ FLOW TABLE ============ -->
@@ -582,7 +560,7 @@
   <p class="srcline">
     Scenarios that sent nothing in the period and are still receiving people. They are not among the 12 that sent,
     and none of them is called a problem: the audit has no reading of what happens to those people, so the verdict
-    is «can't judge» here as it is in the full report.
+    is "can't judge" here as it is in the full report.
   </p>
   <div class="cards">
 
@@ -645,11 +623,11 @@
   <h2 class="section">What we do not know</h2>
   <div class="unknown">
     <ul>
-      <li><b>Per-customer figures are not available on this project.</b> The scenario report returns customer counts as zero here while executions and every other figure are filled, so nothing in this audit is stated per unique customer — only per send, per delivery and per execution.</li>
-      <li><b>Unique reach into a scenario is not held in the reporting data</b> — neither repeat entries nor distinct people. The one reach figure in this audit is the entry-point counter, and it covers its own rolling window of about 30 days, which is not the audit's period.</li>
-      <li><b>The project's other goals could not be listed.</b> This audit counted money against the goal named in its header; nothing available to it enumerates the alternatives, so "was another goal worth counting" is a question for the project, not an omission of this report.</li>
+      <li><b>Per-customer figures are not available on this project.</b> The platform's scenario report returns customer counts as zero here while executions and every other figure are filled, so nothing in this audit is stated per unique customer — only per send, per delivery and per execution.</li>
+      <li><b>Unique reach into a scenario is therefore not held in the reporting data</b> — neither repeat entries nor distinct people. The one reach figure in this audit is the entry-point counter, and it covers its own rolling window of about 30 days, which is not the audit's period.</li>
       <li><b>Per-scenario agreement with the platform's screens was not established.</b> The project totals here stand up by method; an individual row of the table does not carry that guarantee.</li>
       <li><b>August revenue is a lower bound.</b> An order is attributed to a send for up to 30 days afterwards, so the −7 % against July may turn out to be zero, and the +17 % against August 2025 is “at least +17 %”. Volume comparisons are not affected.</li>
+      <li><b>The project's other goals could not be listed.</b> This audit counted money against the goal named in its header; nothing available to it enumerates the alternatives, so “was another goal worth counting” is a question for the project, not an omission of this report. Two goals are never added together — it is the same revenue attributed twice.</li>
       <li><b>How fresh the reporting data is could not be measured.</b> Nothing available to this audit reports it, which is why a closed month was audited rather than a running one.</li>
       <li><b>There is no industry benchmark in this audit.</b> Every “fine” here is measured only against the project itself, and those verdicts are marked weak.</li>
       <li><b>Five silent scenarios were checked</b> — the limit of this audit. The remaining silent ones were not.</li>
@@ -660,7 +638,7 @@
 
   <div class="foot">
     Coverage: 60 of the 60 scenarios on the project's list were classified; 12 sent in August 2026.
-    All money is under the goal “Orders”; the reporting data was recalculated through 2026-08-31.
+    All money is under the goal “Orders”; how fresh the reporting data is could not be measured, so a closed month was audited.
     The figures on this page match the full report of the same run digit for digit — a difference between them is a defect, not rounding.
     Scenario names link to https://example.com — derived from the project's system name. If your admin panel
     answers on a different address, say so and the links will be rebuilt on it.

@@ -5,7 +5,8 @@ something else: **the same period a year earlier** — T10, with T11 guarding it
 kept its id and changed its mechanic — and **one flow at a time**, T3f for what that flow's mailings
 contributed and T5 for whether the flow is in the reporting data at all.
 
-All four are `flow_report` or `campaign_report` calls with particular arguments. The metric
+T10, T3f and T5 are `flow_report` or `campaign_report` calls with particular arguments; T11 is a
+guard assembled from `flows_get`, T3f and the construction. The metric
 vocabulary, the `topN` rule and the clipping caveat are in `metrics-map.md` and
 `calling-the-tools.md`; they apply here unchanged.
 

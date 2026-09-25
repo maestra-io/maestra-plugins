@@ -1,0 +1,304 @@
+<!-- locale: ru-RU. Parallel variant of ../en-US/html-report-example.html. Keep both in step. -->
+
+<!--
+  Example / template for the flow-issues-audit HTML checklist (produced only on request).
+  Reproduce this STRUCTURE and STYLING as-is — it is the product's visual theme.
+  Do NOT change colors, fonts, radii, or layout unless the user explicitly asks.
+  Replace only the CONTENT: project name, scenario names/ids/links, and findings.
+  Base URL is shown as https://example.com — use the project's real admin base URL
+  (`<base_project_url>/scenarios/<flowId>`). The scenarios below are the skill's own
+  calibration examples; a real report lists the actually-audited flows.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Аудит сценариев</title>
+<style>
+  /* No remote font is fetched: the page travels to the reader, so Inter is used only where they
+     already have it and the stack below falls back on its own. */
+  @font-face{
+    font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;
+    src:local("Inter");
+  }
+  @font-face{
+    font-family:"Inter";font-style:normal;font-weight:500;font-display:swap;
+    src:local("Inter");
+  }
+  @font-face{
+    font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;
+    src:local("Inter");
+  }
+
+  :root{
+    /* Surfaces */
+    --bg:#f4f8f9; --card:#ffffff; --table-bg:#fdfdfc; --surface-muted:#ebeff0;
+    /* Text */
+    --ink:#282a2f; --muted:#637076; --disabled:#a9aaac;
+    /* Borders */
+    --line:#dae3e8; --line-strong:#bfccd4; --focus:#b8e5d6;
+    /* accent */
+    --accent:#028f69; --accent-hover:#00664b; --accent-active:#004d38; --accent-soft:#f2faf7;
+    /* Error / High */
+    --high:#db3309; --high-bg:#ffefeb; --high-border:#ffbbad;
+    /* Warning / Medium */
+    --med:#cc8100; --med-bg:#fff5db; --med-border:#f6e0a4;
+    /* Success / OK */
+    --low:#00803c; --low-bg:#edfaf2; --low-border:#bcebce;
+    /* Informational / Recommendation */
+    --info:#402f9e; --info-bg:#f0eef9; --info-border:#9d91da;
+    /* Neutral / Manual check */
+    --neutral:#637076; --neutral-bg:#f4f8f9;
+
+    --radius:8px; --shadow:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,"PT Sans","Trebuchet MS",system-ui,sans-serif;font-size:14px;line-height:20px;
+    -webkit-font-smoothing:antialiased;padding:32px 20px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header.top{margin-bottom:22px}
+  h1{font-size:25px;line-height:32px;font-weight:600;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13px;line-height:18px}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 8px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;padding:12px 16px;min-width:120px}
+  .stat .n{font-size:24px;font-weight:600}
+  .stat .l{font-size:12px;line-height:16px;color:var(--muted);letter-spacing:.02em}
+  .stat.red .n{color:var(--high)} .stat.green .n{color:var(--low)} .stat.amber .n{color:var(--med)}
+
+  h2.section{font-size:14px;line-height:20px;font-weight:600;text-transform:none;letter-spacing:0;
+    color:var(--ink);margin:34px 0 12px}
+
+  .tablecard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;overflow:hidden}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:760px;background:var(--table-bg)}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;line-height:16px;text-transform:none;letter-spacing:0;color:var(--muted);
+    font-weight:600;background:var(--surface-muted);position:sticky;top:0}
+  tr:last-child td{border-bottom:none}
+  td.name a{color:var(--accent);text-decoration:none;font-weight:600}
+  td.name a:hover{color:var(--accent-hover);text-decoration:underline}
+  td.name .id{display:block;color:var(--muted);font-size:12px;line-height:16px;font-weight:400;margin-top:2px}
+  td ul{margin:0;padding-left:16px} td li{margin:2px 0}
+  .chk{width:34px;text-align:center}
+  input[type="checkbox"]{accent-color:var(--accent);cursor:pointer}
+  .chk input{width:17px;height:17px}
+  .badge{display:inline-flex;align-items:center;min-height:24px;padding:2px 8px;
+    border:1px solid transparent;border-radius:999px;font-size:12px;line-height:16px;
+    font-weight:500;white-space:nowrap}
+  .b-high{color:var(--high);background:var(--high-bg);border-color:var(--high-border)}
+  .b-med{color:var(--med);background:var(--med-bg);border-color:var(--med-border)}
+  .b-low{color:var(--low);background:var(--low-bg);border-color:var(--low-border)}
+  .b-list{color:var(--muted);background:var(--surface-muted);border-color:var(--line)}
+
+  .cards{display:grid;gap:16px;margin-top:12px}
+  .flow{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:none;overflow:hidden}
+  .flow .head{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .flow .head .t{flex:1;min-width:200px}
+  .flow .head h3{margin:0;font-size:16px;line-height:24px;font-weight:600}
+  .flow .head h3 a{color:var(--ink);text-decoration:none}
+  .flow .head h3 a:hover{color:var(--accent-hover)}
+  .flow .head .meta{color:var(--muted);font-size:12px;line-height:16px;margin-top:3px}
+  .flow .body{padding:6px 18px 16px}
+  .grp{margin-top:14px}
+  .grp .lab{font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+  .grp.prob .lab{color:var(--high)} .grp.sugg .lab{color:var(--info)} .grp.man .lab{color:var(--neutral)}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .grp.prob .dot{background:var(--high)} .grp.sugg .dot{background:var(--info)} .grp.man .dot{background:var(--neutral)}
+  .item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:none}
+  .item input{margin-top:3px;width:16px;height:16px;flex:none}
+  .item .txt{flex:1}
+  .item .txt b{font-weight:600}
+  .item .where{color:var(--muted);font-size:12px;line-height:16px}
+  .item .fix{margin-top:3px}
+  .item .fix::before{content:"→ ";color:var(--accent);font-weight:600}
+  .clean{color:var(--low);font-weight:600;padding:10px 0 4px;display:flex;align-items:center;gap:8px}
+  .foot{color:var(--muted);font-size:12px;line-height:16px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+  .note{color:var(--ink);background:var(--accent-soft);border:1px solid var(--focus);
+    border-radius:8px;padding:12px 16px;font-size:13px;line-height:18px;margin:16px 0}
+  code{background:var(--surface-muted);padding:1px 5px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>Технический аудит сценариев</h1>
+    <div class="sub">Проект <b>Example</b> · проверено 4 из 4 сценариев · чек-лист нагрузки и корректности коммуникаций</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="n">4</div><div class="l">Сценариев</div></div>
+    <div class="stat green"><div class="n">3</div><div class="l">Без проблем</div></div>
+    <div class="stat red"><div class="n">1</div><div class="l">С проблемами</div></div>
+    <div class="stat amber"><div class="n">3</div><div class="l">Проблем всего</div></div>
+  </div>
+
+  <div class="note">
+    «Проблемы» — то, что стоит починить. «Рекомендации» — необязательные улучшения (компромисс нагрузка/наглядность), не дефекты.
+    «Проверить вручную» — то, что нельзя однозначно определить по структуре сценария (например, есть ли у письма тема подписки, или включён ли боевой режим отправки).
+    Отметки-галочки сохраняются только в открытой вкладке.
+  </div>
+
+  <!-- ============ PRIORITY TABLE ============ -->
+  <h2 class="section">Сводка по приоритету</h2>
+  <div class="tablecard">
+    <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="chk">✓</th>
+          <th>Сценарий</th>
+          <th>Проблемы</th>
+          <th>Что сделать</th>
+          <th>Приоритет</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1001">Welcome с A/B-тестом</a><span class="id">#1001</span></td>
+          <td><ul>
+            <li>А/Б-тест собран на случайном разделении вместо блока А/Б-теста</li>
+            <li>Перед отправкой не проверяется подписка на нужный канал</li>
+            <li>Не проверяется валидность контакта (email / телефон)</li>
+          </ul></td>
+          <td><ul>
+            <li>Пересобрать на блоке А/Б-теста</li>
+            <li>Проверять подписку на канал: SMS перед SMS, email перед email</li>
+            <li>Добавить «валидный email» перед email и «валидный телефон» перед SMS</li>
+          </ul></td>
+          <td><span class="badge b-high">High</span></td>
+        </tr>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1004">Реактивация по расписанию</a><span class="id">#1004</span></td>
+          <td>Проблем не найдено</td>
+          <td>Опционально: часть условий можно перенести в условия запуска (снижение нагрузки)</td>
+          <td><span class="badge b-low">OK</span></td>
+        </tr>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1002">Брошенная корзина</a><span class="id">#1002</span></td>
+          <td>Проблем не найдено</td>
+          <td>Только сверить тему подписки и боевой режим отправки</td>
+          <td><span class="badge b-low">OK</span></td>
+        </tr>
+        <tr>
+          <td class="chk"><input type="checkbox"></td>
+          <td class="name"><a href="https://example.com/scenarios/1003">Брошенные механики (общий)</a><span class="id">#1003</span></td>
+          <td>Проблем не найдено</td>
+          <td>Только сверить тему подписки и боевой режим отправки</td>
+          <td><span class="badge b-low">OK</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ============ DETAIL CARDS ============ -->
+  <h2 class="section">Подробно по каждому сценарию</h2>
+  <div class="cards">
+
+    <!-- 1001 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1001">Welcome с A/B-тестом</a></h3>
+          <div class="meta">#1001 · запуск по событию «регистрация клиента» · <b style="color:var(--high)">3 проблемы + 1 рекомендация</b></div>
+        </div>
+        <span class="badge b-high">High</span>
+      </div>
+      <div class="body">
+        <div class="grp prob">
+          <div class="lab"><span class="dot"></span>Проблемы</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>А/Б-тест собран на случайном разделении вместо блока А/Б-теста.</b> <span class="where">Блок разделения 50/50: одна ветка — SMS, другая — email.</span><div class="fix">Пересобрать на блоке А/Б-теста — он закрепляет клиента за одним вариантом. Случайное разделение при повторных входах отправляет одного клиента в разные варианты и искажает сравнение.</div></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>Перед отправкой не проверяется подписка на нужный канал.</b> <span class="where">Перед SMS-веткой проверки подписки нет вовсе; перед email проверяется подписка только на бренд.</span><div class="fix">Проверять подписку именно на отправляемый канал (и на тему письма, если она есть): SMS перед SMS-шагом, email перед email-шагом. Подписка на бренд не гарантирует согласие на канал.</div></div></div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>Не проверяется валидность контакта.</b> <span class="where">Перед шагами отправки нет проверки контакта.</span><div class="fix">Добавить «валидный email» перед email-шагом и «валидный телефон» перед SMS-шагом — иначе рост недоставок и удар по репутации отправителя.</div></div></div>
+        </div>
+        <div class="grp sugg">
+          <div class="lab"><span class="dot"></span>Рекомендации (необязательно)</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>Фильтр по сегменту стоит после старта и после суточного ожидания.</b> <span class="where">Условие сразу после 1-дневного ожидания (не попавшие в сегмент выходят из сценария).</span><div class="fix">Если фильтр чисто статический — перенести в условия запуска, чтобы клиенты вне аудитории не входили и не ждали сутки впустую (экономия нагрузки). Оставить отдельным шагом, если нужно видеть отвал в воронке. Компромисс нагрузка/наглядность, не дефект.</div></div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Проверить вручную</div>
+          <div class="item"><div class="txt">Есть ли у писем тема подписки — от этого зависит, проверять подписку на тему или на канал.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1004 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1004">Реактивация по расписанию</a></h3>
+          <div class="meta">#1004 · запуск по расписанию</div>
+        </div>
+        <span class="badge b-low">OK</span>
+      </div>
+      <div class="body">
+        <div class="clean">✓ Серьёзных проблем не найдено.</div>
+        <div class="grp sugg">
+          <div class="lab"><span class="dot"></span>Рекомендации (необязательно)</div>
+          <div class="item"><input type="checkbox"><div class="txt"><b>Проверки идут отдельными шагами после старта.</b> <span class="where">Несколько условий-фильтров подряд после стартового блока расписания.</span><div class="fix">Часть проверок можно перенести в условия запуска расписания, чтобы отсекать аудиторию до входа и снизить нагрузку. Если шаги оставлены раздельно намеренно — чтобы видеть, где отсеивается аудитория, — это нормально, оставляйте. Компромисс нагрузка/наглядность.</div></div></div>
+        </div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Проверить вручную</div>
+          <div class="item"><div class="txt">Есть ли у письма тема подписки — от этого зависит уровень проверки подписки (тема или канал).</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1002 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1002">Брошенная корзина</a></h3>
+          <div class="meta">#1002 · запуск по событию «конец сессии»</div>
+        </div>
+        <span class="badge b-low">OK</span>
+      </div>
+      <div class="body">
+        <div class="clean">✓ Проблем не найдено — корректная механика брошенной корзины.</div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Проверить вручную</div>
+          <div class="item"><div class="txt">Проверяется подписка на email-канал (без темы). Если у письма есть тема подписки — проверять тему, а не только канал.</div></div>
+          <div class="item"><div class="txt">Проверено и в порядке: триггер по сессии (изменение корзины, без заказа в сессии), 30-мин ожидание перед повторной проверкой, дневное окно на выходе из ожидания, проверка валидного email и подписки.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1003 -->
+    <div class="flow">
+      <div class="head">
+        <div class="t">
+          <h3><a href="https://example.com/scenarios/1003">Брошенные механики (общий)</a></h3>
+          <div class="meta">#1003 · запуск по событию «конец сессии»</div>
+        </div>
+        <span class="badge b-low">OK</span>
+      </div>
+      <div class="body">
+        <div class="clean">✓ Проблем не найдено — общий сценарий с ветвлением по типу активности.</div>
+        <div class="grp man">
+          <div class="lab"><span class="dot"></span>Проверить вручную</div>
+          <div class="item"><div class="txt">Проверяется подписка на email-канал (без темы). Если письма помечены темой подписки — проверять тему.</div></div>
+          <div class="item"><div class="txt">Проверено и в порядке: триггер по сессии, 30-мин ожидание перед повторной проверкой, дневное окно на выходе, проверка валидного email и подписки; условия механики (корзина / избранное / просмотр / категория) ветвятся — это приоритетная маршрутизация, а не «глухая» цепочка.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    Покрытие: проверено 4 из 4 сценариев. Проверки — по чек-листу нагрузки и корректности коммуникаций (session- vs customer-scope, ожидание перед проверкой «не сделал X», подписка по каналу/теме, валидность контакта, ночные отправки, случайное разделение вместо А/Б-теста, пересчитываемый сегмент вместо realtime, гранулярность условий).
+    Кросс-проектные проверки (несколько сценариев на одном событии, устаревшие тестовые версии) можно запустить отдельно.
+  </div>
+
+</div>
+</body>
+</html>
