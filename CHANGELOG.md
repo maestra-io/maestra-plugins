@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.8 — 2026-09-29
+
+- `.claude-plugin/plugin.json`: documentation and support links point to help.maestra.io without a language path.
+
 ## 1.4.7 — 2026-09-29
 
 - `.claude-plugin/plugin.json`: the documentation link points to the Maestra help center.
