@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.5 — 2026-09-29
+
+- README: a Privacy section with a link to the Maestra Privacy Policy.
+
 ## 1.4.4 — 2026-09-29
 
 - Plugin icon in SVG instead of PNG, same image.
