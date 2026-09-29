@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.9 — 2026-09-29
+
+- `SECURITY.md`: where to report a security vulnerability.
+
 ## 1.4.8 — 2026-09-29
 
 - `.claude-plugin/plugin.json`: documentation and support links point to help.maestra.io without a language path.
