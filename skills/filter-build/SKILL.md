@@ -159,7 +159,8 @@ filter_search_entities({"tenant": "<tenant>", "context": "Find the requested cus
 
 These are two separate searches. For another page of either, repeat the same arguments and
 add `"cursor": "<exact nextCursor from that response>"`. If the cursor is rejected, restart
-the same listing once without `cursor`; offer a feedback report on a repeated failure (step 10). Follow
+the same listing once without `cursor`; on a repeated failure, offer a feedback report: the step 10
+template as far as it applies (no reference filter is needed) and its consent steps. Follow
 `nextCursor` as needed; an incomplete or truncated response does not establish absence. For segments, `pageSize` counts
 segmentations. A matching segmentation can include child segments whose names do not
 match the query. A segmentation and one segment within it are different selections: keep
@@ -304,14 +305,6 @@ route on its own — steps 1 to 9 — but the report is one list, not a stack of
 every item its name, the one-sentence description of what it selects, and the link. Assumptions,
 the project and environment, and the not-saved status are stated once for the whole set.
 
-<!-- ========================= TEMPORARY BLOCK =========================
-     Maestra-specific appendix, not in the upstream skill. Remove
-     everything between these markers once the filters wiki ships
-     `pattern/user.starter_filters.md` — the wiki then carries this set
-     and the skill must not duplicate it. The "Batch requests" section
-     above and the starter-filter trigger phrase in the description STAY.
--->
-
 ## TEMP: the starter set — "main filters"
 
 Until the wiki documents the starter set, its composition lives here. When asked for the
@@ -415,5 +408,3 @@ Link-length caveat (verified): the apply-filter link grows with every OR branch 
 exceed URL length limits — with all 29 Texas phone branches the link (~4400 characters) did
 not open, while ~24 branches did. Hand such a link over with this warning; if it does not
 open for the person, hand over the filter JSON as the artefact instead and say why.
-
-<!-- ======================= END TEMPORARY BLOCK ======================= -->

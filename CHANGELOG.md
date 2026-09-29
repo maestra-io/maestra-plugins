@@ -19,6 +19,10 @@
   values as the root `plugin.json`.
 - `maestra-email-ops`: the gallery contact-sheet script adds its own name to its `User-Agent`.
   A Maestra adaptation — re-apply it on the next upstream sync.
+- `filter-build`: the maintenance note on the temporary starter-set section moves here from an
+  HTML comment in `SKILL.md`. Remove the section once the filters wiki ships
+  `pattern/user.starter_filters.md`; *Batch requests* and the starter-filter trigger phrase in the
+  description stay.
 
 ## 1.4.0 — 2026-09-24
 
