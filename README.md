@@ -64,7 +64,7 @@ The skills work through the Maestra connector with your permissions.
 - **Run:** HTTP requests such as `curl` for that upload and to download an email preview's HTML; the bundled script `gallery_contact_sheet.py`, which downloads gallery images and puts small copies of them on one page in Cowork — for it, the skills may install the Python package Pillow from PyPI without asking. If a preview comes back without snapshots, the email skills may open it in Claude in Chrome, only to look.
 - **Files:** downloads, reports you ask for, and the audits' working notes (a log of every call, a progress list for a project-wide audit) are saved in your working folder and stay there until you delete them.
 
-Data goes only to Maestra and to the links it returns. The skills also open pages you point them to — say, a website to take brand colours from — and PyPI for Pillow. Some steps run in Claude sub-agents. Nothing changes Claude's settings or permissions.
+Account data goes only to Maestra, `feedback` reports included, and to the links Maestra returns. The skills also open pages you point them to — say, a website to take brand colours from — and PyPI for Pillow; neither gets your account data. Some steps run in Claude sub-agents, inside the same Claude session. Nothing changes Claude's settings or permissions.
 
 ## Other AI tools
 
