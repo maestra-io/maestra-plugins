@@ -76,6 +76,10 @@ For developers — the skills follow the open [Agent Skills](https://skills.sh) 
 npx skills add maestra-io/maestra-plugins
 ```
 
+## Privacy
+
+[Maestra Privacy Policy](https://maestra.io/documents/privacy-policy)
+
 ## License
 
 [Apache-2.0](LICENSE)
