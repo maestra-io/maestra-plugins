@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.6 — 2026-09-29
+
+- `.claude-plugin/plugin.json`: documentation, support, privacy policy, and terms of service links.
+
 ## 1.4.5 — 2026-09-29
 
 - README: a Privacy section with a link to the Maestra Privacy Policy.
