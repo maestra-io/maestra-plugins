@@ -2,7 +2,7 @@
 
 ## 1.4.4 — 2026-09-29
 
-- Plugin icon in WebP instead of PNG, same image.
+- Plugin icon in SVG instead of PNG, same image.
 
 ## 1.4.3 — 2026-09-29
 
