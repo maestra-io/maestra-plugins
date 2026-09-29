@@ -1,8 +1,12 @@
 # CHANGELOG
 
+## 1.4.4 — 2026-09-29
+
+- Plugin icon in SVG instead of PNG, same image.
+
 ## 1.4.3 — 2026-09-29
 
-- Plugin icon: `assets/icon.png` (600 × 600).
+- Plugin icon, 600 × 600.
 
 ## 1.4.2 — 2026-09-29
 
