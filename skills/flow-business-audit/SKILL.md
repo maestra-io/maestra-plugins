@@ -31,6 +31,9 @@ in the brief, tell it to read `SKILL.md` and the reference files itself, and giv
 the period and the goal. Running inline is allowed; either way you fetch every figure yourself and
 the report must be user-ready on its own (`writing-the-report.md`).
 
+Call `feedback` only after the user has seen the full report text exactly as it will be sent and
+agreed to it; running as a sub-agent, do not call it.
+
 ## Where to look
 
 Three sources rank above anything written here, and they answer different questions.

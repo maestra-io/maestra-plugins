@@ -159,7 +159,8 @@ filter_search_entities({"tenant": "<tenant>", "context": "Find the requested cus
 
 These are two separate searches. For another page of either, repeat the same arguments and
 add `"cursor": "<exact nextCursor from that response>"`. If the cursor is rejected, restart
-the same listing once without `cursor`; report a repeated failure through feedback. Follow
+the same listing once without `cursor`; on a repeated failure, offer a feedback report: the step 10
+template as far as it applies (no reference filter is needed) and its consent steps. Follow
 `nextCursor` as needed; an incomplete or truncated response does not establish absence. For segments, `pageSize` counts
 segmentations. A matching segmentation can include child segments whose names do not
 match the query. A segmentation and one segment within it are different selections: keep
@@ -252,7 +253,13 @@ does not save a segment or change data.
 
 If the user says the result is wrong, clarify the mismatch and ask for a link to a filter
 that represents the intended selection. Use that URL as a reference in feedback; request
-its JSON as well if you need to inspect or edit it. Send the report through the same server:
+its JSON as well if you need to inspect or edit it. Send the report through the same server,
+only with the user's consent:
+
+1. Show the user the full report text exactly as it will be sent and ask, for example:
+   "Send this report to the Maestra developers?"
+2. Call `feedback` only after an unambiguous yes. If the user changes the text, show the new
+   version and ask again. On a no, do not send; offer the report as copyable text instead.
 
 ```text
 feedback({"tenant": "<tenant>", "feedback": "<report filled from the template below>"})
@@ -284,9 +291,12 @@ with SQL, selected refs, coverage, finalSql, platform verdicts and feedbackState
 Remove credentials and personal data. Report only observed behavior. A missing reference
 filter or trace URL does not prevent reporting: include the visible technical trace anyway.
 
-`feedback` accepts one text report, not a trace attachment. Say it was submitted only after
-the tool succeeds. If unavailable, provide a copyable report. Continue a requested correction
-through this workflow; do not promise a reply from the feedback channel.
+`feedback` accepts one text report, not a trace attachment. Every `feedback` call while you run
+this skill, whatever prompts it, follows the two consent steps above. Running as a sub-agent with
+no way to ask the user, do not call `feedback`: end your answer with the report text under the
+heading `Feedback report`, for the caller to offer. Say it was submitted only after the tool
+succeeds. If unavailable, provide a copyable report. Continue a requested correction through this
+workflow; do not promise a reply from the feedback channel.
 
 ## Batch requests
 
@@ -294,14 +304,6 @@ A request may name a set of filters rather than one. Each item of the set walks 
 route on its own — steps 1 to 9 — but the report is one list, not a stack of full reports: for
 every item its name, the one-sentence description of what it selects, and the link. Assumptions,
 the project and environment, and the not-saved status are stated once for the whole set.
-
-<!-- ========================= TEMPORARY BLOCK =========================
-     Maestra-specific appendix, not in the upstream skill. Remove
-     everything between these markers once the filters wiki ships
-     `pattern/user.starter_filters.md` — the wiki then carries this set
-     and the skill must not duplicate it. The "Batch requests" section
-     above and the starter-filter trigger phrase in the description STAY.
--->
 
 ## TEMP: the starter set — "main filters"
 
@@ -406,5 +408,3 @@ Link-length caveat (verified): the apply-filter link grows with every OR branch 
 exceed URL length limits — with all 29 Texas phone branches the link (~4400 characters) did
 not open, while ~24 branches did. Hand such a link over with this warning; if it does not
 open for the person, hand over the filter JSON as the artefact instead and say why.
-
-<!-- ======================= END TEMPORARY BLOCK ======================= -->

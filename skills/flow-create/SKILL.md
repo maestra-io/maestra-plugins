@@ -43,6 +43,10 @@ the platform's test run — is the one exception, and only at the end:** you rec
 `flows_set_testing_mode` only after a clean validation, after the user has seen and accepted the result, and
 on their explicit yes (step 8) — short of that it is as forbidden as a launch.
 
+**`feedback` only with the user's consent, whatever prompts a report.** Do not call it mid-run: keep the
+report and offer it in *Suggestions* at hand-over (`references/hand-over.md` → *What never goes in*);
+call `feedback` only after the user has seen its full text exactly as it will be sent and said yes.
+
 **Done** = a verified draft, plus a ranked account of what is missing — and stopping short is also
 done (CRITICAL 6). Expect part of a routine request to be out of your reach, and find out while you
 are still planning writes; validation is not your checklist.

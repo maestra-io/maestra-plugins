@@ -22,6 +22,9 @@ write in, and the report shape from `## Output format`.
 The report may go straight to the user — always write it per `## Writing the report`. Fetch the
 structure yourself with the flows tools; do not expect it to be pasted into your prompt.
 
+Call `feedback` only after the user has seen the full report text exactly as it will be sent and
+agreed to it; running as a sub-agent, do not call it.
+
 Read on demand, with `Read`:
 
 - `references/checklist-per-flow.md` — the anti-patterns for **one flow**. The default.

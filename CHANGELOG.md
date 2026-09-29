@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 1.4.1 — 2026-09-29
+
+- Every skill: a `feedback` report is sent only after the user has seen its full text and agreed,
+  as the email skills already do. `filter-build` shows the report on an incorrect result or on a
+  repeated listing failure; `flow-create` offers a report on tool behaviour in *Suggestions*; in
+  `filter-explain`, `flow-summary`, `flow-issues-audit` and `flow-business-audit`, a line in
+  `SKILL.md` says the same. Run as a sub-agent, a skill does not call `feedback`: `filter-build`
+  returns the report under `Feedback report`, and `flow-create` offers it to the user. A Maestra
+  adaptation — re-apply it on the next upstream sync.
+- README: a new section, **What the skills do in your account and on your computer**: what the
+  skills read and change, what they send (the image upload, `feedback` reports), what they run
+  (HTTP downloads, the bundled contact-sheet script, the Pillow install, the Claude in Chrome
+  fallback), and which files they leave in the working folder.
+- README: the logo is a Markdown image instead of an HTML `<img>`; the SVG itself is now 220 px
+  wide, so it renders at the same size.
+- `.claude-plugin/plugin.json`: `homepage`, `repository`, `license`, and `author.url`, the same
+  values as the root `plugin.json`.
+- `maestra-email-ops`: the gallery contact-sheet script adds its own name to its `User-Agent`.
+  A Maestra adaptation — re-apply it on the next upstream sync.
+- `filter-build`: the maintenance note on the temporary starter-set section moves here from an
+  HTML comment in `SKILL.md`. Remove the section once the filters wiki ships
+  `pattern/user.starter_filters.md`; *Batch requests* and the starter-filter trigger phrase in the
+  description stay.
+
 ## 1.4.0 — 2026-09-24
 
 The four flow skills re-ported in full from the upstream `flow` plugin **2.1.0** (author "AI tribe";

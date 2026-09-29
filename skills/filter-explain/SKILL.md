@@ -27,6 +27,9 @@ project system name; discover it with `tenants_list` if unknown. Choose the sole
 project or ask when several fit. Explain a missing connection. Keep calls on the chosen
 server and project: names and IDs identify records only within that project.
 
+Call `feedback` only after the user has seen the full report text exactly as it will be sent and
+agreed to it; running as a sub-agent, do not call it.
+
 Use the complete original filter JSON. A filtered-list URL cannot be imported, and these
 tools do not fetch saved filters by name. If only a link or an unseen filter is supplied,
 ask for its JSON. For a successful build already in this conversation, reuse its confirmed
