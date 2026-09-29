@@ -3,7 +3,7 @@
 **When to read this:** the user wants to visually look at images, choose among
 several similar options, or when a text list of candidates isn't enough.
 **Return to:** after a number is chosen — the "Images: confirmation procedure"
-section of `SKILL.md`, pass the Generator `{url, fileName}` (formula at the bottom
+section of `SKILL.md`, give the Generator `{url, fileName}` (formula at the bottom
 of this file).
 
 A text list remains the fast default response; build a visual contact sheet on
@@ -21,7 +21,7 @@ user request or when similar options are ambiguous.
    ```
 
    Don't include `.webp`. If the user explicitly asks for project assets only,
-   pass `includeSystemImages: false`. If there are too many results, ask for a
+   set `includeSystemImages: false`. If there are too many results, ask for a
    narrower query or use cursor pagination; don't build a contact sheet out of
    hundreds of images. For a visual sheet, 8–20 cards is usually enough.
 
@@ -52,7 +52,7 @@ images.
 5. After they've looked, ask: "Which image number should I use?"
 
 The user's browser loads the images from the gallery links. The agent doesn't
-read the image bytes or pass them into the model.
+read the image bytes or load them into the model.
 
 ## Cowork
 
@@ -89,8 +89,8 @@ In Cowork, first try a side-panel-safe self-contained preview.
 5. Show `outputs/gallery-preview.html` via `mcp__cowork__present_files`.
 6. Ask the user to pick an image number.
 
-Why this approach: `create_artifact`, `show_widget`, markdown images, and remote
-`<img src="https://...">` don't work in the Cowork side panel — the
+Why this approach: `create_artifact`, `show_widget`, markdown images, and `<img>` tags
+with remote sources don't work in the Cowork side panel — the
 sandbox/CSP blocks external image domains. The helper downloads the images,
 shrinks the thumbnails, and embeds them as `data:` URLs, so the HTML works in
 the side panel with no external requests. This is preview only: after selection,

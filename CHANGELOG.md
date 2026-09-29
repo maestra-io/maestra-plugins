@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.2 — 2026-09-29
+
+- `maestra-email-ops`: wording in `references/visual-gallery-selection.md`; no behaviour change.
+
 ## 1.4.1 — 2026-09-29
 
 - Every skill: a `feedback` report is sent only after the user has seen its full text and agreed,
@@ -11,7 +15,7 @@
   adaptation — re-apply it on the next upstream sync.
 - README: a new section, **What the skills do in your account and on your computer**: what the
   skills read and change, what they send (the image upload, `feedback` reports), what they run
-  (HTTP downloads, the bundled contact-sheet script, the Pillow install, the Claude in Chrome
+  (downloads, the bundled contact-sheet script, the Pillow install, the Claude in Chrome
   fallback), and which files they leave in the working folder.
 - README: the logo is a Markdown image instead of an HTML `<img>`; the SVG itself is now 220 px
   wide, so it renders at the same size.
