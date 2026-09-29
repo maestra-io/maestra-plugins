@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.7 — 2026-09-29
+
+- `.claude-plugin/plugin.json`: the documentation link points to the Maestra help center.
+
 ## 1.4.6 — 2026-09-29
 
 - `.claude-plugin/plugin.json`: documentation, support, privacy policy, and terms of service links.
