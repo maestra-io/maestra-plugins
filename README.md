@@ -1,4 +1,4 @@
-<a href="https://maestra.io"><img src="assets/maestra-green.svg" alt="Maestra" width="220"></a>
+[![Maestra](assets/maestra-green.svg)](https://maestra.io)
 
 # Agent skills
 
@@ -53,6 +53,18 @@ Phrases like "create an email" or "build a filter" wake the right skill:
 - "Which flows earned the most last month, and what should we change in the ones that did not?"
 - "Build an abandoned cart flow: wait 30 minutes, skip anyone who ordered, then one email and an SMS a day later."
 - "Add an SMS a day after the email to our running Welcome flow — keep it as a draft."
+
+## What the skills do in your account and on your computer
+
+The skills work through the Maestra connector with your permissions.
+
+- **Read:** your projects; emails, campaign settings, letter styles, saved blocks, and the image gallery; flows; campaign and flow reports; the lists needed to name things — folders, brands, segments, products, promo codes, custom fields. For a test email, your staff test recipients' names, emails, and phones.
+- **Change — only what you ask for:** save an email into a campaign; edit a campaign's name, settings, subject, or HTML; create an email campaign or a folder; build a draft flow — new, or a copy of a running one — adding, changing, or removing its blocks and filters; put a flow into testing mode; send a test email to your staff test recipients. Saving an email, a test send, and testing mode each wait for your explicit yes; a flow is built once you have answered its questions. The filter skills save nothing. Live sending, launching, and deleting flows or campaigns stay in Maestra.
+- **Send:** an image you attach or point to on your computer goes to your Maestra gallery through an upload link the connector returns. When a tool misbehaves or you say a result is wrong, the skills may send Maestra's developers a technical report through the connector's `feedback` tool — your request and the tool calls with their answers. They are told to leave personal data out. The email skills show you the text first and ask; the others may send it without asking.
+- **Run:** HTTP requests such as `curl` for that upload and to download an email preview's HTML; the bundled script `gallery_contact_sheet.py`, which downloads gallery images and puts small copies of them on one page in Cowork — for it, the skills may install the Python package Pillow from PyPI without asking. If a preview comes back without snapshots, the email skills may open it in Claude in Chrome, only to look.
+- **Files:** downloads, reports you ask for, and the audits' working notes (a log of every call, a progress list for a project-wide audit) are saved in your working folder and stay there until you delete them.
+
+Data goes only to Maestra and to the links it returns. The skills also open pages you point them to — say, a website to take brand colours from — and PyPI for Pillow. Some steps run in Claude sub-agents. Nothing changes Claude's settings or permissions.
 
 ## Other AI tools
 

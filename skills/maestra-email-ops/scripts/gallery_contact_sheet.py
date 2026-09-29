@@ -42,7 +42,7 @@ MAX_EMBED_BYTES = 60_000  # if the data URL is still bigger than this after resi
 
 
 def fetch(url: str, timeout: int = 20) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; maestra-gallery-contact-sheet)"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
 
