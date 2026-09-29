@@ -2,17 +2,19 @@
 
 ## 1.4.1 — 2026-09-29
 
-Prepared for submission to Anthropic's plugin directory; the only code change is the contact-sheet
-script's `User-Agent`.
-
-- README: a new section, **What the skills do in your account and on your computer**, names what
-  the skills read and change, what they send (the image upload, `feedback` reports), what they run
+- Every skill: a `feedback` report is sent only after the user has seen its full text and agreed,
+  as the email skills already do. `filter-build` shows the report on an incorrect result or on a
+  repeated listing failure; `flow-create` offers a report on tool behaviour in *Suggestions*; in
+  `filter-explain`, `flow-summary`, `flow-issues-audit` and `flow-business-audit`, a line in
+  `SKILL.md` says the same. Run as a sub-agent, a skill does not call `feedback`: `filter-build`
+  returns the report under `Feedback report`, and `flow-create` offers it to the user. A Maestra
+  adaptation — re-apply it on the next upstream sync.
+- README: a new section, **What the skills do in your account and on your computer**: what the
+  skills read and change, what they send (the image upload, `feedback` reports), what they run
   (HTTP downloads, the bundled contact-sheet script, the Pillow install, the Claude in Chrome
-  fallback), and which files they leave in the working folder. The directory's security scan looks
-  for behaviour a plugin doesn't disclose in its README. The section also says that only the email
-  skills show a `feedback` report before sending it; the others may send one without asking.
-- README: the logo is a Markdown image instead of an HTML `<img>`, as the directory's checklist
-  asks; the SVG itself is now 220 px wide, so it renders at the same size.
+  fallback), and which files they leave in the working folder.
+- README: the logo is a Markdown image instead of an HTML `<img>`; the SVG itself is now 220 px
+  wide, so it renders at the same size.
 - `.claude-plugin/plugin.json`: `homepage`, `repository`, `license`, and `author.url`, the same
   values as the root `plugin.json`.
 - `maestra-email-ops`: the gallery contact-sheet script adds its own name to its `User-Agent`.

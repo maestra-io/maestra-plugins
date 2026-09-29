@@ -95,6 +95,9 @@ provenance you cannot tell a built filter from an improvised one.
 >
 > If your build step returned no payload, say so and stop — do not substitute a draft, an earlier
 > filter, or one written by hand.
+>
+> Do not call `feedback`. If you have a report for the Maestra developers, end your answer with its
+> full text under the heading `Feedback report`, after everything above; I offer it to the user.
 
 ## The answer is a return value, not a conversation
 
@@ -159,6 +162,11 @@ never unfiltered.
 
 With provenance and the root statement in hand the payload is already platform-checked — **do not
 re-run that checking**, and do not treat their absence as something you can work around.
+
+**A `Feedback report`.** If the answer ends with one, keep it even when a check above discards the
+body — it is neither the payload nor the query draft — and offer it at hand-over as
+`references/hand-over.md` → *What never goes in* says. The same report from a fresh launch is
+offered once.
 
 ## Writing it
 

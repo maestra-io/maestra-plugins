@@ -109,7 +109,10 @@ Cut it, whatever else is true of it, if the user cannot act on it:
 - **System names, ids, type tags, row versions, field names, discriminators** — anything from the
   platform's own vocabulary.
 - **Tool behaviour** — how a write answered, that a listing had to be re-queried. If it is worth
-  reporting, it goes to the `feedback` tool, not to the reader.
+  reporting, or a filter sub-agent returned a `Feedback report`, offer in *Suggestions* to send the
+  Maestra developers a report. On a yes, show the full text exactly as it will be sent, with no
+  credentials or personal data, and call `feedback` only after an unambiguous yes to that text. If
+  they change it, show the new version and ask again; on a no, send nothing.
   > **One exception: a message step 7 tells you to pass on verbatim (CRITICAL 5) outranks this.**
   > Never tidy such a message out of the hand-over, and never paraphrase it into something acceptable.
 - **A platform quirk with no user-side move.** A value the read path regenerates and nothing can

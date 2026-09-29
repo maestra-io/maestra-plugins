@@ -28,6 +28,9 @@ Reading the tools' output: `references/flows-tools.md`. Decoding block / event /
 meanings: `references/flows-wiki.md`. Refer to tools by name (`flows_lookup`, `wiki`),
 never by a project-prefixed id.
 
+Call `feedback` only after the user has seen the full report text exactly as it will be sent and
+agreed to it; running as a sub-agent, do not call it.
+
 ## CRITICAL — never fabricate
 
 - **Describe only what the structure shows.** Never invent steps, channels, delays,
