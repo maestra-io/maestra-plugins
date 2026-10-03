@@ -1,6 +1,6 @@
 ---
 name: maestra-email-ops
-description: Operational actions for Maestra emails — preview, reading and saving the visual template, letter styles, saved blocks, reading/editing campaign metadata, test sends, searching gallery assets via MCP, uploading attached/local images via MCP upload link, PNG preview links. Use together with the maestra-email generator when you need images, preview, validation, test sends, or writes to Maestra.
+description: Operational actions for Maestra emails — preview, reading and saving the visual template, letter styles, saved blocks, reading/editing campaign metadata, test sends, searching gallery assets via MCP, uploading attached/local images via MCP upload link, PNG preview links, and an inbox-style mockup of the finished email (before/after when there is an earlier version) to share with a client or the team. Use together with the maestra-email generator when you need images, preview, validation, test sends, or writes to Maestra, or when the user wants a picture of the email as it looks in an inbox ("before/after", "до/после", "mockup", "скриншот для клиента").
 metadata:
   author: Maestra.io
   version: 1.11.0
@@ -84,7 +84,11 @@ The sending protocol is mandatory in both cases:
   Codex/local and self-contained HTML for the Cowork side panel;
 - optionally verifies the content of downloaded HTML and inspects the desktop/mobile PNG snapshots
   that arrive as links in the same preview response; this is supplementary
-  QA diagnostics, not a gate on the main workflow.
+  QA diagnostics, not a gate on the main workflow;
+- when the work on an email is done, offers an inbox-style mockup: the backend render of the
+  email at phone width under a mail-app header, with realistic sample values, and — when there
+  is an earlier version — the two side by side as a before/after picture
+  (`scripts/inbox_mockup.py`). It is a picture to share with the client or the team, not QA.
 
 Live send/activate/delete and recipient edits are not available in MCP — they are done in the campaign UI. A test send to staff test recipients is available — see the "Test send" section.
 
@@ -95,12 +99,14 @@ cookie, or token for searching/uploading images: MCP tools already run in
 the project's context. If a gallery MCP tool returns an error, pass it to the user
 as a tool error and don't diagnose it via local authorization.
 
-Local scripts in this skill are used only for the visual gallery contact sheet.
-PNGs arrive as links in the preview response, with no local rendering or screenshots.
+Local scripts in this skill are used only for the visual gallery contact sheet and the inbox
+mockup. For QA, PNGs arrive as links in the preview response, with no local rendering or
+screenshots; the inbox mockup is the one local rendering, and it is a presentation picture, not QA.
 
 | Script | Purpose | Key arguments |
 |--------|-----------|--------------------|
 | `gallery_contact_sheet.py` | JSON from `gallery_images_list` → self-contained HTML with base64 thumbnails for the Cowork side panel | `<images.json> <out.html> [--max-px 96] [--quality 80]` |
+| `inbox_mockup.py` | Preview `htmlUrl` of the email → PNG of it opened in a phone mail app; with `--before` also a before/after image | `--after <htmlUrl> [--before <htmlUrl>] [--list-chips] --sender … --subject … --to … --replace OLD=NEW … [--accent #RRGGBB]`; fallback `--before-png/--after-png` |
 
 ## Quickstart: pick a route
 
@@ -117,6 +123,7 @@ PNGs arrive as links in the preview response, with no local rendering or screens
 | Test send of an email | "Test send" section: `campaign_get` → `campaign_test_recipients` → recipient choice → confirmation → `campaign_send_test` |
 | Gallery search/upload | MCP `gallery_images_list` / `visual_template_image_upload_link` |
 | PNG | desktop/mobile links in the `visual_template_preview` response |
+| Inbox mockup / before-after picture of an email for a client or the team | "Inbox mockup: before/after" section → `references/before-after-mockup.md` |
 
 If data is missing:
 
@@ -483,6 +490,14 @@ the write confirmation.
    `visual_template_get`, only if the save response is incomplete, the version is lost, a
    subsequent operation is needed, or independent verification is needed. The first bootstrap save is an exception:
    it always goes through independent verification per step 5.
+4. **Close with the inbox-mockup offer — once per email.** After the email is saved
+   successfully and the report above is given, end with one line in the user's language. When
+   there is an earlier version — *"Want a before/after picture of the email as it looks in an
+   inbox, for the client or the team?"*; for a brand-new email — the same without "before/after".
+   An earlier version exists when the email was edited in place (the §2 snapshot is "before"),
+   or rebuilt as a copy or in a new campaign (the source campaign's email is "before"). Ask once
+   per email per conversation: later saves of the same email don't re-arm it. Build nothing until
+   the user says yes; then follow "Inbox mockup: before/after".
 
 ### 7. `ChangeConflict`
 
@@ -724,6 +739,28 @@ What goes out is the published (Active) content of the chosen variant.
 6. On a timeout or no response, don't repeat the call: the send may already have
    happened. Tell the user; a retry — only on their explicit request.
 
+## Inbox mockup: before/after
+
+A presentation picture, not QA and not the preview: the backend render of the email (the
+`htmlUrl` from `visual_template_preview`) opened at phone width under a mail-app header, with
+the editor's sample values swapped for realistic ones. It shows the client or the team how the
+email looks in an inbox; with an earlier version, the two versions stand side by side.
+
+Invariants (the procedure is not repeated here — **before running it you MUST read
+`references/before-after-mockup.md`**):
+
+- only on the user's yes to the §6 offer, or on their own request;
+- every version comes from its own `visual_template_preview` call with its own
+  `formatInternalId`; the script changes nothing in the email's markup except the sample values
+  inside personalization chips and the chips' dashed outline — hand-assembled HTML is still
+  forbidden;
+- "before" for an in-place edit is the §2 snapshot JSX, rendered with `visual_template_preview`
+  and never saved back; a "before" with no visual template (raw HTML) gets no render — make the
+  single mockup of the new version and say why;
+- sample values are invented and obviously fictional — a first name, an order number,
+  `name@example.com` — never a real customer's data, and the same values in both versions;
+- hand the result over as a mockup; nothing is sent anywhere, the user shares it themselves.
+
 ## Safety boundaries
 
 1. Don't invent `mailingInternalId`, `variantInternalId`, or `formatInternalId`.
@@ -758,3 +795,4 @@ What goes out is the published (Active) content of the chosen variant.
 | Composing the MCP `feedback` text and it's unclear how to write `problem`/`context` | `references/feedback-examples.md` | Examples of user-report and agent-observation from real runs + anti-examples |
 | The user asks to visually view/select images from the gallery | `references/visual-gallery-selection.md` | Full Codex/Cowork contact sheet procedure, Pillow, card template, result format |
 | HTML download, PNG, mobile/desktop, QA/debug, rendering diagnosis, or fallback (simple preview stays in core) | `references/preview-qa.md` | Extended QA procedure: HTML download, MCP PNG links, complaint diagnosis, retries, and fallback |
+| The user said yes to the inbox mockup or asks for a before/after picture of an email | `references/before-after-mockup.md` | Which version is "before", rendering both, choosing sample values and the subject line, running `inbox_mockup.py`, fallback, hand-over |

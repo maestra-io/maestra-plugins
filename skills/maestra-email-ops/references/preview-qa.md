@@ -149,7 +149,8 @@ same snapshot as a format not named at all.
   the `htmlUrl`, in one call. When PNG/mobile/desktop is requested, don't look for a second
   tool and don't call the preview a second time — take the links from the response you already
   have, and if there has been no preview since the last edit, call it once. Don't use a local
-  screenshot as the standard path. The exception is the Cowork fallback below, if the response
+  screenshot as the standard path. (The inbox mockup in `references/before-after-mockup.md` is a
+  presentation picture for the client, not QA; this rule is about QA.) The exception is the Cowork fallback below, if the response
   turned out to have no links.
   If the user asks for only mobile or only desktop, you can show just that
   link; for a full responsive diagnosis, show both. Take field names in the

@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 1.5.0 — 2026-10-03
+
+- `maestra-email-ops`: **inbox mockup, before/after.** After an email is saved, the report ends
+  with a one-line offer — once per email per conversation — of a picture of the email as it looks
+  opened in a phone mail app; when there is an earlier version (an in-place edit, or a rebuild as
+  a copy or in a new campaign) the two versions stand side by side. On a yes, each version is
+  rendered with `visual_template_preview` under its own format, and the new bundled script
+  `scripts/inbox_mockup.py` puts the render under a mail-app header, swaps the editor's sample
+  values in personalization chips for invented ones (`--list-chips`, `--replace OLD=NEW`), and
+  saves `<prefix>-before.png`, `<prefix>-after.png` and `<prefix>-before-after.png`. It needs
+  Playwright with a Chromium it can launch; without one it exits with code 3 and the fallback puts
+  the preview's mobile snapshots side by side with Pillow. Procedure, sample-value rules and the
+  hand-over in `references/before-after-mockup.md`; an "Inbox mockup: before/after" section with
+  the invariants, a Quickstart row, a Capabilities line and a References row in `SKILL.md`.
+  `references/preview-qa.md` says the mockup is not QA. A Maestra adaptation — re-apply it on the
+  next upstream sync.
+- `maestra-email`: step 9 of the workflow points at the offer; the Generator builds nothing for it.
+- README: the Emails row and the **Run** line name the mockup and its script.
+
 ## 1.4.9 — 2026-09-29
 
 - `SECURITY.md`: where to report a security vulnerability.
