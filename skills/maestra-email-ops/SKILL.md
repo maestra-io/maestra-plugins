@@ -87,8 +87,9 @@ The sending protocol is mandatory in both cases:
   QA diagnostics, not a gate on the main workflow;
 - when the work on an email is done, offers an inbox-style mockup: the backend render of the
   email at phone width under a mail-app header, with realistic sample values, and — when there
-  is an earlier version — the two side by side as a before/after picture
-  (`scripts/inbox_mockup.py`). It is a picture to share with the client or the team, not QA.
+  is an earlier version — the two side by side as a before/after picture, with a small Maestra
+  badge in the bottom-right corner (`scripts/inbox_mockup.py`). It is a picture to share with the
+  client or the team, not QA.
 
 Live send/activate/delete and recipient edits are not available in MCP — they are done in the campaign UI. A test send to staff test recipients is available — see the "Test send" section.
 
@@ -106,7 +107,7 @@ screenshots; the inbox mockup is the one local rendering, and it is a presentati
 | Script | Purpose | Key arguments |
 |--------|-----------|--------------------|
 | `gallery_contact_sheet.py` | JSON from `gallery_images_list` → self-contained HTML with base64 thumbnails for the Cowork side panel | `<images.json> <out.html> [--max-px 96] [--quality 80]` |
-| `inbox_mockup.py` | Preview `htmlUrl` of the email → PNG of it opened in a phone mail app; with `--before` also a before/after image | `--after <htmlUrl> [--before <htmlUrl>] [--list-chips] --sender … --subject … --to … --replace OLD=NEW … [--accent #RRGGBB]`; fallback `--before-png/--after-png` |
+| `inbox_mockup.py` | Preview `htmlUrl` of the email → PNG of it opened in a phone mail app; with `--before` also a before/after image | `--after <htmlUrl> [--before <htmlUrl>] [--list-chips] --sender … --subject … --to … --replace OLD=NEW … [--accent #RRGGBB] [--no-logo]`; fallback `--before-png/--after-png` |
 
 ## Quickstart: pick a route
 
@@ -744,7 +745,9 @@ What goes out is the published (Active) content of the chosen variant.
 A presentation picture, not QA and not the preview: the backend render of the email (the
 `htmlUrl` from `visual_template_preview`) opened at phone width under a mail-app header, with
 the editor's sample values swapped for realistic ones. It shows the client or the team how the
-email looks in an inbox; with an earlier version, the two versions stand side by side.
+email looks in an inbox; with an earlier version, the two versions stand side by side. Every
+picture carries a small Maestra badge in the bottom-right corner, outside the email; it is left
+out (`--no-logo`) only when the user asks.
 
 Invariants (the procedure is not repeated here — **before running it you MUST read
 `references/before-after-mockup.md`**):

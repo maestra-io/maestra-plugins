@@ -9,7 +9,10 @@
   rendered with `visual_template_preview` under its own format, and the new bundled script
   `scripts/inbox_mockup.py` puts the render under a mail-app header, swaps the editor's sample
   values in personalization chips for invented ones (`--list-chips`, `--replace OLD=NEW`), and
-  saves `<prefix>-before.png`, `<prefix>-after.png` and `<prefix>-before-after.png`. It needs
+  saves `<prefix>-before.png`, `<prefix>-after.png` and `<prefix>-before-after.png`, each with a
+  small Maestra badge in the bottom-right corner, outside the email (`--no-logo` leaves it out;
+  the badge is the wordmark from `assets/maestra-green.svg` on its dark pill, shipped as
+  `skills/maestra-email-ops/assets/maestra-badge.png`). It needs
   Playwright with a Chromium it can launch; without one it exits with code 3 and the fallback puts
   the preview's mobile snapshots side by side with Pillow. Procedure, sample-value rules and the
   hand-over in `references/before-after-mockup.md`; an "Inbox mockup: before/after" section with

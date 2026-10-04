@@ -5,7 +5,8 @@ for showing a client or a teammate. With two inputs it also builds a before/afte
 
 Input  — the temporary `htmlUrl` (or a downloaded .html file) from `visual_template_preview`,
          one for the new version (--after) and optionally one for the old version (--before).
-Output — <prefix>-after.png, <prefix>-before.png and <prefix>-before-after.png in --out-dir.
+Output — <prefix>-after.png, <prefix>-before.png and <prefix>-before-after.png in --out-dir,
+         each with a small Maestra badge in the bottom-right corner (--no-logo to leave it out).
 
 What the script does to the backend render, and nothing else:
   * decodes e-mail addresses that the CDN obfuscated ("[email protected]");
@@ -24,8 +25,8 @@ Usage:
 
 Fallback without Playwright/Chromium (exit code 3 tells you to use it):
     python3 inbox_mockup.py --after-png <mobile snapshot url|file> [--before-png <...>] ...
-    — puts the preview's mobile snapshots side by side with BEFORE/AFTER labels (Pillow only).
-    The editor's sample values and chip outlines stay visible in this mode.
+    — puts the preview's mobile snapshots side by side with BEFORE/AFTER labels and the badge
+    (Pillow only). The editor's sample values and chip outlines stay visible in this mode.
 """
 
 import argparse
@@ -39,6 +40,8 @@ import urllib.request
 from pathlib import Path
 
 UA = "maestra-email-ops/inbox_mockup.py"
+LOGO = Path(__file__).resolve().parent.parent / "assets" / "maestra-badge.png"
+CANVAS_BG = "#F2F2F5"
 
 
 def fetch(src: str) -> bytes:
@@ -183,13 +186,36 @@ async def shoot(pages, a):
     return out
 
 
-def side_by_side(before_img, after_img, out_path, labels=("BEFORE", "AFTER"), accent="#E71F61"):
+def load_logo(height):
+    """The Maestra badge scaled to `height` px, or None when it is switched off or missing."""
+    if height <= 0 or not LOGO.exists():
+        return None
+    from PIL import Image
+    logo = Image.open(LOGO).convert("RGBA")
+    return logo.resize((round(logo.width * height / logo.height), height), Image.LANCZOS)
+
+
+def add_logo_band(path, logo, band=96, margin=32):
+    """Single mockup: a light band under the screenshot with the badge in the bottom-right corner."""
+    if logo is None:
+        return path
+    from PIL import Image
+    img = Image.open(path).convert("RGB")
+    out = Image.new("RGB", (img.width, img.height + band), CANVAS_BG)
+    out.paste(img, (0, 0))
+    out.paste(logo, (img.width - margin - logo.width, img.height + (band - logo.height) // 2), logo)
+    out.save(path, optimize=True)
+    return path
+
+
+def side_by_side(before_img, after_img, out_path, labels=("BEFORE", "AFTER"), accent="#E71F61", logo=None):
     from PIL import Image, ImageDraw, ImageFilter, ImageFont
     b, a_ = before_img.convert("RGB"), after_img.convert("RGB")
     if b.width != a_.width:
         b = b.resize((a_.width, round(b.height * a_.width / b.width)))
     w, pad, gap, label_h = a_.width, 70, 80, 120
-    canvas = Image.new("RGB", (pad * 2 + w * 2 + gap, max(b.height, a_.height) + pad * 2 + label_h), "#F2F2F5")
+    bottom = pad + (logo.height + 40 if logo is not None else 0)
+    canvas = Image.new("RGB", (pad * 2 + w * 2 + gap, max(b.height, a_.height) + pad + bottom + label_h), CANVAS_BG)
     font = None
     for cand in ("Inter-Bold.otf", "/usr/share/fonts/opentype/inter/Inter-Bold.otf", "DejaVuSans-Bold.ttf",
                  "Arial Bold.ttf", "arialbd.ttf", "Helvetica.ttc"):
@@ -210,6 +236,8 @@ def side_by_side(before_img, after_img, out_path, labels=("BEFORE", "AFTER"), ac
         canvas.paste(img, (x, y), mask)
         tw = d.textlength(label, font=font)
         d.text((x + (img.width - tw) / 2, pad + 20), label, font=font, fill=color)
+    if logo is not None:
+        canvas.paste(logo, (canvas.width - pad - logo.width, canvas.height - pad - logo.height), logo)
     canvas.save(out_path, optimize=True)
     return out_path
 
@@ -233,6 +261,7 @@ def main():
     ap.add_argument("--out-dir", default=".")
     ap.add_argument("--prefix", default="email-mockup")
     ap.add_argument("--labels", default="BEFORE,AFTER")
+    ap.add_argument("--no-logo", action="store_true", help="leave out the Maestra badge")
     a = ap.parse_args()
     a.pairs = []
     for r in a.replace:
@@ -254,7 +283,10 @@ def main():
             sys.exit(2)
         b = Image.open(io.BytesIO(fetch(a.before_png)))
         n = Image.open(io.BytesIO(fetch(a.after_png)))
-        out = side_by_side(b, n, Path(a.out_dir) / f"{a.prefix}-before-after.png", labels, a.accent)
+        logo = None if a.no_logo else load_logo(round(48 * n.width / 780))
+        if not a.no_logo and logo is None:
+            print(f"warning: badge not found at {LOGO}; the image is made without it", file=sys.stderr)
+        out = side_by_side(b, n, Path(a.out_dir) / f"{a.prefix}-before-after.png", labels, a.accent, logo)
         print(out)
         return
 
@@ -285,18 +317,27 @@ def main():
         print(f"Chromium could not start ({ex}). Use the fallback: --before-png/--after-png with the "
               "preview's mobile snapshot links.", file=sys.stderr)
         sys.exit(3)
+    try:
+        from PIL import Image
+    except ImportError:
+        for k in ("before", "after"):
+            if k in shots:
+                print(shots[k])
+        print("Pillow is not installed: the images are ready without the Maestra badge, and the "
+              "side-by-side one was skipped.", file=sys.stderr)
+        return
+    logo = None if a.no_logo else load_logo(round(48 * a.scale / 2))
+    if not a.no_logo and logo is None:
+        print(f"warning: badge not found at {LOGO}; images are made without it", file=sys.stderr)
+    if "before" in shots:
+        out = side_by_side(Image.open(shots["before"]), Image.open(shots["after"]),
+                           Path(a.out_dir) / f"{a.prefix}-before-after.png", labels, a.accent, logo)
     for k in ("before", "after"):
         if k in shots:
+            add_logo_band(shots[k], logo)
             print(shots[k])
     if "before" in shots:
-        try:
-            from PIL import Image
-            out = side_by_side(Image.open(shots["before"]), Image.open(shots["after"]),
-                               Path(a.out_dir) / f"{a.prefix}-before-after.png", labels, a.accent)
-            print(out)
-        except ImportError:
-            print("Pillow is not installed: the two images are ready, the side-by-side one was skipped.",
-                  file=sys.stderr)
+        print(out)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,8 @@ The mockup is a presentation picture. It is not QA and it does not replace the p
 still goes through `visual_template_preview` and its snapshots (`references/preview-qa.md`).
 What the mockup adds is the look of a received email: the backend render at phone width under
 a mail-app header, realistic sample values instead of the editor's placeholders, and, with an
-earlier version, the two versions side by side.
+earlier version, the two versions side by side. Every picture carries a small Maestra badge in
+the bottom-right corner.
 
 ## 1. Pick the versions
 
@@ -82,9 +83,16 @@ python3 <skill>/scripts/inbox_mockup.py \
 Without `--before` it renders the single mockup. Output: `<prefix>-after.png`,
 `<prefix>-before.png`, `<prefix>-before-after.png` (phone width 390 px at 2x).
 
+**The Maestra badge.** Every image gets a small Maestra badge — the green wordmark on its dark
+pill, `assets/maestra-badge.png` next to `scripts/` — in the bottom-right corner, and it never
+covers the email: on the side-by-side image it sits in the bottom margin under the AFTER column,
+on a single image in a light band the script adds under the email. It is on by default; pass
+`--no-logo` only when the user asks for pictures without it. If the badge file is missing, the
+script warns and makes the images without it — say so in the hand-over.
+
 Dependencies: Python 3; Playwright with a Chromium it can launch (Cowork has both); Pillow for
-the side-by-side image. The script installs nothing. Install Pillow from PyPI if it is missing,
-as for the gallery contact sheet; don't download browsers.
+the side-by-side image and the badge. The script installs nothing. Install Pillow from PyPI if it
+is missing, as for the gallery contact sheet; don't download browsers.
 
 **Exit code 3** — Playwright or Chromium is not available. Fall back to the preview's mobile
 snapshots:
@@ -94,13 +102,14 @@ python3 <skill>/scripts/inbox_mockup.py --before-png "<before mobile snapshot>" 
   --after-png "<after mobile snapshot>" --out-dir "<output folder>" --prefix "<campaign-slug>"
 ```
 
-This gives the side-by-side image only, without the mail-app header, and the editor's sample
-values and chip outlines stay visible. Say so in the hand-over.
+This gives the side-by-side image only, with the badge but without the mail-app header, and the
+editor's sample values and chip outlines stay visible. Say so in the hand-over.
 
 ## 5. Check and hand over
 
 Look at every image before sending it: no chip left with an editor placeholder (`Name`, a
-dashed outline), no `[email protected]`, no broken image, the header not cut. A leftover
+dashed outline), no `[email protected]`, no broken image, the header not cut, the Maestra badge in
+the bottom-right corner (unless `--no-logo` was asked for). A leftover
 placeholder means a `--replace` pair is missing: run `--list-chips` again.
 
 Hand over with the host's file-delivery tool, the side-by-side image first. In one or two lines:
