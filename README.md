@@ -43,7 +43,7 @@ First, check the connection:
 
 Phrases like "create an email" or "build a filter" wake the right skill:
 
-- "Create an email in Maestra: a spring-sale promo with a hero image, two product cards, and a discount code. Show me a preview before saving."
+- "Create an email in Maestra: a spring-sale promo with a hero image, two product cards, and a discount code. Show me a preview before saving." — before building, Claude shows one card with the open questions (where to save, which data, which images).
 - "Add a row of recommended products and greet the customer by name."
 - "Build a filter: customers with a confirmed email who bought Nike in the last 90 days."
 - "Add a condition to this filter: exclude anyone who ordered in the last 7 days." (paste the filter JSON)

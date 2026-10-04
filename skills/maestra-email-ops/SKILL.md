@@ -113,14 +113,14 @@ screenshots; the inbox mockup is the one local rendering, and it is a presentati
 
 | Task | Route |
 |---|---|
-| New JSX email | target discovery, if a save is needed → gallery → Generator → stale-preview notice / optional preview+QA → canonical visual save workflow |
+| New JSX email | target discovery → email details card (`maestra-email` step 0) → gallery → Generator → stale-preview notice / optional preview+QA → canonical visual save workflow |
 | Editing an existing email by ID | `campaign_get` → canonical visual workflow with `visual_template_get` |
 | Saved editor block | `visual_template_saved_block_list` → the user picks in the panel → `visual_template_saved_block_get` by the `internalId` from their reply |
 | Changing the hero/content inside the email body | canonical visual workflow, not subject |
 | Changing the template type: "redo it in the visual editor", "convert it to HTML" | "Changing the template type" section: the type doesn't change, the email is ported to a new campaign |
 | Changing subject/sender/preheader | `campaign_get` → `campaign_edit_content` |
 | Changing name/UTM/schedule | `campaign_get` → `campaign_edit` |
-| New campaign from scratch | end-to-end workflow below: `campaign_create` → `campaign_get` → metadata/content edits → visual save; live recipients/send/activate — UI |
+| New campaign from scratch | end-to-end workflow below: folder/brand lookup → email details card → `campaign_create` → `campaign_get` → metadata/content edits → visual save; live recipients/send/activate — UI |
 | Test send of an email | "Test send" section: `campaign_get` → `campaign_test_recipients` → recipient choice → confirmation → `campaign_send_test` |
 | Gallery search/upload | MCP `gallery_images_list` / `visual_template_image_upload_link` |
 | PNG | desktop/mobile links in the `visual_template_preview` response |
@@ -553,6 +553,9 @@ automatically:
 
 ### New email
 
+Before anything else, the email details card from `maestra-email` step 0
+(`references/email-details-card.md` of that skill): the lookups below feed its options, and
+nothing is uploaded, generated or created until it is answered or skipped.
 If the email is being saved into a campaign: `campaign_get` → choose target →
 `visual_template_get`/bootstrap discovery → if the format already has an email, the question about
 replacement and about its letter styles (§2 items 2a–2b) → the Generator determines the needed images
@@ -634,7 +637,9 @@ for the campaign; don't confuse it with the separate `visualTemplateRowVersion`.
 If the user wants to create and prepare a campaign with no existing mailingId,
 follow a single route:
 
-1. Ask the user for **the folder and brand in words, not identifiers**, and the timezone. Find the
+1. Ask the user for **the folder and brand in words, not identifiers**, and the timezone — inside the
+   email details card (`maestra-email` step 0) together with the other open questions, with the
+   folders and brands from the lookup as the options, not as separate questions. Find the
    actual values for `campaign_create` yourself: `entities_list(entityType: "Folder")` returns the
    folder's `internalId` and its brands, `entities_list(entityType: "Brand")` — the brand's system name
    (in this tool the brand is set by that, not by a GUID). Nothing found, or several candidates —

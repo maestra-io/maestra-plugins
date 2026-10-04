@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 1.6.0 — 2026-10-04
+
+- `maestra-email`: **email details card, mandatory before a new email.** A new step 0 of the
+  workflow: building a new email (from a description, a mockup or a reference, a rebuild, a copy,
+  a port) starts with one card of the open questions — where to save it, automatic or manual,
+  which data to show, the product layout, which reference images to take, the style, and, when
+  the look is not given, where to take it from: the brand's last 3 one-off emails, the last 3 flow
+  emails, the website, or the client's brand book uploaded in the card — with what
+  the project and the reference already tell preselected. Drawn with the visualization tool
+  (`show_widget`, elicitation module) where the host has it; otherwise the host's native choice
+  tool; otherwise numbered questions in one message. Nothing is uploaded, generated or created
+  before the answer or a Skip; when nothing is open, one line says what was decided instead. Small
+  edits of an existing email get no card. Procedure, question table, the card skeleton and the
+  fallbacks in the new `references/email-details-card.md`. A Maestra adaptation — re-apply it on
+  the next upstream sync.
+- `maestra-email-ops`: the *New JSX email* and *New campaign from scratch* routes and the
+  folder/brand question point at the card.
+
 ## 1.5.0 — 2026-10-03
 
 - `maestra-email-ops`: **inbox mockup, before/after.** After an email is saved, the report ends
