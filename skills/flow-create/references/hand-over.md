@@ -41,9 +41,9 @@ Exactly three, in this order, and nothing else.
 
 ### 1. What was built
 
-**Reuse the flow-summary skill's output format**, in the language the user is working in, taking its
-name from your skill listing; if it is not listed, keep to its three parts — what starts the flow,
-what it does step by step, what it is for. Keep it compact, and expand only if the user asks.
+Three parts, in the language the user is working in: **what starts the flow**, **what it does step
+by step**, **what it is for**. If a flow-summary skill is in your listing, reuse its output format
+instead — it is the same shape, kept in one place. Keep it compact, and expand only if the user asks.
 
 Refer to a block by its name in quotes or by its role ("the 3-day wait", "the email step"). No block
 ids, no type tags, no row versions, no field or value names.
@@ -83,6 +83,11 @@ no section.
 it you can switch the flow to testing mode, so the platform runs it as a test without launching it for
 real. It is an offer, never a step you take on your own — you act on an explicit yes and on nothing
 else, and you never launch, pause, stop or delete the flow (`SKILL.md`, top and step 8).
+
+**When they accept, the reply also asks once for a 1-to-10 rating of the build**, in one unobtrusive
+line that says the number, any comment and the flow ids go to the Maestra developers — never before
+acceptance, and once per thread: an unanswered ask is spent
+(`references/feedback-and-selfcheck.md` → *Rating the build*).
 
 ## Reporting a stop under CRITICAL 6
 
@@ -158,5 +163,6 @@ every line under *What to do* starts with something to do.
 - `SKILL.md` → step 8 — the rule this file serves, and testing mode after acceptance
 - `SKILL.md`, top — the two kinds of shortfall, and why the ranking carries the message
 - `references/questions.md` — what belongs in the question rather than in the hand-over
-- the flow-summary skill → `## Output format` — the format part 1 reuses; take its name from your
-  skill listing
+- `references/feedback-and-selfcheck.md` — the rating ask, and the self-check findings that land here
+- a flow-summary skill, when one is listed → `## Output format` — the same shape part 1 describes;
+  the three parts above stand on their own when it is not

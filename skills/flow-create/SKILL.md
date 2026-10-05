@@ -10,12 +10,13 @@ description: >-
   asked to rebuild here the logic a client is moving off an external marketing-automation
   platform — in whatever language the request comes in, and whatever the reader calls
   the thing: a flow is also a scenario or a journey, a send step is a mailing or a campaign,
-  an entry filter is an audience or a segment. Don't use to audit a flow (use
-  maestra:flow-issues-audit), or to launch, stop or delete anything.
+  an entry filter is an audience or a segment. Don't use to describe or check an existing
+  flow (maestra:flow-summary, maestra:flow-issues-audit), or to launch, stop or delete
+  anything: that stays a human decision.
 metadata:
   author: Maestra.io
-  upstream: AI tribe
-  version: 17.1.0
+  upstream: mindbox.cloud
+  version: 1.0.0
 ---
 
 # Flow create
@@ -45,7 +46,9 @@ on their explicit yes (step 8) — short of that it is as forbidden as a launch.
 
 **`feedback` only with the user's consent, whatever prompts a report.** Do not call it mid-run: keep the
 report and offer it in *Suggestions* at hand-over (`references/hand-over.md` → *What never goes in*);
-call `feedback` only after the user has seen its full text exactly as it will be sent and said yes.
+call `feedback` only after the user has seen its full text exactly as it will be sent and said yes. The
+one exception is the step-8 rating: a number given in reply to the line that says what goes to the
+Maestra developers is the consent.
 
 **Done** = a verified draft, plus a ranked account of what is missing — and stopping short is also
 done (CRITICAL 6). Expect part of a routine request to be out of your reach, and find out while you
@@ -91,7 +94,11 @@ completed from the block**: a member you leave out lands at its **type default**
 block held, and a fragment missing a **required** member gets the whole call refused with nothing
 applied. So build every fragment from the pre-write read **plus** your change, however small the change
 inside it. Ordinary block-level fields merge instead (`writing.read_vs_write`, `writing.overview`): a
-top-level field your body does not name keeps its stored value, and only an explicit `null` clears it.
+top-level field your body does not name keeps its stored value. **`null` is not a general clear**: per
+member it clears, silently resets to a platform default, is ignored, is stored as a `0` you never sent,
+or is refused outright. Only the refusal is loud — the first three are one identical plain success, and
+the `0` is a success carrying an objection, which is not a gate. **So a success tells you nothing.** Send
+`null` only where the reference states that member is clearable, and read the block back (CRITICAL 4).
 
 Read a block to *learn* its values, then build the body: a read carries members the server owns, and
 echoing one can change what you were not asked to touch. **Exception: a value you send back only to
@@ -166,6 +173,7 @@ invisible from inside: a body that is already correct, re-sent against an object
 | `references/validation.md` | the validate call's failure modes, the three kinds of what it reports, the after-validation path | at step 7 |
 | `references/hand-over.md` | the link, the three parts, reporting a stop, what never goes in | at step 8 |
 | `references/troubleshooting.md` | one row per symptom, pointing at the rule that covers it | when something goes wrong |
+| `references/feedback-and-selfcheck.md` | the two feedback messages, the rating ask, running and triaging the self-check | at a docs mismatch, at step 7c, on acceptance |
 
 ## Where to look
 
@@ -209,6 +217,11 @@ wins on its own coverage.
 **But a schema read is not a capability check in either direction** — the only check is one call, and
 reading the answer. And load a deferred tool's schema before calling it.
 
+- **`feedback`**, on the same connection: the moment live behaviour contradicts the wiki or this file,
+  write one structured message and keep it for *Suggestions* at hand-over — it is sent only with the
+  user's consent; no such tool, skip it silently
+  (`references/feedback-and-selfcheck.md` → *A documentation mismatch*).
+
 **Send `metadata.iteration` on every `flows_create` and every `flows_apply_operations`** — the only two tools
 here with a `metadata` object, and the one argument this file names, because nothing but you supplies the count.
 
@@ -216,10 +229,10 @@ here with a `metadata` object, and the one argument this file names, because not
 
 **A filter is an ordinary block-level field, so a write that does not mention it leaves it alone** — a
 start block's entry filter and a schedule block's conditions alike: omit the field and the stored filter
-stands, send `null` and it is cleared. What needs care in such a write is any **opaque fragment** the body
-carries, since a fragment sent incomplete resets the members it omits (CRITICAL 3), and the **entity
-scope**, which goes in the same call as a filter body. Where you send a filter back, send the one you
-read, unchanged: composing or editing a body is never yours (CRITICAL 3).
+stands; `null` is not a general clear (CRITICAL 3). What needs care in such a write is any **opaque
+fragment** the body carries, since a fragment sent incomplete resets the members it omits (CRITICAL 3),
+and the **entity scope**, which goes in the same call as a filter body. Where you send a filter back,
+send the one you read, unchanged: composing or editing a body is never yours (CRITICAL 3).
 
 **Read `references/filter-delegation.md` before your first delegation.** It owns everything else about
 filters, including the flow's **entity scope set**. **One condition block per call**, and flow tools do
@@ -444,16 +457,31 @@ activated the flow renders instead of sending (`flows` → the send-step documen
 hand-over as an *Actions* item per mailing, alongside the flow's own launch, stated as the limit on your
 side that it is (`references/hand-over.md`).
 
+### 7c. Self-check
+
+Once the final validation has passed, run the read-only structural audit skill
+(`maestra:flow-issues-audit` in this plugin's listing) — take its name from your skill listing —
+in a sub-agent, once per flow built this session, per-flow mode, handing it the flow id and
+version. Its findings are leads, not verdicts: drop one that contradicts an explicit decision of the user's
+or a documented platform behaviour, and put a real undecided risk into step 8's *Actions* or *Suggestions*
+in plain words — no findings, no mention; no re-runs, a failed sub-agent is skipped silently, and it neither
+spends the write budget nor reopens validation (`references/feedback-and-selfcheck.md` → *The self-check*).
+
 ### 8. Hand over
 
 Hand over a link to the draft version you built, then three parts and nothing else: **what was built**
-(the flow-summary skill's format), **Actions** and **Suggestions**. **Cut everything they cannot act
+(the format in `references/hand-over.md`), **Actions** and **Suggestions**. **Cut everything they cannot act
 on.** **Read `references/hand-over.md` first.**
 
 **Then testing mode, if they accept.** A flow that validated clean and that the user has seen and accepted is
 ready for the platform's test run: recommend it in *Suggestions*, and on their **explicit yes** — only then —
 call `flows_set_testing_mode` **once** for that version, then read the record back with `flows_get` and report
 the status it came back with.
+
+**On acceptance, ask once per thread for a rating** — one line, 1 to 10, never blocking, saying that
+the number, any comment and the flow ids go to the Maestra developers; an unanswered ask is spent; a number given in
+reply goes to `feedback`, anything else sends nothing
+(`references/feedback-and-selfcheck.md` → *Rating the build*).
 
 ## If something goes wrong
 

@@ -1,5 +1,80 @@
 # CHANGELOG
 
+## 1.7.0 — 2026-10-05
+
+Upstream sync: the email skills from the upstream editor skills **1.15.0**, and `flow-create`,
+`filter-build`, `filter-explain` from the upstream public plugin **1.1.0**. Upstream now ships
+these in English, so the Maestra copies are rebuilt from the upstream text with the standing
+Maestra adaptations re-applied; the next sync is an English-to-English diff. Skill versions
+mirror upstream: the email skills `1.15.0`; `flow-create`, `filter-build`, `filter-explain`
+`1.0.0` (upstream restarted numbering for its public plugin; the previous `17.1.0` / `1.3.0`
+were its internal numbers).
+
+`maestra-email-ops` — **edits to a running automated campaign go into a draft.** A working
+automated campaign keeps its email in two versions: the active one customers receive and the
+draft a person applies in the campaign editor. The skill reads the editability line
+`campaign_get` prints, writes once into the version the user sees — on a working campaign the
+draft, created by the save itself when there is none — and says plainly that customers see the
+edit only after the draft is applied. It no longer writes the same email into Draft and then
+Active. The subject, sender, preheader and schedule of a working campaign have no draft, so the
+skill leaves them to the editor. Verified on a live project: the save creates the draft and
+names its address, and a save aimed at the active version while a draft exists is refused.
+
+`maestra-email-ops`, also new:
+
+- **Recipients.** A bulk campaign's recipients can be set to a segment (`segments_list`) or to
+  a filter built by `maestra:filter-build`, after a separate confirmation
+  (`references/recipients.md`). An automated campaign's audience stays the flow's.
+- **Images.** Uploads go through `gallery_image_upload`: its panel puts files straight into the
+  project gallery with permanent addresses; an image given as a link is copied into the gallery
+  too. In clients with MCP Apps, `gallery_images_list` opens a picker with thumbnails. The
+  contact-sheet script `gallery_contact_sheet.py` and `references/visual-gallery-selection.md`
+  are removed, as upstream did.
+- **Test sends** go out from the saved version the user chose, with its `formatInternalId`; an
+  unsaved edit is saved first or the user is told. The campaign version token is tracked on
+  refusals and on a test send from the draft too; a version conflict on a metadata edit is a
+  question to the user, not a retry.
+- The feedback report's `skill=` field names `email` / `email-ops`, upstream's machine values.
+
+`maestra-email`:
+
+- **Fonts** only from the editor's 19-font list (10 web-safe, 9 Google fonts with a web-safe
+  `fallbackFontFamily`); the closest one is picked and named.
+- **Buttons without an address** are saved with an empty link and listed for the user to fill in,
+  after one question for all of them.
+- **Editor-template blocks** (`<QuokkaBlock>`) in an email that was read are carried over
+  untouched (`references/dsl-surface.md` §13); a new one is never built. Verified: such an email
+  saves back unchanged.
+- `RecipientGreeting` already carries the whole greeting — no words are written around it; own
+  words go in `affixVariableText`. Bonus pluralization rules; `Image alt`; the editor's default
+  product card; new parameters `MailingTopicName`, `OrderPresentment*` and
+  `OrderItemPresentment*` with the `formatMoney` formatter.
+- The default unsubscribe line is "If you no longer want these emails — unsubscribe".
+
+`flow-create`:
+
+- `null` is not a general clear — per member it clears, resets, is ignored or is refused, so it
+  is sent only where the reference says the member is clearable, and the block is read back.
+- **Self-check** (step 7c): after the final validation, `maestra:flow-issues-audit` runs on each
+  built flow in a sub-agent; a real undecided risk lands in the hand-over, nothing else is said.
+- On acceptance, one line asks for a 1-to-10 rating, saying the number goes to the Maestra
+  developers; a number given in reply is sent, anything else sends nothing.
+- New `references/feedback-and-selfcheck.md`; `filter-delegation.md` asks the filter sub-agent to
+  confirm the property set as well as the root.
+
+`filter-build`, `filter-explain`: tool calls are described by name and the arguments that carry
+the request, the rest filled from the server's schema; descriptions keep the Maestra wording.
+
+Maestra adaptations kept: the email details card (step 0), the inbox mockup — its reference now
+names the draft as "after" on a working campaign —, "letter styles", the note on the API's legacy
+editor-kind value, `maestra:` cross-references, the admin link from the project's system name, the
+multi-project `tenant` guidance in the filter skills, the filter starter set (the wiki still has no
+starter-set pattern), and `feedback` only with the user's consent — upstream's unasked
+documentation-mismatch message in `flow-create` is kept and offered at hand-over instead.
+
+README: the Emails, Flows and "What the skills do" rows say the above; two try-it prompts.
+Removed from the repository: a stray `__pycache__/inbox_mockup.cpython-310.pyc`.
+
 ## 1.6.0 — 2026-10-04
 
 - `maestra-email`: **email details card, mandatory before a new email.** A new step 0 of the

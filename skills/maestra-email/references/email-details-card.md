@@ -31,6 +31,7 @@ and build.
 | Question | Ask when | Options |
 |---|---|---|
 | Where to save it? | no target named | new campaign (folder + brand from the lookup in the subtitle) · an existing campaign (by link or ID, "Other" field) · don't save, preview only |
+| Which time zone? | a new campaign | the time zone of the brand's recent campaigns (from `campaign_get`) preselected · "Other" field for an IANA name |
 | Automatic or manual? | the kind is not obvious from the request **and** it changes the content (order data, cart, viewed products) | automatic (flow, live data) · manual (to a segment, placeholders) — say in the subtitle what each gives |
 | Which data to show? | personalization or order/product data is in play | multi-select of the concrete values: first name, order number, date, total, order items, promo code… |
 | How many products, which layout? | the email has a product row | 6 (3×2) · 3 (3×1) · 4 (2×2) |

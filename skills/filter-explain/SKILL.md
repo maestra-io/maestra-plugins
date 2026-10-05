@@ -13,8 +13,8 @@ description: >-
 argument-hint: "the complete filter JSON from the project"
 metadata:
   author: Maestra.io
-  upstream: AI tribe
-  version: 1.3.0
+  upstream: mindbox.cloud
+  version: 1.0.0
 ---
 
 # Filter explain
@@ -35,23 +35,21 @@ tools do not fetch saved filters by name. If only a link or an unseen filter is 
 ask for its JSON. For a successful build already in this conversation, reuse its confirmed
 `finalSql` and selected records instead of converting it again.
 
-Freshly read the connected server's maintained, up-to-date entry point:
-
-```text
-filter_wiki_read({"tenant": "<tenant>", "paths": ["README.md"]})
-```
+Freshly read the connected server's maintained, up-to-date entry point: `filter_wiki_read`
+with `paths = ["README.md"]`.
 
 Use its navigation and current tool guidance. Reuse pages within this explanation. Examples
-below are synthetic. Replace `<tenant>` with the confirmed project system name; omit the
-argument only if the tool's schema has no `tenant`. Use the actual input and returned paths.
-Tool names may have a server prefix.
+below name a tool and the arguments that carry the request; fill in the rest from the
+schema the server exposes — including `tenant` where the schema has it. Use the actual input and returned paths. Tool names may have a
+server prefix.
 
 ## 1. Convert the original JSON to SQL
 
-Pass the complete JSON unchanged as the `filterJson` object. For example:
+Pass the complete JSON unchanged to `filter_json_to_sql` as its `filterJson` object — for
+example this filter, customers aged 30 and over:
 
-```text
-filter_json_to_sql({"tenant": "<tenant>", "filterJson": {
+```json
+{
   "entityType": "User",
   "filterFactory": "and",
   "innerConditions": [{
@@ -59,7 +57,7 @@ filter_json_to_sql({"tenant": "<tenant>", "filterJson": {
     "filterFactory": "age",
     "value": {"mode": "concrete", "value": {"range": {"from": "30", "to": ""}, "unit": "Years"}}
   }]
-}})
+}
 ```
 
 Read the returned `sql`, selected records and warnings. The tool already attempts to resolve
@@ -75,17 +73,16 @@ Identify the root, fields, relations, operators and business concepts in the SQL
 wiki for each distinct concept whose meaning or limitations you need to establish, combining
 related terms in a regex and reusing relevant pages already read:
 
-```text
-filter_wiki_grep({"tenant": "<tenant>", "pattern": "возраст|\\bage(?:d|s)?\\b", "paths": ["field/user"], "root": "User"})
-filter_wiki_read({"tenant": "<tenant>", "paths": ["field/user.age.md"], "root": "User"})
-```
+Search with `filter_wiki_grep`, then read the hits with `filter_wiki_read`. For an age
+condition on customers that is `pattern = "возраст|\\bage(?:d|s)?\\b"` over
+`paths = ["field/user"]`, then `paths = ["field/user.age.md"]`, both with `root = "User"`.
 
 `pattern` is a case-insensitive regular expression. The wiki's pages carry Russian and English
-wording side by side, so search both. Here `возраст` matches forms such as `возраста` and
-`возрастной`; `\\bage(?:d|s)?\\b` matches the English words `age`, `aged` and `ages` without
-matching `message`. JSON strings need `\\b` to send the regex boundary `\b`. For subscription
-conditions, `подпис(?:к|ок|ан)|subscri(?:b|pt)` covers forms such as `подписка`, `подписок`,
-`подписан`, `subscribe` and `subscription`. Choose the terms needed for the filter.
+wording side by side, so search both. Here `возраст` matches forms such as
+`возраста` and `возрастной`; `\\bage(?:d|s)?\\b` matches the English words `age`, `aged` and
+`ages` without matching `message`. JSON strings need `\\b` to send the regex boundary `\b`.
+For subscription conditions, `подпис(?:к|ок|ан)|subscri(?:b|pt)` covers forms such as `подписка`,
+`подписок`, `подписан`, `subscribe` and `subscription`. Choose the terms needed for the filter.
 
 `paths` prioritizes sections; it does not exclude other sections. Follow `skip`/`limit` when
 results continue. Copy returned paths exactly, including underscores, casing and `.md`.
@@ -96,11 +93,10 @@ explains a condition; it does not add conditions to the filter.
 
 For an unresolved catalogue value, discover the relevant lookup type and supported search:
 
-```text
-filter_wiki_ls({"tenant": "<tenant>", "path": "lookup", "root": "User"})
-filter_wiki_read({"tenant": "<tenant>", "paths": ["lookup/segment.md"], "root": "User"})
-filter_search_entities({"tenant": "<tenant>", "context": "Identify an unnamed segment referenced by this filter", "types": ["segment"], "mode": "list", "pageSize": 20})
-```
+List the lookups with `filter_wiki_ls` at `path = "lookup"`, read the relevant one with
+`filter_wiki_read` — `paths = ["lookup/segment.md"]` for a segment — and then search with
+`filter_search_entities`, passing `types = ["segment"]` and a `context` that states what you
+are identifying. Keep `root = "User"` on the wiki calls.
 
 Browse when practical, or search a known name with `query`. Continue with the returned
 `nextCursor` as `cursor`, preserving the other arguments. If rejected, restart the same

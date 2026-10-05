@@ -16,8 +16,8 @@ description: >-
 argument-hint: "who to select, or the existing filter JSON and the requested change"
 metadata:
   author: Maestra.io
-  upstream: AI tribe
-  version: 1.3.0
+  upstream: mindbox.cloud
+  version: 1.0.0
 ---
 
 # Filter build
@@ -29,19 +29,17 @@ projects with `tenants_list`. Choose the sole applicable project or ask when sev
 Explain a missing connection. Keep all calls on the chosen server and project: catalogue
 IDs belong to that project.
 
-Examples below are independent and use synthetic requests. Replace `<tenant>` with the
-confirmed project system name before calling; omit it only if the tool's schema has no
-`tenant` argument. Use the actual request, editor and returned records. Tool names may have
-a server prefix.
+Examples below are independent and use synthetic requests. Each names a tool and the
+arguments that carry the request; fill in the rest from the schema the server exposes —
+including `tenant` where the schema has it. Use the actual request, editor and returned
+records. Tool names may have a server prefix.
 
 ## 1. Read the current entry point
 
 At the start of every build or edit, freshly read the connected server's root README, even
 if you read it in an earlier task:
 
-```text
-filter_wiki_read({"tenant": "<tenant>", "paths": ["README.md"]})
-```
+Read it with `filter_wiki_read`, `paths = ["README.md"]`.
 
 This is the maintained, up-to-date entry point. Use its current navigation and tool guidance
 alongside the workflow below. Reuse pages within this build; follow returned paths instead
@@ -57,9 +55,7 @@ if the filter is not already in context. Do not silently drop an unreadable cond
 
 If either the root or property set is unknown, read the root catalogue:
 
-```text
-filter_wiki_read({"tenant": "<tenant>", "paths": ["root/README.md"]})
-```
+`filter_wiki_read` with `paths = ["root/README.md"]`.
 
 Choose the root by what one result row represents: customers, products, orders or another
 listed object. Objects mentioned in conditions may be related to that root. Preserve any
@@ -77,23 +73,22 @@ paths have different casing:
 | `User` | `ScenarioInboundEvent` | `root/user.scenario_inbound_event.md` |
 | `RetailProduct` | `Default` | `root/retail_product.default.md` |
 
-```text
-filter_wiki_read({"tenant": "<tenant>", "paths": ["root/user.scenario_inbound_event.md"], "root": "User", "filterablePropertySet": "ScenarioInboundEvent"})
-```
+`filter_wiki_read` with `paths = ["root/user.scenario_inbound_event.md"]`, `root = "User"`
+and `filterablePropertySet = "ScenarioInboundEvent"`.
 
 Use `filterablePropertySet` as the argument name, not `filter_property_set`. Copy document
 paths including underscores and `.md`; `README.md` is uppercase. If a path is unknown, discover
-it with `filter_wiki_ls({"tenant": "<tenant>", "path": "root"})`. Carry the chosen root and property set into subsequent
+it with `filter_wiki_ls` at `path = "root"`. Carry the chosen root and property set into subsequent
 wiki, validation and compile calls that accept them. Never widen the editor to bypass a refusal.
 
 ## 3. Find the meaning and documented constructs
 
 For business labels or a request that may have a recipe, search recipes and the glossary:
 
-```text
-filter_wiki_grep({"tenant": "<tenant>", "pattern": "реактив|спящ|dorman(?:t|cy)|reactivat", "paths": ["recipe", "glossary"], "root": "User", "filterablePropertySet": "Default"})
-filter_wiki_read({"tenant": "<tenant>", "paths": ["glossary/reactivation.md", "recipe/user.reactivation.md"], "root": "User", "filterablePropertySet": "Default"})
-```
+`filter_wiki_grep` with `pattern = "реактив|спящ|dorman(?:t|cy)|reactivat"` over
+`paths = ["recipe", "glossary"]`, then `filter_wiki_read` on the hits —
+`paths = ["glossary/reactivation.md", "recipe/user.reactivation.md"]`. Both carry
+`root = "User"` and `filterablePropertySet = "Default"`.
 
 Read relevant hits, especially `Use for`, `Not for`, `Not offered` and `Ask`. For straightforward
 conditions, open the editor's linked field or relation pages directly. Learn the full construct,
@@ -109,10 +104,9 @@ matches forms such as `реактивация` and `реактивировать
 
 For subscriptions and mailings, respectively:
 
-```text
-filter_wiki_grep({"tenant": "<tenant>", "pattern": "подпис(?:к|ок|ан)|subscri(?:b|pt)", "paths": ["pattern", "field"], "root": "User", "filterablePropertySet": "Default"})
-filter_wiki_grep({"tenant": "<tenant>", "pattern": "рассыл(?:к|ок)|mailings?", "paths": ["lookup", "glossary"], "root": "User", "filterablePropertySet": "Default"})
-```
+Two searches with `filter_wiki_grep`: `pattern = "подпис(?:к|ок|ан)|subscri(?:b|pt)"` over
+`paths = ["pattern", "field"]`, and `pattern = "рассыл(?:к|ок)|mailings?"` over
+`paths = ["lookup", "glossary"]`.
 
 The first covers `подписка`, `подписок`, `подписан`, `subscribe` and `subscription`; the
 second covers `рассылка`, `рассылок`, `mailing` and `mailings`. These cover the shown forms,
@@ -125,9 +119,7 @@ excluding all others. Search excerpts alone are not the full rule.
 If the local pages leave a product or business meaning unclear, search `help` explicitly.
 Its absence from the README map does not establish that help is unavailable:
 
-```text
-filter_wiki_grep({"tenant": "<tenant>", "pattern": "реактив|спящ|dorman(?:t|cy)|reactivat", "paths": ["help"], "root": "User", "filterablePropertySet": "Default"})
-```
+The same `filter_wiki_grep` pattern over `paths = ["help"]`.
 
 Read relevant returned `help/` articles. Use business wording here, not internal field names.
 Then check the proposed condition against the editor and filter reference. A help article
@@ -138,11 +130,9 @@ the meaning remains unclear, ask about the point that changes the audience.
 
 When conditions name project records, discover the catalogue types and read the relevant pages:
 
-```text
-filter_wiki_ls({"tenant": "<tenant>", "path": "lookup", "root": "User", "filterablePropertySet": "Default"})
-filter_wiki_read({"tenant": "<tenant>", "paths": ["lookup/segment.md"], "root": "User", "filterablePropertySet": "Default"})
-filter_search_entities({"tenant": "<tenant>", "context": "Customers in the Example segment", "types": ["segment"], "query": "Example segment", "mode": "match"})
-```
+`filter_wiki_ls` at `path = "lookup"`, then `filter_wiki_read` with
+`paths = ["lookup/segment.md"]`, then `filter_search_entities` with `types = ["segment"]`,
+`query = "Example segment"`, `mode = "match"` and a `context` naming the request.
 
 `query` is the name to find; `context` supplies the surrounding request, not another search
 query or a semantic selection guarantee. Batch names in `queries` when they share types and
@@ -152,10 +142,8 @@ not confidence that the record expresses the request.
 
 Browse one catalogue type, or search literal substrings with `mode=list`:
 
-```text
-filter_search_entities({"tenant": "<tenant>", "context": "Find the requested customer segment", "types": ["segment"], "mode": "list", "pageSize": 20})
-filter_search_entities({"tenant": "<tenant>", "context": "Find the requested customer segment", "types": ["segment"], "query": "Example", "mode": "list", "pageSize": 20})
-```
+Two separate `filter_search_entities` calls with `mode = "list"` and `pageSize = 20`: one
+browsing `types = ["segment"]` without a query, one narrowing it with `query = "Example"`.
 
 These are two separate searches. For another page of either, repeat the same arguments and
 add `"cursor": "<exact nextCursor from that response>"`. If the cursor is rejected, restart
@@ -187,9 +175,10 @@ It records intent; it is not a proof that the SQL matches the request.
 
 A standalone example with no catalogue references:
 
-```text
-filter_sql_validate({
-  "tenant": "<tenant>",
+Call `filter_sql_validate` with the SQL, the editor and one `coverage` entry per requirement:
+
+```json
+{
   "sql": "FROM User WHERE user.age >= 30",
   "root": "User",
   "filterablePropertySet": "Default",
@@ -198,7 +187,7 @@ filter_sql_validate({
     "decision": "user.age >= 30",
     "reason": "At least includes the boundary; age is measured in years."
   }]
-})
+}
 ```
 
 Proceed on `status: valid`. When `reference` lines are returned, match each to the already
@@ -211,15 +200,16 @@ compilation. If validation exposes a missing lookup, resolve it before proceedin
 
 For the no-reference example above:
 
-```text
-filter_compile_preview({
-  "tenant": "<tenant>",
+Call `filter_compile_preview` with the same SQL and editor:
+
+```json
+{
   "sql": "FROM User WHERE user.age >= 30",
   "root": "User",
   "filterablePropertySet": "Default",
   "selected": [],
   "includeFilterJson": false
-})
+}
 ```
 
 For a draft with references, fill `selected` with the chosen `ref` objects and their current
@@ -261,9 +251,7 @@ only with the user's consent:
 2. Call `feedback` only after an unambiguous yes. If the user changes the text, show the new
    version and ask again. On a no, do not send; offer the report as copyable text instead.
 
-```text
-feedback({"tenant": "<tenant>", "feedback": "<report filled from the template below>"})
-```
+When you call it, pass the report below as its `feedback` argument.
 
 Fill this template from the current session. Keep both URL fields explicit; write
 `not provided` or `unavailable` when the source does not exist. Never invent a trace ID.

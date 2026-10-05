@@ -16,14 +16,15 @@ the bottom-right corner.
 
 | Situation | "After" | "Before" |
 |---|---|---|
-| The email was edited in place | the saved JSX, its format | the §2 snapshot JSX — the one read before the edit — same format |
-| The email was rebuilt as a copy or in a new campaign | the new campaign's format | the source campaign: `campaign_get` → `visual_template_get` of its format |
+| The email was edited in place | the saved JSX, its format — on a working campaign, the draft the save wrote into (its address is in the save response) | on a campaign that is not working, the §2 snapshot JSX — the one read before the edit — same format; on a working campaign, the active version customers receive now: `visual_template_get` on its own `formatInternalId` (it is still there — the edit went into the draft) |
+| The email was rebuilt as a copy or in a new campaign | the new campaign's format | the source campaign: `campaign_get` → `visual_template_get` of the version customers receive (the active one on a working campaign) |
 | A brand-new email | the new format | none — one mockup, no comparison |
 | The earlier version is raw HTML (`Rawhtml`, `html: yes`) | the new format | none: it has no visual render; make the single mockup and say why |
 
 The snapshot is only rendered, never written back. If the user did not keep the conversation
 where the snapshot was read and the email was overwritten, there is no "before" left: say so
-and make the single mockup.
+and make the single mockup. On a working campaign the active version is still there — read it
+with `visual_template_get`.
 
 ## 2. Render each version
 
@@ -92,7 +93,7 @@ script warns and makes the images without it — say so in the hand-over.
 
 Dependencies: Python 3; Playwright with a Chromium it can launch (Cowork has both); Pillow for
 the side-by-side image and the badge. The script installs nothing. Install Pillow from PyPI if it
-is missing, as for the gallery contact sheet; don't download browsers.
+is missing; don't download browsers.
 
 **Exit code 3** — Playwright or Chromium is not available. Fall back to the preview's mobile
 snapshots:

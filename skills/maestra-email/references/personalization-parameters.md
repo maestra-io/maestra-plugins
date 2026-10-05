@@ -1,24 +1,24 @@
-# Personalization parameters — what can be assembled from JSX
+# Personalization parameters — what can be built from JSX
 
 **When to read:** the root parameter you need is not among the common ones in `personalization.md`, or you need to check its exact attributes and the campaign-kind restriction.
 
-**Return to:** `personalization.md`, then Self-check in `SKILL.md`; do not substitute a product parameter for a root parameter and do not use an automated-only parameter in a Manual campaign.
+**Return:** to `personalization.md`, then to Self-check in `SKILL.md`; do not substitute a product parameter for a root parameter and do not use an automated-only parameter in a bulk (`Manual`) campaign.
 
-The 43 parameters of the email itself, with the attributes of each. The remaining 125 are product parameters; they live only inside
+49 parameters of the email itself, with the attributes of each. The other 127 are product parameters; they live only inside
 a product row and are listed in [product-parameters.md](./product-parameters.md).
 
-**The entity decides where a parameter can stand, and the campaign kind — whether it is available at all.** An email parameter
-(`root`) stands anywhere in the email, order data included: the 21 rows marked *(automated only)*
-read the order, and in a bulk campaign they have nothing to read, while in an automatic email such a parameter stands
-anywhere — in the heading, in the text, in a button — and not only in a product-row card. Three of them
+**The entity decides where a parameter can go, and the campaign kind decides whether it is available at all.** An email parameter
+(`root`) goes anywhere in the email, including order data: the 26 rows marked *(automated only)*
+read the order, and in a bulk campaign they have nothing to read, while in an automated email such a parameter goes
+anywhere — in a heading, in text, in a button — and not only in a product row card. Three of them
 read not the order itself but a level inside it: `OrderItemStatusName` — an order line, `OrderPaymentAmount`
-and `OrderPaymentType` — a payment; in the email body they will go out empty. The four special links, the authentication
+and `OrderPaymentType` — a payment; in the email body they will be sent empty. The four special links, the authentication
 ticket and both personal prices are provided by the email channel itself; they are available to any kind.
 
-A setting attribute that refers to a project catalogue (`customFieldType`, `externalSystem`,
-`orderExternalIdSelection`, `promoCodePool`, `balance`, `hostname`) is required: the converter rejects a chip in
-which it is not filled in; if an empty setting did make it into the email, late validation answers with
-a broken-expression error. The rules are in `personalization.md`.
+A setting attribute that refers to a project reference list (`customFieldType`, `externalSystem`,
+`orderExternalIdSelection`, `promoCodePool`, `balance`, `hostname`) is required: the converter rejects a chip
+in which it is not filled; if an empty setting did get into the email, later validation answers
+with a broken-expression error. The rules are in `personalization.md`.
 
 The list was taken from the platform at the time the skill was built. A parameter that appeared on the platform later can be authored and
 works, but it will not be in this list — if the user names a parameter that is not here, do not
@@ -32,6 +32,7 @@ refuse right away; try it and see whether the converter accepts it.
 | `EmailAuthenticationTicket` | `caseFormatter`, `affixVariableText` |
 | `EmailConfirmationLinkTicket` | `caseFormatter`, `affixVariableText` |
 | `MailingSendingDateTime` | `formatDateTime`, `affixVariableText` |
+| `MailingTopicName` | `caseFormatter`, `affixVariableText` |
 | `OrderAppliedDiscount` *(automated only)* | `discountSettings`, `numericFilter`, `formatDecimal`, `affixVariableText` |
 | `OrderBaseAmount` *(automated only)* | `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `OrderBaseAmountFull` *(automated only)* | `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
@@ -51,6 +52,11 @@ refuse right away; try it and see whether the converter accepts it.
 | `OrderMobilePhone` *(automated only)* | `caseFormatter`, `affixVariableText` |
 | `OrderPaymentAmount` *(automated only)* | `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `OrderPaymentType` *(automated only)* | `caseFormatter`, `affixVariableText` |
+| `OrderPresentmentGiftCardAmount` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderPresentmentTotalAmount` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderPresentmentTotalDiscounts` *(automated only)* | `discountSettings`, `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderPresentmentTotalShipping` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderPresentmentTotalTax` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
 | `OrderTotalAmount` *(automated only)* | `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `OrderTotalAmountWithoutDelivery` *(automated only)* | `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `PromoCodeExpirationDateTime` | `promoCodePool`, `formatDate`, `affixVariableText` |
@@ -64,7 +70,7 @@ refuse right away; try it and see whether the converter accepts it.
 | `RecipientCustomFieldInteger` | `customFieldType`, `numericFilter`, `formatInteger`, `pluralizationAffix`, `affixVariableText` |
 | `RecipientCustomFieldString` | `customFieldType`, `formatString`, `caseFormatter`, `affixVariableText` |
 | `RecipientEmail` | `caseFormatter`, `affixVariableText` |
-| `RecipientGreeting` | `greetingWithNameInput`, `greetingNoNameInput`, `affixVariableText` |
+| `RecipientGreeting` | `affixVariableText` — the greeting words; see “The greeting carries the whole phrase” in [personalization.md](./personalization.md) |
 | `RecipientMobilePhone` | `caseFormatter`, `affixVariableText` |
 | `RecipientNearestExpirationBonuses` | `balance`, `numericFilter`, `formatInteger`, `pluralizationAffix`, `affixVariableText` |
 | `RecipientNearestExpirationBonusesDate` | `balance`, `formatDate`, `affixVariableText` |
@@ -72,14 +78,14 @@ refuse right away; try it and see whether the converter accepts it.
 | `SpecialLinkTopicUnsubscribeLink` | `affixVariableText` |
 | `SpecialLinkUnsubscribeLink` | `affixVariableText` |
 
-## Product parameters live separately
+## Product parameters are listed separately
 
-Besides the email, parameters have five more entities — a product, a viewed product, a product-list line,
-the single list line and an order line. These are the remaining 125 parameters, and they are listed by entity in
-[product-parameters.md](./product-parameters.md). They come alive only inside the product row
-`<CollectionRow>` with its cards ([product-rows.md](./product-rows.md)): such a chip placed in a regular column
-is not a correct way to output a product. Do not use product chips outside a product-row
-card.
+Besides the email, parameters have five more entities — product, viewed product, product list row,
+single list row and order line. These are the remaining 127 parameters, and they are listed by entity in
+[product-parameters.md](./product-parameters.md). They come alive only inside a product row
+`<CollectionRow>` with its cards ([product-rows.md](./product-rows.md)): placed in an ordinary column,
+such a chip is not a correct way to display a product. Do not use product chips outside a product
+row card.
 
-**When asked to output the order's products, the cart, recommendations or viewed products, do not pick a similar
+**When asked to display order products, a cart, recommendations or viewed products, do not pick a similar
 parameter from the list above** — build a product row.

@@ -84,14 +84,14 @@ provenance you cannot tell a built filter from an improvised one.
 > against, and a prose sentence cannot be compared with a rendering. So: the prose sentence **and**
 > the draft.
 >
-> Also tell me, in one line each: the root entity, the project and environment you built on, and any
-> assumption you made.
+> Also tell me, in one line each: the root entity, the property set you built in, the project and
+> environment you built on, and any assumption you made.
 >
 > And tell me how it was produced: **which skill you followed**, **which of its reference documents
 > you read** to choose the root and the predicates (give their ids as the reference prints them),
 > that the payload is your compile's confirmed output and **not** one you composed, patched or edited
 > by hand, and that **the compile came back `status: ready` and `platform: accepted` with that root
-> passed**.
+> passed — and with the property set above passed too, where I named one**.
 >
 > If your build step returned no payload, say so and stop — do not substitute a draft, an earlier
 > filter, or one written by hand.
@@ -127,7 +127,7 @@ name the block, and say what the flow does not do while that condition is missin
 | A filter payload is present, in a code block | Ask once more, restating why the payload is the deliverable. Still nothing: stop that condition and report it. Never reconstruct one. |
 | The **query draft** is present too, in the language a stored filter renders back into | Ask once more, by name — see *The query draft* below. |
 | The answer **evidences its provenance**: it names the skill it followed, cites reference documents it read, and states the payload is the confirmed output of its build step | **Ask once more, for the provenance specifically** — see *Provenance* below, which owns the budget. |
-| The answer states the compile came back **`status: ready` and `platform: accepted`, with your root passed** | Ask once more for that statement — see *The root statement* below. |
+| The answer states the compile came back **`status: ready` and `platform: accepted`, with your root passed — and with your property set passed, where you named one** | Ask once more for that statement — see *The root statement* below. |
 | The answer builds **every** clause of the request | If it diagnoses one clause as unbuildable, the delegation worked and what is open is a business decision. **Do not narrow the request yourself** — see *A clause that cannot be expressed* below. |
 | The root is the one you asked for | Discard it. Do not re-root it yourself and do not adjust the scope to match — the scope came from the graph, not from the filter. Where you named no property set, the root's default is the expected answer and is not a mismatch; only a property set you did name and did not get is one. |
 | The project and environment match the server the flow is on | Discard it and re-delegate naming the server. A wrong-project filter does not error; it silently describes a different audience. |
@@ -146,7 +146,9 @@ followed the skill with nothing it read to show for it.
 
 **The root statement.** Without it you do not know the root was checked. Then it is yours to
 corroborate: have the payload rendered and see that it is about the entity you asked for. Corroborate
-or discard; never write it on a bare "it validated".
+or discard; never write it on a bare "it validated". The property set half of the statement is the
+only evidence you get that the set was passed — do not treat the payload as corroborating it. Where
+you named a set and the statement does not cover it, ask once more; still missing, discard.
 
 **A clause that cannot be expressed.** A diagnosed clause is a **finding**, not silence and not a bad
 answer: what is open is **which filter to build instead**, and that is the marketer's decision.

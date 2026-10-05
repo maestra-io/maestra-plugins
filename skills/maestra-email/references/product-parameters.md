@@ -1,31 +1,31 @@
 # Product parameters — only inside a product row
 
-**When to read:** the needed product value is not in the short table of `product-rows.md`, or you need to pick a product `<Var>` for a card.
+**When to read:** the product value you need is not in the short table in `product-rows.md`, or you need to pick a product `<Var>` for a card.
 
-**Return to:** `product-rows.md`, then to Self-check in `SKILL.md`; the parameter must match the entity the chosen mechanic iterates.
+**Return:** to `product-rows.md`, then to Self-check in `SKILL.md`; the parameter must match the entity that the chosen mechanic iterates over.
 
-Five product entities — a product (`product`), a viewed product (`productView`), a product list line
-(`productListItem`), the only line of a list (`singleProductListItem`) and an order line (`orderItem`) —
-125 parameters out of 168, with the attributes of each. Opened when the needed product value is not in the
-"value → parameter name" table in [product-rows.md](./product-rows.md). The parameters of the email itself are in
+Five product entities — product (`product`), viewed product (`productView`), product list row
+(`productListItem`), single list row (`singleProductListItem`) and order line (`orderItem`) —
+127 parameters out of 176, with the attributes of each. Open it when the product value you need is not in the
+“value → parameter name” table in [product-rows.md](./product-rows.md). Parameters of the email itself are in
 [personalization-parameters.md](./personalization-parameters.md).
 
-Such a parameter is authored only inside a block that iterates products — that is the product row
-`<CollectionRow>` with its cards (`references/product-rows.md`). Do not use product chips outside a card of a
-product row: for products, assemble a `<CollectionRow>`.
+Such a parameter is authored only inside a block that iterates over products — that is, a product row
+`<CollectionRow>` with its cards (`references/product-rows.md`). Do not use product chips outside a product
+row card: for products, build a `<CollectionRow>`.
 
-**The family is chosen not by the author but by the row's mechanic.** A chip of a different entity than the one the mechanic iterates
-the converter rejects, and itself names the twin parameter from the right family ("Use `ProductListItemProductName` — the
-same value, read from `productListItem`"). The "mechanic → family" table is in `references/product-rows.md`;
+**The family is chosen not by the author but by the row's mechanic.** A chip of an entity other than the one the mechanic iterates over is
+rejected by the converter, which itself names the counterpart parameter from the right family (“Use `ProductListItemProductName` — the
+same value, read from `productListItem`”). The “mechanic → family” table is in `references/product-rows.md`;
 here it is repeated in the table headings.
 
-**When asked to show order products, the cart, recommendations or viewed products, do not pick a similar-looking
-parameter from the email's list above** — assemble a product row. A row with recommendations or another
-automatic mechanic can be assembled from JSX entirely. A row with manually picked products — too: the
-products themselves are found by lookup (`entities_list`, `entityType: Product`) or taken from the email you are editing, and
-never invented. Nowhere to take them from — assemble the styling and say that the products need to be picked.
+**When asked to display order products, a cart, recommendations or viewed products, do not pick a similar
+parameter from the email list above** — build a product row. A row with recommendations or another
+automatic mechanic can be built entirely from JSX. So can a row with manually selected products: the
+products themselves are found with a lookup (`entities_list`, `entityType: Product`) or taken from the email you are editing, and
+are never invented. If there is nowhere to take them from, build the design and say that the products need to be selected.
 
-## `product` — a product (19)
+## `product` — product (19)
 
 Mechanics `Recipient.Recommendations`, `Products.GetBySegment`, `SessionGetViewProducts`, `SessionGetAddedToListProducts` and the other twelve — everything except the three below.
 
@@ -51,9 +51,9 @@ Mechanics `Recipient.Recommendations`, `Products.GetBySegment`, `SessionGetViewP
 | `ProductVendorCode` | `productSegment`, `caseFormatter`, `affixVariableText` |
 | `ProductVendorName` | `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
 
-## `productListItem` — a product list line (33)
+## `productListItem` — product list row (33)
 
-Mechanic `FROM_PRODUCT_LIST` — the row iterates a product list of the project.
+Mechanic `FROM_PRODUCT_LIST` — the row iterates over a project product list.
 
 | `param` | its attributes |
 |---|---|
@@ -91,7 +91,7 @@ Mechanic `FROM_PRODUCT_LIST` — the row iterates a product list of the project.
 | `ProductListItemProductVendorCode` | `productSegment`, `caseFormatter`, `affixVariableText` |
 | `ProductListItemProductVendorName` | `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
 
-## `singleProductListItem` — the only line of a list (26)
+## `singleProductListItem` — single list row (26)
 
 Mechanic `ProductListItem`.
 
@@ -124,9 +124,9 @@ Mechanic `ProductListItem`.
 | `SingleProductListItemProductVendorCode` | `productSegment`, `caseFormatter`, `affixVariableText` |
 | `SingleProductListItemProductVendorName` | `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
 
-## `orderItem` — an order line (28)
+## `orderItem` — order line (30)
 
-Mechanic `ORDER` — the row iterates the order's line items.
+Mechanic `ORDER` — the row iterates over the order lines.
 
 | `param` | its attributes |
 |---|---|
@@ -142,6 +142,8 @@ Mechanic `ORDER` — the row iterates the order's line items.
 | `OrderItemCustomFieldString` | `customFieldType`, `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
 | `OrderItemDiscount` | `discountSettings`, `productSegment`, `numericFilter`, `formatDecimal`, `affixVariableText` |
 | `OrderItemDiscountPerUnit` | `discountSettings`, `productSegment`, `numericFilter`, `formatDecimal`, `affixVariableText` |
+| `OrderItemPresentmentLineTotal` | `productSegment`, `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderItemPresentmentUnitPrice` | `productSegment`, `numericFilter`, `formatMoney`, `affixVariableText` |
 | `OrderItemPricePerUnit` | `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `OrderItemProductAddToCartUrl` | `hostname`, `externalSystem`, `amount`, `discountQuery`, `destinationRoute`, `productSegment`, `affixVariableText` |
 | `OrderItemProductCustomFieldDate` | `customFieldType`, `productSegment`, `formatDate`, `affixVariableText` |
@@ -159,7 +161,7 @@ Mechanic `ORDER` — the row iterates the order's line items.
 | `OrderItemProductVendorName` | `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
 | `OrderItemStatus` | `productSegment`, `caseFormatter`, `affixVariableText` |
 
-## `productView` — a viewed product (19)
+## `productView` — viewed product (19)
 
 Mechanic `ProductView`.
 
