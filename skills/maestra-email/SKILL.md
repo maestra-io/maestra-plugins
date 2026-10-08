@@ -468,7 +468,7 @@ The style of the text as a whole (font, size, color) is set through `style={{...
 </Column>
 ```
 
-A source that keeps a heading and a paragraph in one section — a text block from Klaviyo or another email platform, an HTML cell, a block of a mockup — is split the same way: a `<Text>` per size or font, one under another (`dsl-surface.md` §6: not inside a `<Split>` column, which holds one element). The gap between them is the sum of their own `innerSpacing`; match it to the source by lowering the heading's `bottom` and the paragraph's `top`.
+A source that keeps a heading and a paragraph in one section — a text block from Klaviyo or another email platform, an HTML cell, a block of a mockup — is split the same way: a `<Text>` per size or font, one under another. A `<Split>` column holds one element (`dsl-surface.md` §6), so when such text sits side by side with something else, build that part as its own `FlexRow` with ordinary `Column`s instead of a `<Split>`: a `Column` holds any number of elements. The gap between them is the sum of their own `innerSpacing`; match it to the source by lowering the heading's `bottom` and the paragraph's `top`.
 
 The rule applies to text you write or carry over. Do not restructure existing text that the request does not touch, a library block or a `<QuokkaBlock>`; if an existing block mixes sizes and the user is editing it, name it and offer the split.
 
