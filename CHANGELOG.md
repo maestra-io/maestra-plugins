@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 1.7.1 — 2026-10-08
+
+- `maestra-email`: **one size and one font per text block.** A heading is always its own `<Text>`,
+  and so is any line that differs from its neighbors in size or font; an `h1`–`h6` tag is the only
+  content of its `<Text>`, and size or font is not changed with a `<span>`. Bold, italics, links
+  and the color of a word inside a block stay allowed. A section that keeps a heading and a
+  paragraph together in the source — a text block from Klaviyo or another email platform, an
+  HTML cell, a mockup — is split into several `<Text>` one under another, with the spacing between
+  them matched to the source. Applies to text the agent writes or carries over; library blocks
+  and untouched text stay as they are. Added to the "Text — markup inside text" section and to
+  the self-check. A Maestra adaptation — on the next upstream sync keep the upstream wording if
+  it carries the same rule, otherwise re-apply it.
+
 ## 1.7.0 — 2026-10-05
 
 Upstream sync: the email skills from the upstream editor skills **1.15.0**, and `flow-create`,

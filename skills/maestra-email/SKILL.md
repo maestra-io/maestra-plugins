@@ -459,6 +459,19 @@ Plain text (without its own markup) is automatically wrapped in `<p style="margi
 
 The style of the text as a whole (font, size, color) is set through `style={{...}}` on `<Text>` — not to be confused with inline `<strong>` markup inside.
 
+**One `<Text>` — one size and one font.** In the editor the style of a text block applies to the whole block, so text of different sizes or fonts in one block cannot be adjusted separately. A heading is always its own `<Text>`, and so is any line that differs from its neighbors in size or font: a subheading, a caption, fine print. Set the heading level with `themeVariant` (step 5); an `h1`–`h6` tag carried over from a source stays the only content of its `<Text>`, never a line next to a `<p>`. Do not change the size or the font with a `<span style="font-size: …">` or `font-family`. Everything that keeps the size and the font stays inside one block — for example bold, italics, underline, strikethrough, a link, the color of a word, a personalization chip, a line break, a list.
+
+```jsx
+<Column size={12}>
+  <Text themeVariant="h2" innerSpacing={{ top: 10, bottom: 4 }}>Last day of the sale</Text>
+  <Text innerSpacing={{ top: 4, bottom: 10 }}><p style="margin: 0;">Save <strong>20%</strong> on everything before midnight.</p></Text>
+</Column>
+```
+
+A source that keeps a heading and a paragraph in one section — a text block from Klaviyo or another email platform, an HTML cell, a block of a mockup — is split the same way: a `<Text>` per size or font, one under another. A `<Split>` column holds one element (`dsl-surface.md` §6), so when such text sits side by side with something else, build that part as its own `FlexRow` with ordinary `Column`s instead of a `<Split>`: a `Column` holds any number of elements. The gap between them is the sum of their own `innerSpacing`; match it to the source by lowering the heading's `bottom` and the paragraph's `top`.
+
+The rule applies to text you write or carry over. Do not restructure existing text that the request does not touch, a library block or a `<QuokkaBlock>`; if an existing block mixes sizes and the user is editing it, name it and offer the split.
+
 ## Cards with aligned CTAs
 
 This is about cards made of **static** content that you write yourself. Product cards from a mechanic — recommendations, viewed products, order items — are a product row `<CollectionRow>` (`references/product-rows.md`); there the heights are synchronized on their own. The full list of mechanics is in `references/product-rows.md`; what people call a "cart" is not among them: the closest is `SessionGetAddedToListProducts`, products added to a list during the session.
@@ -475,13 +488,16 @@ Blocks hidden for the current device (`visibilityOnDevices="mobile"`/`"desktop"`
 
 ## Self-check (mandatory before output)
 
-**Not applied to a library block or to `<QuokkaBlock>`:** "Values", "Gap attributes" and "Mobile typography": do not add `style.mobile`, do not convert string numbers into numbers, do not complete partial attributes. Check everything else as usual.
+**Not applied to a library block or to `<QuokkaBlock>`:** "Values", "Gap attributes", "Mobile typography" and "One size and one font per `<Text>`": do not add `style.mobile`, do not convert string numbers into numbers, do not complete partial attributes. Check everything else as usual.
 
 - **Visual hierarchy** (for emails longer than one section): at least two sections with an opaque `background`, at least one of which contrasts with the others; three levels of text size — provided either by different `fontSize` or by different `themeVariant` (`h1`/`h2`/`text`), and the latter is no worse: the sizes live in the email's letter styles; the CTA has a brand `background` if the brand or reference is known; enumerations are built as a grid, not as a single column. An email of sections without background, with text of one size and a black-and-white button is unfinished, even if valid.
 - **Grid:** the sum of `size` of all columns in each `FlexRow` and `<Split>` **equals 12** (strictly ==, not ≤). For example: `12` (one), `6+6` (two), `4+4+4` (three), `8+4`, `3+3+6`. Empty columns fill up the grid or narrow the composition when a narrow one is visible in the mockup or named by the user — but they do not center: a single centered line is given by `Column size={12}` with `style.align`, not by margins of empty columns on the sides.
 - **Carry-over:** elements adjacent in one source container (HTML or another email platform)
   (table row/div-row) are in one `FlexRow`, not spread across several `12` rows;
   the container's proportions are converted into integer `Column.size` summing to 12 (`600+600` of `1200` → `6+6`).
+  Text of one source section with different sizes or fonts is several `<Text>` one under another, not one `<Text>`.
+- **One size and one font per `<Text>`** (in text you wrote or carried over): no `h1`–`h6` next to other lines in the same `<Text>`, no `<span>` with
+  `font-size` or `font-family`; a heading, a subheading and the body text are separate `<Text>` blocks ("Text — markup inside text").
 - **Completeness of carrying over from a mockup** — any kind of source: an image, Figma, HTML, a link to a page.
   Checked against the source: images and logos are in place, all text blocks, spacing and sizes,
   buttons with their links, the footer's contents, and when carrying over a whole email — the background and width on
