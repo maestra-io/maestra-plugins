@@ -459,6 +459,17 @@ Plain text (without its own markup) is automatically wrapped in `<p style="margi
 
 The style of the text as a whole (font, size, color) is set through `style={{...}}` on `<Text>` — not to be confused with inline `<strong>` markup inside.
 
+**One `<Text>` — one size and one font.** In the editor the style of a text block applies to the whole block, so text of different sizes or fonts in one block cannot be adjusted separately. A heading is always its own `<Text>`, and so is any line that differs from its neighbors in size or font: a subheading, a caption, fine print. An `h1`–`h6` tag is the only content of its `<Text>`, never a line next to a `<p>`; do not change the size or the font with a `<span style="font-size: …">` or `font-family`. Inside one block you may still mark a fragment: `<strong>`, `<em>`, `<u>`, `<s>`, a link, the color of a word.
+
+```jsx
+<Column size={12}>
+  <Text themeVariant="h2" innerSpacing={{ top: 10, bottom: 4 }}>Last day of the sale</Text>
+  <Text innerSpacing={{ top: 4, bottom: 10 }}><p style="margin: 0;">Save <strong>20%</strong> on everything before midnight.</p></Text>
+</Column>
+```
+
+A source that keeps a heading and a paragraph in one section — a text block from Klaviyo or another email platform, an HTML cell, a block of a mockup — is split the same way: one `Column`, a `<Text>` per size or font. Each `<Text>` has `innerSpacing` 10 at the top and bottom by default, 20 between two blocks; if the source has a tighter gap, lower the heading's `bottom` and the paragraph's `top`.
+
 ## Cards with aligned CTAs
 
 This is about cards made of **static** content that you write yourself. Product cards from a mechanic — recommendations, viewed products, order items — are a product row `<CollectionRow>` (`references/product-rows.md`); there the heights are synchronized on their own. The full list of mechanics is in `references/product-rows.md`; what people call a "cart" is not among them: the closest is `SessionGetAddedToListProducts`, products added to a list during the session.
@@ -482,6 +493,9 @@ Blocks hidden for the current device (`visibilityOnDevices="mobile"`/`"desktop"`
 - **Carry-over:** elements adjacent in one source container (HTML or another email platform)
   (table row/div-row) are in one `FlexRow`, not spread across several `12` rows;
   the container's proportions are converted into integer `Column.size` summing to 12 (`600+600` of `1200` → `6+6`).
+  Text of one source section with different sizes or fonts is several `<Text>` in one `Column`, not one `<Text>`.
+- **One size and one font per `<Text>`:** no `h1`–`h6` next to other lines in the same `<Text>`, no `<span>` with
+  `font-size` or `font-family`; a heading, a subheading and the body text are separate `<Text>` blocks ("Text — markup inside text").
 - **Completeness of carrying over from a mockup** — any kind of source: an image, Figma, HTML, a link to a page.
   Checked against the source: images and logos are in place, all text blocks, spacing and sizes,
   buttons with their links, the footer's contents, and when carrying over a whole email — the background and width on
