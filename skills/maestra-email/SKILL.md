@@ -123,7 +123,7 @@ Template         exactly one, the root
 | `Button` | — | `url`, `align`, `themeVariant` (`primary`/`secondary`), `innerSpacing`, `buttonSize`, `background`, `simpleTextStyles`, `border`, `borderRadius`, `iconSrc`, `iconAlt`, `iconDisplay`, `iconSizeInPercents`, `visibilityOnDevices` | CTA button; `url` is required for generation by policy |
 | `Divider` | — | `innerSpacing`, `border`, `visibilityOnDevices` | Divider line (self-closing) |
 | `Html` | — | `visibilityOnDevices` | Arbitrary HTML block |
-| `Image` | `image` | `url`, `size`, `align`, `innerSpacing`, `border`, `borderRadius`, `visibilityOnDevices` | Image with a confirmed source URL (self-closing); `size`/`align` control the image itself, `url` makes it clickable; do not set `background` — the backend rejects it |
+| `Image` | `image` | `alt`, `url`, `size`, `align`, `innerSpacing`, `border`, `borderRadius`, `visibilityOnDevices` | Image with a confirmed source URL (self-closing); `size`/`align` control the image itself, `url` makes it clickable; do not set `background` — the backend rejects it |
 | `Label` | — | `url`, `background`, `border`, `borderRadius`, `innerSpacing`, `contentSpacing`, `simpleTextStyles`, `iconSrc`, `iconAlt`, `iconDisplay`, `iconSizeInPercents`, `emptyVariableBehavior`, `boolFieldVisibility`, `themeVariant` (`primary`/`secondary`) | Label: short text on a background with an optional icon. **Place it only in a product row card and only as a line of `<Labels>`**: the restriction lives in the editor canvas, the converter will let a label through in a regular row — a successful preview proves nothing here. Placed directly in `<Column>`, it is rejected by the editor. The label has no `visibilityOnDevices` (`Unknown attribute`); it is set on the `<Labels>` group. Content — text or a list of segments `{["−", <Var … />]}`; a chip as a child element is rejected: `<Label> may only contain text`. It disappears entirely if a variable in it has no value — `references/dsl-surface.md`, §6 |
 | `Menu` | — | `align`, `itemsGap`, `innerSpacing`, `background`, `border`, `borderRadius`, `visibilityOnDevices` | Menu; children — only `<Text>` or only `<Button>` |
 | `Labels` | — | `align`, `itemsGap`, `innerSpacing`, `background`, `border`, `borderRadius`, `visibilityOnDevices` | A row of labels in a product row card; children — only `<Label>…</Label>` |
@@ -233,6 +233,30 @@ Generator does not upload files and does not go to gallery/search tools itself. 
 
 An image is set as the email background following the same source rules; the value shape and modes are in §4 `dsl-surface.md`, "Image background".
 
+### Alt text — always set it
+
+Every image gets alt text wherever the format allows it — a Maestra rule, not optional polish. Many
+clients block images by default, and the alt is what the recipient reads instead; screen readers
+read it too.
+
+- **`<Image>`** — `alt="…"`. In a product row card it is the product name chip
+  (`references/product-rows.md`); everywhere else a plain string.
+- **`<img>` inside `<Html>`** — an `alt="…"` attribute on every `<img>`.
+- **`<Socials>` lines** — the network name: `alt="Instagram"`, `alt="Facebook"`.
+- **What to write:** what the image says or does, in the email's language. A banner with text →
+  its text, shortened to the essentials (headline, offer, CTA label). A navigation tile or a button
+  drawn as an image → its label ("Hot Deals", "Shop now"). A logo → the brand name. A photo → a
+  short description ("Linen duvet set in sage"). Read the text off the image itself (look at it
+  through Ops' preview or the file); do not guess it from the file name.
+- A purely decorative image (a spacer, a divider drawn as a picture, a background ornament) gets
+  `alt=""` rather than a made-up caption.
+- **Carrying over an email** (a copy, a port from another platform, a raw-HTML rebuild): keep the
+  source's alt when it is meaningful; when it is missing, empty on a non-decorative image, or a
+  placeholder ("image", "banner", a file name), write a proper one. Name in the response that alt
+  text was added.
+- When editing an existing email, add missing alt text to the images you touch; offer — not
+  silently perform — the same for the rest of the email.
+
 ### Hard rules
 
 - Do not invent URLs. Author-supplied `data:`, `base64`, `blob:`, `file:` and `cid:` are forbidden.
@@ -243,7 +267,7 @@ An image is set as the email background following the same source rules; the val
 - The invented-URL rules extend to a personal image as a ban on an invented prefix: the address
   itself comes from the project's data, not from the model's response.
 - `<Html>` does not bypass the image rules: if the quoted HTML contains `<img>`, its `src` must
-  be a confirmed HTTPS URL; prefer `<Image>`.
+  be a confirmed HTTPS URL and it carries an `alt`; prefer `<Image>`.
 - Do not put important text, a price, a CTA or terms only inside an image.
 
 ## Fonts
@@ -545,7 +569,7 @@ Blocks hidden for the current device (`visibilityOnDevices="mobile"`/`"desktop"`
 - **Moving into the letter styles** (if it happened) — checked against §8 `dsl-surface.md`: the set from the variant matches the removed one field by field, by values, not by the preview; mobile sides are carried over; extra looks are left unique and their number is named; `<Theme>`, the removed styles and `themeVariant` went in one document.
 - **Editor-template blocks:** every `<QuokkaBlock>` of the email that was read is in place and untouched — the same `templateId`, the same attributes, the same `<Collection>` with their shape (`count`, `count` + one card, a list of `<Item>`). None has been rewritten with flex blocks or removed "as unnecessary"; removal happens only where it was asked for.
 - **Group visibility:** set `visibilityOnDevices` on `<Menu>`, `<BulletList>`, `<Socials>`, `<Labels>` or `<Split>`, but not on their lines: `<Label>` has no such attribute at all.
-- **Images:** every authored `<Image>` has a source — `image={{ mode: "static", static: { url, fileName } }}` or `image={{ mode: "dynamic", dynamic: [<Var … />] }}` without an invented prefix. The source URL starts with `https://` and came from the user or was returned by Ops from a confirmed gallery DTO; there are no bare Image, no author-supplied forbidden schemes and no invented Socials URLs. If the size/alignment of a standalone image was requested, they are set through `Image.size`/`Image.align`, not with extra columns or side `innerSpacing`; a fixed size has a deliberate mobile branch. A source that arrived inside a library block is already confirmed.
+- **Images:** every authored `<Image>` has a source — `image={{ mode: "static", static: { url, fileName } }}` or `image={{ mode: "dynamic", dynamic: [<Var … />] }}` without an invented prefix. The source URL starts with `https://` and came from the user or was returned by Ops from a confirmed gallery DTO; there are no bare Image, no author-supplied forbidden schemes and no invented Socials URLs. If the size/alignment of a standalone image was requested, they are set through `Image.size`/`Image.align`, not with extra columns or side `innerSpacing`; a fixed size has a deliberate mobile branch. A source that arrived inside a library block is already confirmed. Every image — `<Image>`, a `<Socials>` line, an `<img>` inside `<Html>` — has alt text per "Images" → "Alt text": the image's text or meaning, the network name for a social icon, `alt=""` only for a decorative image.
 - **Unsubscribe:** the email **has** a canonical unsubscribe link — or the response says why it is absent (a transactional email, or unsubscribe comes from the wrapper/campaign settings). Then, as to form: the canonical link is not duplicated; a new `${Message.UnsubscribeLink}` is allowed only as the exact `href` of an `<a>` inside `<Text>`, and in the `url` of a button or image the `SpecialLinkUnsubscribeLink` chip is used instead of the token. There is no `<Button url="${Message.UnsubscribeLink}">`, fake `/unsubscribe`, preferences-as-unsubscribe or other new `${...}`/`{{...}}` variables — personalization is written with `<Var>`, not with a raw template string.
 - **Personalization:** every `<Var>` has a `param` from `references/personalization.md`; no tenant-specific setting (`customFieldType`, `externalSystem`, `orderExternalIdSelection`, `promoCodePool`, `balance`, `hostname`) is empty or invented; product families (`Product*`, `ProductView*`, `ProductListItem*`, `SingleProductListItem*`, `OrderItem*`) are only inside a product row card, not in a regular column; *(automated only)* parameters did not end up in a bulk (`Manual`) campaign. Every tenant-specific `systemName` came from `entities_list` or from the user, none is invented; `name` and `internalId` are carried over next to it if they are in the response. `type` is not written in `customFieldType`. Existing `<personalization-parameter model="…">` are not rewritten. Every text chip in a product row card (`ProductName`, `ProductDescription`, `ProductVendorName` and their counterparts in the other families) has `formatString` set: a limit from the presets `40`/`80`/`120`/`200` for products from a mechanic, `isTruncateEnabled: false` for manually selected ones. The default 150 breaks card heights.
 

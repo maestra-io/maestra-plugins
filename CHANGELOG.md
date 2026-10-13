@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.7.2 — 2026-10-13
+
+- `maestra-email`: **alt text on every image.** `<Image>` takes `alt`, every `<img>` inside
+  `<Html>` carries an `alt` attribute, and `<Socials>` lines get the network name. The alt is the
+  image's text or meaning (a banner's headline and CTA, a nav tile's label, the brand name for a
+  logo, a short description for a photo), read off the image rather than guessed from the file
+  name; decorative images get `alt=""`. When an email is copied or ported, meaningful source alts
+  are kept and missing or placeholder ones are written. New "Images" → "Alt text" section, `alt`
+  added to the allowlist row of `Image`, the `<Html>` hard rule and the self-check. A Maestra
+  adaptation — on the next upstream sync keep the upstream wording if it carries the same rule,
+  otherwise re-apply it.
+
 ## 1.7.1 — 2026-10-08
 
 - `maestra-email`: **one size and one font per text block.** A heading is always its own `<Text>`,
