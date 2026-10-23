@@ -2,7 +2,7 @@
 
 **When to read this:** you are about to build a new email (step 0 of the Workflow in `SKILL.md`):
 from a description, a mockup or a reference, a rebuild or redesign of an existing email, a copy
-into a new campaign, a port from another platform.
+into a new campaign, a port from another platform, an email by one of the project's saved templates.
 **Return to:** step 1 of the Workflow, with the answers.
 
 One card with every question the build needs, shown before anything is created or generated.
@@ -36,6 +36,7 @@ and build.
 | Which data to show? | personalization or order/product data is in play | multi-select of the concrete values: first name, order number, date, total, order items, promo code… |
 | How many products, which layout? | the email has a product row | 6 (3×2) · 3 (3×1) · 4 (2×2) |
 | Which images from the reference? | the reference has images beyond the logo and icons | one card per image with its subject and offer in the subtitle; multi-select |
+| Start from a saved template? | the project has saved templates (`client_visual_template_list` is in the MCP and returns rows) and no mockup, reference or template was named | the template names as cards · "no, from scratch" preselected; a chosen template goes to `maestra-email-ops`, `references/saved-template.md` |
 | Where to take the look from? | the look is not given — no mockup, reference, brand book or earlier email in the request or the project notes | cards: the last 3 one-off (bulk) emails of this brand · the last 3 flow emails · design from the website (URL field, the brand's site prefilled when known) · the client's brand book (file upload with a text fallback) — multi-select |
 | Style / blocks | a redesign, or the description leaves the look open | preview tiles for the layout; cards for optional blocks |
 

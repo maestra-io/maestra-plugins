@@ -3,7 +3,7 @@ name: maestra-email-ops
 description: Operational actions for Maestra emails — preview, reading and saving the visual template, letter styles, saved blocks, reading/editing campaign metadata and recipients (a segment or a filter), test sends, finding gallery assets via MCP, uploading images from the user's machine through the MCP App panel, PNG preview links, and an inbox-style mockup of the finished email (before/after when there is an earlier version) to share with a client or the team. Use together with the maestra-email skill when images, a preview, a check, a test send or a write to Maestra are needed, or when the user wants a picture of the email as it looks in an inbox ("before/after", "до/после", "mockup", "скриншот для клиента").
 metadata:
   author: Maestra.io
-  version: 1.15.0
+  version: 1.17.1
 ---
 
 > Note: `Mindboxeditor` is the platform's literal editor-kind value returned by the API (legacy name); do not rename it.
@@ -76,6 +76,8 @@ The sending protocol is mandatory in both cases:
   supporting host an MCP App widget opens;
 - reads campaign metadata (`campaign_get`);
 - reads the existing visual JSX of the chosen format (`visual_template_get`) and the JSX of saved blocks chosen by the user in the panel (`visual_template_saved_block_list` → `visual_template_saved_block_get`);
+- builds an email by a saved template the user picks in the panel (`client_visual_template_list`);
+- reads a block template's markup and the settings it takes by the `templateId` of its `<QuokkaBlock>` (`visual_template_quokka_block_describe`);
 - gives the generator the email's current letter styles as a `<Theme>` fragment
   (`visual_template_theme_get`);
 - saves JSX into the chosen campaign format after explicit confirmation
@@ -116,15 +118,26 @@ script in this skill is the inbox mockup — a presentation picture, not QA:
 |--------|-----------|--------------------|
 | `inbox_mockup.py` | Preview `htmlUrl` of the email → PNG of it opened in a phone mail app; with `--before` also a before/after image | `--after <htmlUrl> [--before <htmlUrl>] [--list-chips] --sender … --subject … --to … --replace OLD=NEW … [--accent #RRGGBB] [--no-logo]`; fallback `--before-png/--after-png` |
 
+`template` (get, theme_get) and `settingsSource` (preview, save) name a template as their descriptions say:
+**the campaign's template** — by the `formatInternalId` of the version, **the saved template** — by `internalId`
+from `client_visual_template_list`. The deprecated `formatInternalId` of get, theme_get and preview is not passed.
+Go by the schema the server shows: a Maestra MCP that still lists only `formatInternalId` on these tools (the release
+with `template`, `settingsSource`, `client_visual_template_list` and the `kind` column of the saved-block list has not
+reached it yet) takes the campaign's template by `formatInternalId`, and the saved-template route is not available
+there — say so instead of improvising.
+
 ## Quickstart: pick a route
 
 | Task | Route |
 |---|---|
 | New JSX email | target discovery if a save is needed → email details card (`maestra-email` step 0) → gallery → Generator → stale-preview notice / optional preview+QA → the canonical visual save workflow |
 | Editing an existing email by ID | `campaign_get` → the canonical visual workflow with `visual_template_get` |
-| A saved editor block | `visual_template_saved_block_list` → the user chooses in the panel → `visual_template_saved_block_get` with the `internalId` from their message |
+| An email by a saved template: "by template X", "from my templates", "show my templates" | `references/saved-template.md` |
+| A saved editor block | `visual_template_saved_block_list` → the user chooses in the panel → `visual_template_saved_block_get` with the `internalId` from their message. `kind` is `block` / `quokka` / `sync`: `quokka` comes back as `<QuokkaBlock>`, `sync` as one `<SyncBlock savedBlockInternalId="…" />` tag; a row the get refuses — ask for another block, no look-alike |
+| Change the content inside a `<QuokkaBlock>` of an email that was read or of a library block | `visual_template_quokka_block_describe` by the block's `templateId` → the attribute is written onto the tag already in the email → the canonical visual save workflow |
+| Change the content inside a `<SyncBlock>` | not through MCP: say it is a universal block (a block shared between emails), edited only in the editor |
 | Change the hero/content in the email body | the canonical visual workflow, not subject |
-| Change the template type: "rebuild it in the visual editor", "convert it to HTML" | the "Changing the template type" section: the type does not change, the email is carried over into a new campaign |
+| Change the template type: "rebuild it in the visual editor", "convert it to HTML" | the "Changing the template type" section: the type does not change, the email is carried over into a new campaign — said up front: table layout and non-standard HTML do not carry over one-to-one |
 | Change the subject/sender/preheader | `campaign_get` → `campaign_edit_content` |
 | Change the name/UTM/schedule | `campaign_get` → `campaign_edit` |
 | Set recipients: a segment or a filter | `references/recipients.md`: `campaign_get` → `segments_list` or the filter-building skill (`maestra:filter-build`) → confirmation → `campaign_edit` |
@@ -144,8 +157,7 @@ If data is missing:
 
 ## Images: confirmation procedure
 
-Generator uses only URLs that Ops returned or that the user explicitly
-provided. Ops chooses nothing silently.
+Ops chooses nothing silently.
 
 If the email has to be saved into a specific campaign, before finding or uploading
 images first run `campaign_get`, choose the exact target and complete
@@ -172,12 +184,9 @@ For standalone generation without a target campaign this preliminary discovery i
    more often means a different spelling of the name than a missing file: if the user expected this
    image to be in the gallery, ask again about the name rather than creating a second copy.
 5. If there is one candidate, return `{url, fileName}` to Generator. Take `url` exactly from the
-   tool output row: do not build, edit or shorten it. `fileName` is
-   `name + fileExtension` if `name` does not already end with that extension;
-   otherwise use `name` as is.
-6. If there are several candidates, do not choose silently. Show the user safe
-   metadata from the actual MCP row: `name`, `fileExtension`, `isSystem`,
-   and size/date only if they are actually present in the response. `isSystem: true`
+   tool output row: do not build, edit or shorten it. `fileName` is the `fileName` column of the same row, as printed.
+6. If there are several candidates, do not choose silently. Show the user the
+   row's `fileName` and `isSystem`, and size/date only if they are actually present in the response. `isSystem: true`
    means a platform shared system icon; otherwise it is a project asset. Show the URL
    only if the user cannot tell the options apart without it.
 7. When offering an image to the user, say explicitly whether it is a platform system icon
@@ -201,7 +210,6 @@ section still works everywhere.
   do not choose silently.
 - If the user says they see no panel, their client does not support it: say so plainly and continue
   with the text list from the previous section.
-- A `data:` URL is forbidden in email JSX.
 
 ### Uploading images from the user's machine
 
@@ -222,24 +230,22 @@ The skill adds two rules here:
 ### External HTTPS URL
 
 Put an image from the user's direct HTTPS link into the gallery — `gallery_image_upload` with
-`imageUrl` — and from then on use the `url` from its response: that way the address is permanent and does not depend on
-someone else's server. Leave as is only a personal link (with variables) and a link
-that the user explicitly asks not to copy.
+`imageUrl` — and from then on use the `url` from its response (`fileName` — the `name` from the same response): that way the address is permanent and does not depend on
+someone else's server. The tool fetches only `https://`: for an `http://` link ask for an https one or a file; a `data:`/`blob:`/`file:`/`cid:` string is not a fetchable link — ask the user to save the picture as a file and upload it through the panel. A personal address (from a customer's field) is not uploaded: there is no file.
 
 ### Gallery unavailable/errors
 
 If `gallery_images_list` or `gallery_image_upload` returned an error,
 pass the meaning of the error to the user and stop the image-dependent part of the workflow.
 Do not invent a cause, do not substitute a similar image and do not ask for local
-credentials. Without a confirmed URL the email can be built only without this
-image or with explicit placeholder text by agreement.
+credentials. Without a URL from the tool the email can be built only without this
+image, by agreement; never with an image picked by name or a placeholder.
 
 ### Social icons and utility icons
 
 Look for social network icons and utility icons with the same `gallery_images_list` with system
 images on by default. System rows come with `isSystem: true`; these are
-platform shared system icons, not project assets. Icons are ordinary HTTPS URLs and
-are placed into `<Image image={{ mode: "static", ... }}>` like any other image.
+platform shared system icons, not project assets.
 One social network often has several design variants — show the metadata and
 ask; do not choose yourself. If the needed social network is missing, ask for an external HTTPS URL or
 a file; do not substitute a similar icon.
@@ -261,18 +267,17 @@ Preview invariants (not moved out; the full procedure is behind the trigger belo
   is filled with sample values, and they are not customer data. What can and cannot be checked on the canvas
   is in `references/preview-qa.md`. `containerWidth` from the response is for the panel; do not relay
   it to the user.
-- **Pass `formatInternalId` as soon as it is known.** With it the render carries, underneath
-  the document, the format's own width, background, "Global (CSS) styles" and the email's letter styles — that
-  is, it shows the email. Otherwise the picture shows only the document, and it looks every bit
-  as convincing. This happens in two ways: the format is not named, or nothing has been saved
-  in it yet — and the tool's response says plainly what exactly was drawn. Trust
-  the response, not what you passed: a format with a typo falls into the same case.
+- **`settingsSource` is the template whose settings the email will have once saved.** With it the render carries,
+  underneath the document, its width, background, "Global (CSS) styles" and letter styles —
+  it shows the email. Editing a campaign's email — the campaign's template of the version being edited, once it has a
+  saved email; building by a saved template — the saved template. Without it the picture shows only the document,
+  and it looks every bit as convincing; the tool's response says so.
   Pass the address of the version you are editing, unless the user asked to show the other one:
   a working campaign has two versions, and their settings may differ.
-- **If you inspect the rendering yourself, look at both snapshots.** The mobile layout differs from
+- **A statement about the layout is made only after both snapshots were opened.** The mobile layout differs from
   the desktop one in more than trifles: the columns of a row collapse into a stack by default, and what
-  stands neatly on desktop may fall apart on mobile. A verdict based on one snapshot does not
-  cover it.
+  stands neatly on desktop may fall apart on mobile. Snapshots not opened — say so instead of describing the
+  layout; a verdict from one snapshot does not cover the other.
 - **HTML is downloaded only for HTML QA/diagnostics; PNGs are always links from the preview
   response, there is no separate call for them.** A local screenshot is not the standard
   path (the emergency Cowork fallback is Claude in Chrome, explicitly marked as a fallback). Return
@@ -317,8 +322,7 @@ only choose the route and do not repeat the save algorithm.
       to convert this email to the visual editor through the "Changing the template type" section;
     - `Rawhtml` with `html: no` — an empty-bootstrap candidate: do not ask for the UI, go to
       `visual_template_get` and choose the bootstrap/recovery branch based on its response;
-      the bootstrap trigger is the verbatim response `No visual template was saved for
-      format '…' yet`;
+      the bootstrap trigger is a response with `No visual template was saved for`;
     - the editor kind is missing or not recognized — do not guess compatibility; stop.
 7. If there is one suitable A/B variant, do not ask an unnecessary question, but show
    the choice in the final confirmation. If there are several variants,
@@ -328,7 +332,7 @@ only choose the route and do not repeat the save algorithm.
 
 ### 2. Reading the initial state
 
-1. Call `visual_template_get(formatInternalId)` for the target version —
+1. Call `visual_template_get` with `template` — the campaign's template of the target version,
    `Mindboxeditor` or `Rawhtml` with `html: no`. `visualTemplateRowVersion` belongs to exactly that
    version: do not pass a version read from one version of the email into another.
 2. If the tool returned JSX and `visualTemplateRowVersion`, this is an existing visual
@@ -340,12 +344,13 @@ only choose the route and do not repeat the save algorithm.
 2a. An existing visual template, and the task is to build a new email (a mockup, a description, a prompt):
     before generation, ask what to do with what is already in the format — build a new one as a replacement or edit
     the existing one. A replacement is a different email, not an edit, and the user decides. Pass the answer
-    to the generator together with the JSX snapshot.
+    to the generator together with the JSX snapshot. An email by a saved template is a replacement too.
     The gate is tied to the intent, not to this step: "let's start over", "redo everything", "from scratch" in the middle of
     editing — is the same replacement, and 2a–2b are gone through again, no matter how many iterations have passed. The snapshot and
     the styles are re-read at that point (`visual_template_get`, `visual_template_theme_get`): over
     the iterations they could have changed, including through your own saves.
-2b. Replacement chosen — call `visual_template_theme_get(formatInternalId, jsx)` and see whether the
+2b. Replacement chosen, not by a saved template — call `visual_template_theme_get` with `template` — the
+    campaign's template — and `jsx`, and see whether the
     email's letter styles are its own or the platform defaults. Its own — the second question is **mandatory**, and it has three answers:
     build the new content **in these styles** (headings and buttons take their look from them and from then on
     change together with the whole email), **give the email new ones**, or **reset to platform defaults**.
@@ -357,7 +362,7 @@ only choose the route and do not repeat the save algorithm.
     the platform defaults. And say it directly: a complete "as if nobody had configured it" is not available from markup — the email
     will look unconfigured, but its styles will remain its own, just equal to the platform defaults.
     Pass all the answers to the generator.
-3. If the tool says verbatim `No visual template was saved for format '…' yet`,
+3. If the tool's response says `No visual template was saved for`,
    check the original `campaign_get`:
     - the chosen format has `html: no`, and the editor kind is `Mindboxeditor` or
       `Rawhtml` — this is a bootstrap of a new visual template: record the absence of
@@ -383,18 +388,20 @@ only choose the route and do not repeat the save algorithm.
    items 2a–2b, re-read the snapshot and the styles and ask both questions again. Silently starting a new email
    on top of the work done is not allowed, no matter how many iterations have passed.
 4. If the user asks for preview/QA/debug, `visual_template_preview` renders
-   the current JSX **with the target format's `formatInternalId`**.
-5. If the generator needs the current values of the email's letter styles — to detach a node from
-   them or to write the set into `<Theme>` — call
-   `visual_template_theme_get(formatInternalId, jsx)`. **Pass the current JSX**: without it
+   the current JSX per the preview invariants.
+5. If the generator needs the current values of the email's letter styles — to move a look into
+   `<Theme>` or to check the values after the move — call
+   `visual_template_theme_get` with `template` — the campaign's template — and `jsx`. **Pass the current JSX**: without it
    the response will not take into account the document's not-yet-saved `<Theme>`, and replacing that tag with the response
    will erase the edits. The response is a ready fragment; give it to the generator as is. If there is no email
-   yet — call it with neither argument (no `formatInternalId`, no `jsx`), and the platform default values will come back; the tool says so
+   yet — call it with neither argument (no `template`, no `jsx`), and the platform default values will come back; the tool says so
    plainly, and they must not be relayed to the user as the styling of their email.
 6. A request to change the look of nodes that follow the email's letter styles — the number first.
    Count in the document how many other elements an edit of the letter styles will affect: a node under them
    writes no styles of its own, so they are visible. Name the number and ask whether to edit the letter styles or
-   detach the named nodes from them. A question without the number gives the user nothing to decide with.
+   detach the named nodes from them. A question without the number gives the user nothing to decide with. When the
+   request itself says "throughout the email", "all the buttons", the choice is made: edit the letter styles and
+   name the number without asking.
 7. For QA/debug, download the HTML if an HTML check is needed, and/or get the PNG links
    through MCP per the rules of the "Checks, preview and QA" section. For an ordinary edit
    without QA no download is performed.
@@ -403,7 +410,7 @@ The state of the letter styles needs to be known only when the document actually
 §4). It is found out without an extra call:
 
 - the format is not named or does not exist yet — the styles are platform defaults; this follows from the fact itself;
-- `visual_template_get` answered verbatim `No visual template was saved for format '…' yet` — the same:
+- `visual_template_get` answered `No visual template was saved for …` — the same:
   there was nothing to save, so the styles are platform defaults;
 - the format contains an email — then this is already branch 2a–2b, where `visual_template_theme_get` is called for
   another reason; no separate call is needed.
@@ -433,7 +440,7 @@ allow a save without a new preview:
   - there is no `<Theme>` and the nodes name no look → "the email's letter styles stay as they are, the nodes follow
     them".
 
-  No line — the confirmation is incomplete. Separately from the line: if, per the conditions of step 7 of
+  No line — the confirmation is incomplete. Separately from the line: if, per the conditions of step 5 of
   `maestra-email/SKILL.md`, the offer to move the nodes' look into the letter styles is needed, and it has
   not been made in this conversation — make it right here, together with the other save parameters: "Save
   this email's styles as its letter styles? Then you'll be able to change headings and buttons across the whole
@@ -454,7 +461,8 @@ write confirmation.
 
 1. Call `visual_template_save` for the chosen `formatInternalId`.
 2. **One edit — one write.** The tool writes exactly into the `formatInternalId` it was given; do
-   not make a second call with the same JSX to another address.
+   not make a second call with the same JSX to another address. `settingsSource` — only in the save that
+   applies a saved template (`references/saved-template.md`).
 3. For an existing visual template, pass the versions from discovery:
    `mailingRowVersion` — the campaign has one — and `visualTemplateRowVersion` — it belongs to the
    version of the email you write into and is not taken from another version.
@@ -716,7 +724,8 @@ follow a single route:
    `campaign_edit` — name/UTM/schedule/timezone/rate/restrictions. After each
    write, update rowVersion through the chain above.
 4. The email body: Generator creates JSX → canonical visual workflow/bootstrap below →
-   optional preview/QA → a confirmed `visual_template_save`.
+   optional preview/QA → a confirmed `visual_template_save`. The link to the campaign comes back from that save;
+   until the first save there is none — report the `internalId` and the name, never an address built by hand.
 5. Set the recipients per `references/recipients.md`. Topic/subscription and live
    send/activate/delete are not configured through MCP: at the end, say explicitly that this has to be
    done in the UI. Offer a test
@@ -726,9 +735,9 @@ follow a single route:
 read, so the following make no sense in it:
 
 - personalization parameters marked *(automated only)* — they read the order;
-- product rows on mechanics that look at the customer's action — the cart,
-  viewed products, order items. Recommendations and product lists work in
-  both: they do not depend on an event.
+- product rows, and the collections of editor-template blocks, on mechanics that
+  look at the customer's action — the cart, viewed products, order items.
+  Recommendations and product lists work in both: they do not depend on an event.
 
 If the email the user asks for relies on such data, the kind must be
 `Automatic` — say so before creation, not after the email has been built in `Manual`.
@@ -780,7 +789,7 @@ is allowed only on an explicit request from the user.
 3. An empty format (`html: no`) may exist before the visual template is initialized,
    and allows a bootstrap with editor kind `Mindboxeditor` or `Rawhtml`.
 4. For the empty format found, call `visual_template_get`. The response
-   `No visual template was saved for format '…' yet` together with `html: no` turns on
+   `No visual template was saved for …` together with `html: no` turns on
    the bootstrap branch of the canonical workflow: new JSX → stale-preview notice →
    optional preview/HTML/PNG QA on request → confirmation with the preview status
    → the first `visual_template_save` without `visualTemplateRowVersion`.
@@ -846,12 +855,12 @@ Invariants (the procedure is not repeated here — **before running it you MUST 
 `references/before-after-mockup.md`**):
 
 - only on the user's yes to the §6 offer, or on their own request;
-- every version comes from its own `visual_template_preview` call with its own
-  `formatInternalId`; the script changes nothing in the email's markup except the sample values
+- every version comes from its own `visual_template_preview` call with its own template as
+  `settingsSource`; the script changes nothing in the email's markup except the sample values
   inside personalization chips and the chips' dashed outline — hand-assembled HTML is still
   forbidden;
 - "before" for an in-place edit is the §2 snapshot JSX — on a working campaign, the active version,
-  read with `visual_template_get` on its own `formatInternalId` — rendered with
+  read with `visual_template_get` with that version's own template — rendered with
   `visual_template_preview` and never saved back; a "before" with no visual template (raw HTML) gets no render — make the
   single mockup of the new version and say why;
 - sample values are invented and obviously fictional — a first name, an order number,
@@ -875,10 +884,10 @@ Invariants (the procedure is not repeated here — **before running it you MUST 
 8. `htmlBody` is not a fallback of the visual save; switching to raw HTML is allowed only on an explicit request from the user.
 9. Do not clear subject/preheader to empty/null through MCP — nullable behavior is not described by the contract; report the limitation and direct the user to the UI.
 10. Live send/activate/delete and applying the draft are not available through MCP — UI only; recipients — only per `references/recipients.md`, after separate confirmation. A test send (`campaign_send_test`) — only to `recipientId`s from a fresh `campaign_test_recipients`, after the user has explicitly chosen the recipients and consented to the send; on a timeout the call is not repeated. The test goes out from the saved version: either save an unsaved edit before the test, or say it out loud.
-11. Preview/save/editor errors are returned verbatim; silent repair is forbidden.
+11. Preview/save/editor errors are returned verbatim; silent repair is forbidden. A preview or save refused because a sync block was not found: after the editor's text, offer to remove its `<SyncBlock>` or to open the email in the editor.
 12. Validation errors are separated into pre-existing ones and those introduced by the current edit.
-13. For images use only the `url` from `gallery_images_list`, the address from the panel context / the `gallery_image_upload` response, or an external HTTPS URL that the user asks to leave as is; do not build URLs by hand and do not encode images yourself.
-14. The format's template type does not change through MCP: there is no workaround; retrying a refused save and `htmlBody` are not workarounds. The route is the "Changing the template type" section: a visual format of the same campaign, otherwise a new campaign after the user's consent.
+13. For images use only the `url` from `gallery_images_list`, the address from the panel context / the `gallery_image_upload` response; put the user's link to an image file into the gallery, not into the email; a personal or product image is a chip, not an address; do not build URLs by hand and do not encode images yourself.
+14. The format's template type does not change through MCP: there is no workaround; retrying a refused save and `htmlBody` are not workarounds. The route is the "Changing the template type" section: a new campaign after the user's consent, with the one-to-one caveat said in advance.
 15. Anything not available in the MCP tools (activation, live send, deletion, creating a format, changing the template type, recipients from a file), the agent does not do on the user's behalf: neither in the editor nor through browser automation. The browser is allowed only for reading the preview. If you run into such an action — name it, say where the user can do it, and stop.
 16. `Rawhtml/html:yes` is never a target of a visual save. `Rawhtml/html:no`
     allows bootstrap/recovery based on the result of `visual_template_get`; the success of the first
@@ -891,5 +900,6 @@ Invariants (the procedure is not repeated here — **before running it you MUST 
 |---|---|---|
 | You are composing MCP `feedback` text and it is unclear how to write `problem`/`context` | `references/feedback-examples.md` | Examples of user-report and agent-observation from real runs + anti-examples |
 | HTML download, PNG, mobile/desktop, QA/debug, rendering diagnostics or fallback (a simple preview stays in the core) | `references/preview-qa.md` | The extended QA procedure: download HTML, MCP PNG links, diagnosing complaints, repeats and fallback |
+| An email by a saved template, or the user asks to see their templates | `references/saved-template.md` | Picking the template, its letter styles, the confirmation line, the one save with `settingsSource` |
 | Set or change the campaign's recipients: a segment or a filter | `references/recipients.md` | Choosing the method, `segments_list` / the filter-building skill (`maestra:filter-build`), confirmation, writing |
 | The user said yes to the inbox mockup or asks for a before/after picture of an email | `references/before-after-mockup.md` | Which version is "before", rendering both, choosing sample values and the subject line, running `inbox_mockup.py`, fallback, hand-over |
