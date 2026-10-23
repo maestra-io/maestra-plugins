@@ -1,13 +1,12 @@
+---
+description: "The product row <CollectionRow>: recommendations, a product list, order or viewed products, products from an event, a manual collection — the mechanic and its required settings, the card, the chips a card takes"
+---
+
 # Product rows — `<CollectionRow>`
-
-**When to read:** the email contains products: recommendations, a product list, order products, viewed products, products from an event, or a manual collection. Do not generate `<CollectionRow>` before reading this file.
-
-**Return:** to Workflow / Self-check in `SKILL.md`; check the mechanic, all required settings, lookup values, the placement of product `<Var>` and that the family matches.
 
 A product row is the second kind of block row: instead of columns it holds product cards. Everything about
 it is here — how to build it, where it gets its products, which chips are allowed in its card and what an
-email with it breaks on. An ordinary email does not need this file; it is opened when the email contains
-products; the rest of the DSL surface is in [dsl-surface.md](./dsl-surface.md).
+email with it breaks on.
 
 ```
 Template  →  Block  →  CollectionRow  →  CardTemplate | CollectionCard  →  Column  →  element
@@ -25,8 +24,8 @@ a row, image above the words; here it is in JSX:
     <CollectionRow dataSource={{ "key": "ProductShowcase" }} orientation="vertical" columnCount={{ "value": 3 }} rowCount={{ "value": 1 }}>
       <CardTemplate url={[<Var param="ProductUrl" />]}>
         <Column size={12}>
-          <Image image={{ mode: "dynamic", dynamic: [<Var param="ProductPictureUrl" />] }} url={[<Var param="ProductUrl" />]} alt={[<Var param="ProductName" formatString={{ "isTruncateEnabled": true, "truncateValue": 40 }} />]} height={{ "height": 180 }} />
-          <Text themeVariant="h3"><p style="margin: 0"><Var param="ProductName" formatString={{ "isTruncateEnabled": true, "truncateValue": 40 }} /></p></Text>
+          <Image image={{ mode: "dynamic", dynamic: [<Var param="ProductPictureUrl" />] }} url={[<Var param="ProductUrl" />]} alt={[<Var param="ProductName" formatString={{ "isTruncateEnabled": false }} />]} height={{ "height": 180 }} />
+          <Text themeVariant="h3"><p style="margin: 0"><Var param="ProductName" formatString={{ "isTruncateEnabled": false }} /></p></Text>
           <Split columnsGap={{ "size": 0 }} innerSpacing={{ "top": 10, "bottom": 10 }} height={{ "height": 40 }}>
             <Column size={6}><Text innerSpacing={{ "top": 0, "bottom": 0 }}><p style="margin: 0"><Var param="ProductPrice" /></p></Text></Column>
             <Column size={6}><Text innerSpacing={{ "top": 0, "bottom": 0 }} style={{ "fontSize": 16, "inscription": ["crossed"], "color": "#666666" }}><p style="margin: 0"><Var param="ProductOldPrice" /></p></Text></Column>
@@ -39,9 +38,11 @@ a row, image above the words; here it is in JSX:
 </Template>
 ```
 
-This is a copy-safe example: no products are selected yet. Its mechanic is manual selection; `ProductShowcase`
-without `<CollectionCard>` is legal. If you know the user's mechanic, set it, and after generation say that
-the products need to be selected in the editor or named to you for a lookup.
+The name's `formatString` is off here because `ProductShowcase` is a manual selection; under a mechanic the card sets a limit — [personalization.md](personalization.md), "Long text".
+
+This is a copy-safe example: no products are selected yet. Its `ProductShowcase` is the manual-selection mechanic,
+which needs no settings and is legal without `<CollectionCard>`; a row whose source is not known at all is written
+without `dataSource`. With the mechanic known, it is set; the products are selected later, in the editor or by name for a lookup.
 
 **This is the base example, not the only correct card.** No mockup and no special requests — build this one.
 The user brought a mockup or described the card in words — lay it out accordingly, but build the links, chips
@@ -53,15 +54,17 @@ in a row (`columnCount` 2, image height 260) and a list — `orientation="horizo
 `<Column size={6}>`: image on the left, name with price and button on the right. Which one to take is said
 by the mockup or the user; if nobody said, take the example above.
 
-**All three card links are required** — `CardTemplate.url` (a click on the whole card), `Image.url`,
-`Button.url`, and each is the same product chip. Without it the card passes preview, but in the sent email
-the click leads nowhere. The SKILL.md rule "`Image.url` — only from an explicit user URL" does not apply
-to the card: the address comes from the mechanic, not from a person, and it is never a placeholder.
+**The card's `url` is the link of everything inside it.** The converter hands the card's `url` down to the
+`Image`, `Button`, `Text` and `Divider` in the card, over their own `url`: a `<CardTemplate>` and every
+`<CollectionCard>` with its own columns carries `url={[<Var param="ProductUrl" />]}`, and `Image.url` and
+`Button.url` repeat the same chip — the editor shows it on them. A card without `url` passes preview and looks the
+same, but in the sent email nothing in it is clickable, the picture and the button included. The address comes from the mechanic, not from a person: nobody is asked for it, and it is never a placeholder.
+
+A price chip prints the currency sign itself — `<Var param="ProductPrice" />` alone is "$1,234", with a $ written beside it "$1,234 $" ([personalization.md](personalization.md), "What a chip prints on its own").
 
 **The card writes no styles, except for the crossed-out price.** The look of the name and the button comes
-from the email's letter styles via `themeVariant`. Own styling is not forbidden, but a node that names a
-field those styles set (font, size, color, weight for text; background, border, radius, typography for a
-button) silently leaves them; `align` and `innerSpacing` are not set by the styles — those may be written.
+from the email's letter styles via `themeVariant`. Own styling is not forbidden, but a node that names a field of the covered set leaves the styles
+(`wiki/theme.md`); `align` and `innerSpacing` may be written.
 The self-check requirement "the CTA has a brand `background`" does not apply to the card button.
 
 **No products selected yet — do not write cards at all.** `<CollectionCard>` means "this exact product stands
@@ -72,10 +75,8 @@ Placeholders are drawn by `<CardTemplate>` itself, and how many is decided by th
 lays them out. So while the source is not chosen, do not invent a mechanic: a row without one is exactly the
 "added, not configured" state.
 
-`formatString` on the name is not for looks: without it the preview pads the value with repeats up to 150
-characters and the card falls apart. For products from a mechanic set a limit, for manually selected ones
-`isTruncateEnabled: false`, so that the preview shows the real name. Details — `references/personalization.md`,
-“Long text: `formatString`”.
+`formatString` on the name keeps the preview from padding it to 150 characters — `references/wiki/personalization.md`,
+“Long text — `formatString`”.
 
 ## One card renders every product
 
@@ -90,8 +91,7 @@ Its `<Column>` is the inner structure of the card, and it follows the orientatio
 words. `size` sums to 12, as with row columns. **A row holds one `<CardTemplate>`**; a second one is the error
 `A <CollectionRow> may hold only one <CardTemplate>`.
 
-Product values are **chips**. A product chip is authored only inside such a row; do not put it in an ordinary
-column, build a product row. `<Var>` forms are in `references/personalization.md`.
+Product values are **chips**, and they stand only inside such a row — `references/wiki/personalization.md`, "Where a chip stands".
 
 **The product image is personal, not a file.** The address comes as a chip, like a personal image from
 customer data: `image={{ mode: "dynamic", dynamic: [<Var param="ProductPictureUrl" />] }}`. A static file in
@@ -129,9 +129,9 @@ glue a prefix onto a name: the price of a product in an order is `OrderItemAmoun
 For `SingleProductListItem*` and `ProductView*` names are built the same way as for `ProductListItem*` — with
 their own prefix instead of `ProductListItem`. A name that does not exist will not be accepted by the
 converter: `Unknown personalization parameter` — so guessing is pointless, and the full list of product
-parameters by entity is in `references/product-parameters.md`.
+parameters by entity is in `references/wiki/product-parameters.md`.
 
-The family is chosen by the entity the mechanic iterates over. The converter rejects a chip from another family and suggests the counterpart parameter from the right family. A product chip outside `<CollectionRow>` is a different case: do not put it in an ordinary column, build a product row.
+The converter rejects a chip from another family and suggests the counterpart parameter from the right family.
 
 ## Where the products come from
 
@@ -141,7 +141,7 @@ The family is chosen by the entity the mechanic iterates over. The converter rej
 <CollectionRow dataSource={{ "key": "RECIPIENT_RECOMMENDATIONS", "model": { "settings": { "model": { "recoMechanicSystemName": "<SYSTEM_NAME_FROM_LOOKUP>" } } } }}>
 ```
 
-Do not copy this fragment before the lookup. The value `<SYSTEM_NAME_FROM_LOOKUP>` must be replaced with the exact `systemName` returned by `entities_list(entityType: "RecommendationMechanic")`; preview/save do not check an invented name.
+Do not copy this fragment before the lookup. The value `<SYSTEM_NAME_FROM_LOOKUP>` must be replaced with the exact `systemName` returned by the lookup of entity `RecommendationMechanic`; preview/save do not check an invented name.
 
 - **Write only what the mechanic declared.** A mechanic on its defaults is written with a single `key`.
 - **Mechanic names and their settings are not guessed.** A mechanic that cannot fill a product row is
@@ -149,12 +149,9 @@ Do not copy this fragment before the lookup. The value `<SYSTEM_NAME_FROM_LOOKUP
   the rejected: they iterate over the root object, not over products.
 - **A row may have no mechanic at all** — that is the state right after adding it, before a source is chosen.
   Then `dataSource` is simply not written.
-- **Do not write a mechanic without its required setting at all.** The setting is required by the package
-  policy. The current preview rejects an incomplete `RECIPIENT_RECOMMENDATIONS` without `recoMechanicSystemName`
-  (`RECIPIENT_RECOMMENDATIONS needs a value in its settings`, hint `recoMechanicSystemName`); save behavior on
-  an incomplete mechanic is not separately confirmed, so do not count a successful save as a completeness check.
-  The value is found by lookup — the product list, products and the recommendation mechanic are in
-  `entities_list` — and what is not there is asked of the user. There is no such thing as an empty setting or a placeholder.
+- **A mechanic is written with its required settings (★ in the table below)** — without them preview and save
+  refuse, naming the setting. The value is found by lookup — the product list, products and the recommendation mechanic are
+  entities of the project — and what is not there is asked of the user. There is no such thing as an empty setting or a placeholder.
 
 ## Mechanic settings
 
@@ -166,15 +163,15 @@ change them: as everywhere in the DSL, what is not declared keeps its value.
 | `RECIPIENT_RECOMMENDATIONS`, `PRODUCT_RECOMMENDATIONS` | **★ `recoMechanicSystemName`** — system name of the recommendation mechanic (see below for where to get it) |
 | `FROM_PRODUCT_LIST` | **★ `productListSystemName`** and **★ `productListInternalId`** — both; these are not two ways of naming one thing (see below for why); `availableForRecipient`, `enabledFilterBySegment`, `filterBySegmentDetails`, `singlePerGroup` |
 | `FROM_SEGMENT` | **★ `segmentSystemName`** and **★ `segmentationInternalId`** — also both; `random`, `availableForRecipient`, `singlePerGroup`, `filterByRecipientComputedFieldSettings` |
-| `SessionGetAddedToListProducts` | **★ `productListSystemName`** and **★ `productListInternalId`** — as for `FROM_PRODUCT_LIST`; `enabledFilterBySegment`, `filterBySegmentDetails`, `availableForRecipient`, `singlePerGroup` |
+| `SessionGetAddedToListProducts` | **★ `productListSystemName`** and **★ `productListInternalId`** — as for `FROM_PRODUCT_LIST`; `enabledFilterBySegment`, `filterBySegmentDetails`, `availableForRecipient`, `singlePerGroup` — products added to the list during the session: «products from the cart» in an automated campaign, where the action that fired it is the adding; in a bulk campaign the cart is `FROM_PRODUCT_LIST` over the project's cart list (`ProductListItem*`), with quantities and line totals |
 | `ORDER_PRODUCTS`, `ViewedProducts`, `ViewedProductsInSession`, `SessionProductCategoryViews`, `RecentlyBoughtProducts` | none required; `enabledFilterBySegment`, `filterBySegmentDetails`, `availableForRecipient`, `singlePerGroup` |
 | `CategoryProductsComputedField` | **★ `recoMechanicSystemName`** and **★ `computedField`** — an object `{ "systemName": …, "internalId": … }`, both fields |
 | `FromCustomerComputedField` | **★ `systemName`** and **★ `internalId`** — here the setting is the computed field object itself, i.e. `"settings": { "model": { "systemName": …, "internalId": … } }`; without the system name the expression stays `Recipient.CustomField` and the row fills nothing |
-| `ORDER`, `ProductShowcase`, `ProductListItem`, `ProductView`, `Empty` | no settings — a single `key` is written |
+| `ORDER`, `ProductShowcase`, `ProductListItem`, `ProductView` | no settings — a single `key` is written; `Empty` is how a read email prints a row with no source yet — carried over as is, never written anew (a new row without a source has no `dataSource`) |
 
 ### Where the recommendation mechanic comes from
 
-The system name comes from `entities_list`, `entityType: RecommendationMechanic`. A result row has `systemName`,
+The system name comes from the lookup of entity `RecommendationMechanic`. A result row has `systemName`,
 `name` and three suitability fields, because **not every mechanic will do**:
 
 | column | what to do with it |
@@ -185,9 +182,10 @@ The system name comes from `entities_list`, `entityType: RecommendationMechanic`
 
 The lookup returns the suitability fields, and the agent must apply them before generation: preview/save do not
 prove that the mechanic fits the chosen row or is ready for calculation. So the choice is made by the three
-columns, not by the first matching row. If no suitable one is found, tell the user rather than substituting an
-unsuitable one: there is nothing to build a recommendations row with, and it is better to suggest another
-filling mechanic.
+columns, not by the first matching row. With no suitable one there is nothing to build a recommendations row with, and another filling mechanic
+is the way out. A mechanic the person names goes through the same three columns — being asked for is not a
+column. One that fails them is not written; the column it failed names the reason,
+because nothing further down the line will catch it and the block goes out empty.
 
 Two pairs are easy to confuse, and mixing them up means building a row with the wrong iteration entity:
 
@@ -211,9 +209,9 @@ unused. The same goes for a segment (`segmentSystemName` + `segmentationInternal
 The canvas writes `productListId` as a third field but never reads it — do not invent it yourself, and if you
 see it in an email you are editing, leave it as is.
 
-**Where to get the values.** A product list — `entities_list`, entity `ProductList`: **`systemName` and
+**Where to get the values.** A product list — entity `ProductList`: **`systemName` and
 `internalId` are taken from the same result row**, like the product identifier triple. Recommendation mechanics —
-`entities_list`, entity `RecommendationMechanic`; the lookup returns `systemName`, `name`, `target`,
+entity `RecommendationMechanic`; the lookup returns `systemName`, `name`, `target`,
 `readyToUse` and `status`, and the agent applies the suitability rules above. This file does not describe a
 lookup for segments: a segment is taken from the user or from the email you are editing. An example of a mechanic with a list:
 
@@ -222,8 +220,8 @@ lookup for segments: a segment is taken from the user or from the email you are 
 ```
 
 Do not copy this fragment before the lookup. The values `<PRODUCT_LIST_SYSTEM_NAME_FROM_LOOKUP>` and
-`<PRODUCT_LIST_INTERNAL_ID_FROM_LOOKUP>` must be replaced with the exact `systemName` and `internalId` from the same row of
-`entities_list(entityType: "ProductList")`; preview/save do not check that the list exists.
+`<PRODUCT_LIST_INTERNAL_ID_FROM_LOOKUP>` must be replaced with the values from one row of
+the lookup of entity `ProductList`; preview/save do not check that the list exists.
 
 - **Some mechanics work only in an automated campaign.** They read a customer action, and a bulk
   campaign has no action — the row will go out empty. These are `ORDER`, `ORDER_PRODUCTS` (order products),
@@ -231,7 +229,7 @@ Do not copy this fragment before the lookup. The values `<PRODUCT_LIST_SYSTEM_NA
   `SessionGetAddedToListProducts`, `RecentlyBoughtProducts`. Independent of the campaign kind are
   `RECIPIENT_RECOMMENDATIONS`, `PRODUCT_RECOMMENDATIONS`, `FROM_PRODUCT_LIST`, `FROM_SEGMENT`,
   `ProductShowcase`. The converter itself lists everything it accepts in the error message; the campaign kind
-  is set at creation and does not change afterwards — see the `maestra-email-ops` skill.
+  is set at creation and does not change afterwards.
 
 ## Manually selected list
 
@@ -244,20 +242,20 @@ from the beginning of the file, not from here:
 
 ```jsx
 <CollectionRow dataSource={{ "key": "ProductShowcase" }} orientation="vertical" columnCount={{ "value": 3 }}>
-  <CardTemplate url={[<Var param="ProductUrl" />]}><Column size={12}><Text><p style="margin: 0"><Var param="ProductName" /></p></Text></Column></CardTemplate>
+  <CardTemplate url={[<Var param="ProductUrl" />]}><Column size={12}><Text><p style="margin: 0"><Var param="ProductName" formatString={{ "isTruncateEnabled": false }} /></p></Text></Column></CardTemplate>
   <CollectionCard product={{ "internalId": "<PRODUCT_INTERNAL_ID_FROM_LOOKUP>", "externalId": "<PRODUCT_EXTERNAL_ID_FROM_LOOKUP>", "externalSystemName": "<PRODUCT_EXTERNAL_SYSTEM_NAME_FROM_LOOKUP>" }} />
-  <CollectionCard product={{ "internalId": "<SECOND_PRODUCT_INTERNAL_ID_FROM_LOOKUP>", "externalId": "<SECOND_PRODUCT_EXTERNAL_ID_FROM_LOOKUP>", "externalSystemName": "<SECOND_PRODUCT_EXTERNAL_SYSTEM_NAME_FROM_LOOKUP>" }}><Column size={12}><Text>This exact one</Text></Column></CollectionCard>
+  <CollectionCard product={{ "internalId": "<SECOND_PRODUCT_INTERNAL_ID_FROM_LOOKUP>", "externalId": "<SECOND_PRODUCT_EXTERNAL_ID_FROM_LOOKUP>", "externalSystemName": "<SECOND_PRODUCT_EXTERNAL_SYSTEM_NAME_FROM_LOOKUP>" }} url={[<Var param="ProductUrl" />]}><Column size={12}><Text>This exact one</Text></Column></CollectionCard>
 </CollectionRow>
 ```
 
 Do not copy this fragment before the lookup. Each `product` triple must be replaced with the exact
-`internalId`/`externalId`/`externalSystemName` from `entities_list(entityType: "Product")` or from the email
+`internalId`/`externalId`/`externalSystemName` from the lookup of entity `Product` or from the email
 you are editing.
 
 The rules of such a row, and breaking any of them is an error:
 
-- **A card always names a product.** A card that names none is not a second template but an error;
-  if no products are selected yet, do not write cards at all — see the beginning of the file.
+- **A card always names a product.** A card that names none is not a second template but an error
+  ("No products selected yet", above).
 - **The triple is written in full and is not invented.** Two values out of three are not derived from the third, so
   a product named incompletely or with an extra field is rejected. The triple is taken from the lookup or from the
   email you are editing. Do not write an invented triple: preview/save do not prove that such a product exists and
@@ -266,27 +264,23 @@ The rules of such a row, and breaking any of them is an error:
   made by the converter, like all other ids of the document. An email read from the editor sometimes comes in the
   old form — `selectionId="…"` instead of `product` — it is readable and does not need rewriting; but both forms
   on one card are rejected: a product is named once.
-- **Products are looked up with `entities_list`, `entityType: Product`.** The user names a product in words
-  (“Home Alone quest”), by vendor code or by external id — any of the three is searched with a single `query`.
+- **Products are looked up as entity `Product`.** The user names a product in words
+  (“Home Alone quest”), by vendor code or by external id — any of the three is one search string.
   The result row has exactly the triple the card asks for: `internalId`, `externalId`, `externalSystemName` — and
   next to it `name`, `price`, `vendorCode`, `isAvailable`, `url`, `pictureUrl`, so the person can recognize the product.
 
-  **More than one found — show them and ask, do not choose yourself.** The catalog holds many products with the
-  same name; price and vendor code are printed for exactly this. And do not silently offer a product with `isAvailable: false`.
-
-  Nothing found — do not pick something similar and do not invent: ask the user for a more precise name,
-  vendor code or external id, or build the row without cards (below).
+  **Several rows can match one name.** The catalog holds many products with the same name; price and vendor code
+  are printed to tell them apart, and `isAvailable: false` marks one not for sale. A name that matches nothing is
+  found by vendor code or external id, or the row goes without cards (below).
 - **Product data is filled in on its own — it does not need to be passed.** The email stores only the identifier
-  triple per card, and `visual_template_preview` itself reads the name, price and image from the project catalog
+  triple per card, and the preview itself reads the name, price and image from the project catalog
   by these triples. It is enough for you to name the product correctly in `product` — the rest will appear in the
   preview without your involvement, and there is no need to restate product data in the call. A product that is
   no longer in the catalog will be drawn by the card as a placeholder; all cards will be drawn the same way if the
   catalog is unavailable — the layout will render in any case. A personal price and bonuses will never be in the
   preview: they are individual for each recipient, and nobody knows them before sending.
-- **No products selected yet — write the row without cards.** `ProductShowcase` with one `<CardTemplate>` and not a
-  single `<CollectionCard>` is a legal row: the card styling is ready, products are selected into it
-  separately. Do this when there is nowhere to take products from, and **tell the user that they need to be
-  selected** — in the editor or by naming them to you. Add cards when the products appear.
+- **No products selected yet — the row without cards** ("No products selected yet", above), the products are selected
+  later, in the editor or by name for a lookup; cards are added when they appear.
 - **Cards exist only under `ProductShowcase`.** Under a mechanic that finds products itself, the row would
   draw the cards and leave the mechanic unread.
 - **A card without its own content needs a `<CardTemplate>`** in the row — otherwise there is nothing to draw it
@@ -305,9 +299,10 @@ cards keep the same shape whatever the products. `original` — height by conten
 of alignment: it will have no group in the markup, and an `autosizeKey` next to it does nothing. Do not align
 text with a key while leaving it `original` — the key will be set, but the heights will not match.
 
-**The default differs between elements, and for a reason** (values — §6 `dsl-surface.md`): text length cannot be
-guessed in advance, so text has height by content, while products come in different proportions, so the image
-has a fixed one. When writing it yourself, stick to the same: `original` for text and the splitter, a number for the image.
+**The default differs between elements, and for a reason**: an image is 220 px `manual`, a `<Split>` 58 px
+`manual`, a text `original`. Text length cannot be guessed in advance, so text has height by content, while
+products come in different proportions, so the image has a fixed one. A height container reserves its space even
+when the content is shorter: in a card this is the main source of a broken rhythm. When writing it yourself, stick to the same: `original` for text, a number for the image and the splitter.
 
 **Image height in the editor's layouts is 180** for three in a row and for the list, **260** for two in a row;
 if you take a layout from there, take this too. For your own layout, compute from the card width: email width
@@ -324,9 +319,13 @@ default container will leave empty space under a square photo.
   editing, **or it is a name in words** for a group you have in mind: `autosizeKey: "the-picked-two"` on two
   cards will put them at the same height.
 - A card with its own content stands in its own group by default — the same as a detached card on the
-  canvas: its height becomes the author's business, which is what detaching is for.
+  canvas: its height becomes the author's business, which is what detaching is for. Two such cards side by side
+  therefore differ in height when their content does — one `autosizeKey` evens them out.
 
 ## Attributes of elements inside a card
+
+A card holds the plain elements and `<Labels>` (`wiki/label.md`); the editor does not offer `Menu`, `BulletList`
+or `Socials` there (`wiki/groups.md`).
 
 An element in a card carries settings it does not have in an ordinary column — outside a card the same
 attributes will be `Unknown attribute`:
@@ -334,8 +333,7 @@ attributes will be `Unknown attribute`:
 | Attribute | On | What it does |
 |---|---|---|
 | `height` | `Text`, `Image`, `Split` | Element height and autosize key. JSON: `{ "settingType": "original" \| "manual", "height": 180, "mobile": { … }, "autosizeKey": "…" }`. How the values differ and what to write by default — above, “Card heights and `autosizeKey`” |
-| `url` | `Text`, `Divider` | Link to the product — so that not only the button leads to it. Outside a card the same attribute on them is an error: there is nowhere to lead |
-| `alt` | `Image` | Image caption for when it did not load. In a card it is the product name chip; a string is accepted too, but one caption for all products is not what is needed |
+| `url` | `Text`, `Divider` | the product link, as on the card itself ("The card's `url`", above) |
 
 ## Attributes of row containers
 
@@ -347,9 +345,7 @@ attributes will be `Unknown attribute`:
 
 Row value forms: `columnCount` and `rowCount` — `{ "value": N }`; `cardGap` and `rowGap` —
 `{ "size": N, "mobile": { "size": N } }`; `orientation` — a string: `"horizontal"` (default) draws one
-card per line and does not read the column count, `"vertical"` gives a `columnCount` × `rowCount` grid. The
-written form is checked against the default, and the response to a wrong form shows the whole default — you do not
-need to remember the form, reading the refusal is enough.
+card per line and does not read the column count, `"vertical"` gives a `columnCount` × `rowCount` grid. A wrong
+form is refused with the default shown, cut at 70 characters.
 
-`url` on a card makes the whole card lead to the product, not only its button. Inside a card `url` also appears
-on `<Text>` and `<Divider>` — outside a card the same attribute on them is an error, because there is nowhere to lead.
+`url` on a card makes the whole card lead to the product — "The card's `url`", above.

@@ -16,7 +16,7 @@ the bottom-right corner.
 
 | Situation | "After" | "Before" |
 |---|---|---|
-| The email was edited in place | the saved JSX, its format — on a working campaign, the draft the save wrote into (its address is in the save response) | on a campaign that is not working, the §2 snapshot JSX — the one read before the edit — same format; on a working campaign, the active version customers receive now: `visual_template_get` on its own `formatInternalId` (it is still there — the edit went into the draft) |
+| The email was edited in place | the saved JSX, its format — on a working campaign, the draft the save wrote into (its address is in the save response) | on a campaign that is not working, the §2 snapshot JSX — the one read before the edit — same format; on a working campaign, the active version customers receive now: `visual_template_get` with that version's own template (it is still there — the edit went into the draft) |
 | The email was rebuilt as a copy or in a new campaign | the new campaign's format | the source campaign: `campaign_get` → `visual_template_get` of the version customers receive (the active one on a working campaign) |
 | A brand-new email | the new format | none — one mockup, no comparison |
 | The earlier version is raw HTML (`Rawhtml`, `html: yes`) | the new format | none: it has no visual render; make the single mockup and say why |
@@ -28,8 +28,9 @@ with `visual_template_get`.
 
 ## 2. Render each version
 
-One `visual_template_preview(jsx, formatInternalId)` call per version, each with **its own**
-format. Take `htmlUrl` from each response, and keep the mobile snapshot link too — it is the
+One `visual_template_preview` call per version, each with **its own** template as `settingsSource` —
+the version's `formatInternalId` names it (on a Maestra MCP that still lists only `formatInternalId`, that argument).
+Take `htmlUrl` from each response, and keep the mobile snapshot link too — it is the
 fallback input. Each call opens a new preview widget in hosts that have them; that is expected
 here, the user asked for the pictures.
 

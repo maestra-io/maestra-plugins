@@ -1,8 +1,10 @@
+---
+description: "Every product <Var> a card can carry, by the entity the row's mechanic iterates over: product, viewed product, product list row, order line"
+---
+
 # Product parameters — only inside a product row
 
-**When to read:** the product value you need is not in the short table in `product-rows.md`, or you need to pick a product `<Var>` for a card.
-
-**Return:** to `product-rows.md`, then to Self-check in `SKILL.md`; the parameter must match the entity that the chosen mechanic iterates over.
+The parameter matches the entity the chosen mechanic iterates over ([product-rows.md](product-rows.md)).
 
 Five product entities — product (`product`), viewed product (`productView`), product list row
 (`productListItem`), single list row (`singleProductListItem`) and order line (`orderItem`) —
@@ -10,24 +12,23 @@ Five product entities — product (`product`), viewed product (`productView`), p
 “value → parameter name” table in [product-rows.md](./product-rows.md). Parameters of the email itself are in
 [personalization-parameters.md](./personalization-parameters.md).
 
-Such a parameter is authored only inside a block that iterates over products — that is, a product row
-`<CollectionRow>` with its cards (`references/product-rows.md`). Do not use product chips outside a product
-row card: for products, build a `<CollectionRow>`.
+Such a parameter stands only inside a product row card (`references/wiki/personalization.md`, "Where a chip stands").
 
 **The family is chosen not by the author but by the row's mechanic.** A chip of an entity other than the one the mechanic iterates over is
 rejected by the converter, which itself names the counterpart parameter from the right family (“Use `ProductListItemProductName` — the
-same value, read from `productListItem`”). The “mechanic → family” table is in `references/product-rows.md`;
+same value, read from `productListItem`”). The “mechanic → family” table is in `references/wiki/product-rows.md`;
 here it is repeated in the table headings.
 
 **When asked to display order products, a cart, recommendations or viewed products, do not pick a similar
-parameter from the email list above** — build a product row. A row with recommendations or another
+parameter from `personalization-parameters.md`** — build a product row. A row with recommendations or another
 automatic mechanic can be built entirely from JSX. So can a row with manually selected products: the
-products themselves are found with a lookup (`entities_list`, `entityType: Product`) or taken from the email you are editing, and
-are never invented. If there is nowhere to take them from, build the design and say that the products need to be selected.
+products themselves are found with a lookup of entity `Product` or taken from the email you are editing, and
+are never invented; until they are selected the row stands without cards ([product-rows.md](product-rows.md)).
 
 ## `product` — product (19)
 
-Mechanics `Recipient.Recommendations`, `Products.GetBySegment`, `SessionGetViewProducts`, `SessionGetAddedToListProducts` and the other twelve — everything except the three below.
+The mechanics of the `Product*` row — `product-rows.md`, "One card renders every product" — everything except the entities below.
+`discountSettings` is `{ "format": "absolute" | "percent" }`; what a price or discount chip prints around the number — `personalization.md`, "What a chip prints on its own". `hostname` on `*AddToCartUrl` is the store's domain, asked from the user, not looked up.
 
 | `param` | its attributes |
 |---|---|

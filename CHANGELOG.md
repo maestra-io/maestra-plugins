@@ -1,5 +1,78 @@
 # CHANGELOG
 
+## 1.8.0 — 2026-10-23
+
+Upstream sync: the email skills from the upstream editor skills — `maestra-email` **1.18.2**,
+`maestra-email-ops` **1.17.1** (skill versions mirror upstream). Rebuilt from the upstream text
+with the standing Maestra adaptations re-applied, including the 1.7.2 alt-text rule; the other
+skills are unchanged.
+
+`maestra-email` — **the reference is now a wiki, one page per tag.** `SKILL.md` shrank to the
+procedure and the rules that span tags (upstream's 6 workflow steps plus the Maestra step 0, a tag table that says which page to
+open, "Rules across elements", "Value rules", "Refuse or simplify"); every attribute, default,
+value shape and snippet moved into `references/wiki/` — `containers.md` (Template, Block,
+FlexRow, Column, Split, the grid, spacing and mobile stacking), `text.md`, `typography.md`
+(fonts), `button.md`, `image.md`, `divider.md`, `html.md`, `groups.md` (Menu, BulletList,
+Socials), `label.md`, `theme.md` (letter styles and moving a look into them), `canvas.md` (what
+the preview shows that the sent email will not), `unsubscribe-link.md`, `quokka-block.md`,
+`sync-block.md`, plus the four carried over: `personalization.md`,
+`personalization-parameters.md`, `product-parameters.md`, `product-rows.md`. The old
+`dsl-surface.md`, `formats.md` and `examples.md` are gone — their content lives on the pages.
+Rules that are new or sharper: a read email is written back as read (markers, `font` objects,
+placeholders, storage forms — nothing completed or trimmed); every image address — `Image`,
+`Template.background`, `<img>` in `<Html>`, `bulletIcon`, `iconSrc` — comes from the gallery
+through Ops; `Image.alt` with a chip, `emptyVariableBehavior` on any element with a chip;
+`buttonSize` with `widthType` and the mobile sides; a `<Theme>` is a patch down to the fields;
+what a chip prints on its own (currency sign, bonus word, greeting) is never written next to
+it; "Two values in one text" are two elements; a timer or a video is not writable in JSX — say
+so and build the rest. The email details card (step 0, `references/email-details-card.md`), the
+"one size and one font per `<Text>`" rule (now a section of `wiki/text.md`) and the "alt text on
+every image" rule from 1.7.2 (now a section of `wiki/image.md`, pointed at from `html.md` and the
+rules across elements) stay as Maestra additions.
+
+- **Universal blocks** (`<SyncBlock savedBlockInternalId="…" />`, `wiki/sync-block.md`): a block
+  shared between emails is carried over as the tag it came as, never expanded into a `<Block>`
+  or rebuilt; its content is edited only in the editor; an unsubscribe link inside it is read
+  off the preview and not duplicated. The saved-block list tells `block` / `quokka` / `sync`
+  apart by `kind`.
+- **Editor-template blocks**: `<QuokkaBlock>` settings are changed through
+  `visual_template_quokka_block_describe` (the template's description names the attribute and
+  its value shape) and written onto the tag already in the email.
+
+`maestra-email-ops`:
+
+- **An email by a saved template** (`references/saved-template.md`): the user picks one of the
+  project's saved templates in the panel (`client_visual_template_list`); its blocks are read
+  with `visual_template_get`, its letter styles with `visual_template_theme_get`, and the one
+  save that applies it passes `settingsSource` so the email gets the template's width,
+  background, CSS and letter styles; later edits are saved without it.
+- **The template argument**: `visual_template_get` / `visual_template_theme_get` take the
+  campaign's or the saved template as `template`, `visual_template_preview` /
+  `visual_template_save` as `settingsSource`; `formatInternalId` on get, theme_get and preview is
+  deprecated. Until the Maestra MCP release that carries these arguments reaches a project, the
+  skill goes by the tool schema it sees and keeps passing `formatInternalId`; the saved-template
+  route needs that release.
+- Letter styles: "throughout the email" / "all the buttons" in the request settles the
+  styles-vs-node question without asking (the number is still named); a layout verdict is given
+  only after both preview snapshots were opened; a bare `Internal server error` is passed on
+  verbatim, not read as a value-shape error; `gallery_image_upload` with a link fetches only
+  `https://`; a preview or save refused because a sync block was not found offers to remove the
+  tag or to open the editor; the campaign link is reported only once a save returned it.
+
+Version `1.8.0` in all three manifests.
+
+## 1.7.2 — 2026-10-13
+
+- `maestra-email`: **alt text on every image.** `<Image>` takes `alt`, every `<img>` inside
+  `<Html>` carries an `alt` attribute, and `<Socials>` lines get the network name. The alt is the
+  image's text or meaning (a banner's headline and CTA, a nav tile's label, the brand name for a
+  logo, a short description for a photo), read off the image rather than guessed from the file
+  name; decorative images get `alt=""`. When an email is copied or ported, meaningful source alts
+  are kept and missing or placeholder ones are written. New "Images" → "Alt text" section, `alt`
+  added to the allowlist row of `Image`, the `<Html>` hard rule and the self-check. A Maestra
+  adaptation — on the next upstream sync keep the upstream wording if it carries the same rule,
+  otherwise re-apply it.
+
 ## 1.7.1 — 2026-10-08
 
 - `maestra-email`: **one size and one font per text block.** A heading is always its own `<Text>`,
