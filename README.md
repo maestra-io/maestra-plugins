@@ -20,10 +20,12 @@ Stuck at any point? Paste the link to this page into Claude and ask it to walk y
 
 ### Step 1. Connect Maestra to Claude
 
-1. In Maestra, open **Integrations → MCP server** and copy your account's connector link.
-2. In Claude, go to **Settings → Connectors → Add custom connector** and paste the link ([step-by-step guide](https://help.maestra.io/api-integrations/connect-an-ai-assistant-to-maestra-via-mcp)).
+1. In Claude, go to **Settings → Connectors → Add custom connector** and paste `https://mcp.maestra.io` ([step-by-step guide](https://help.maestra.io/api-integrations/connect-an-ai-assistant-to-maestra-via-mcp)).
+2. Enter your admin panel address (for example `yourbrand.maestra.io`) and sign in.
 
-**On a Team or Enterprise plan** — only the workspace Owner can add connectors: send them the connector link.
+**Need several Maestra accounts?** In Claude, add a separate connector for each account, using that account's own link from **Integrations → MCP server** (`https://mcp.omega.maestra.io/c/{accountSystemName}`).
+
+**On a Team or Enterprise plan** — only the workspace Owner can add connectors: send them `https://mcp.maestra.io`.
 
 ### Step 2. Install the skills
 
