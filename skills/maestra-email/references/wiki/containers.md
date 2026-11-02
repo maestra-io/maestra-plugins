@@ -45,7 +45,7 @@ the document does not name stays as it was: width and background are named here,
 | `gapAfterBlock` | `{ desktop: N, mobile: N }` — a strip **outside** the block, below it; it shows `externalBackground` when that is set, otherwise `Template.background` | 0 |
 | `externalBackground` | as `background` — what fills the page beside the block when the client's window is wider than the email | transparent |
 | `visibilityOnDevices` | `"all"` \| `"desktop"` \| `"mobile"` — on the canvas the hidden block is drawn blurred, in the email a media query hides it ([canvas.md](canvas.md)) | `"all"` |
-| `targeting` | printed by a read email on `Block`, `FlexRow` and `QuokkaBlock`; carried over unchanged, never written anew — a segment is chosen in the editor, and losing the attribute sends the block to everyone | — |
+| `targeting` | shows the block only to a segment or hides it from one — [Targeting](#targeting); a read email prints it on `Block`, `FlexRow` and `QuokkaBlock`, carried over unchanged | none: the block goes to everyone |
 
 "letter styles": `background` and `innerSpacing` are what the email's `BlockStyle` covers; a block that writes either
 is detached from it and the other is frozen at the styles of that moment ([theme.md](theme.md)). A partial
@@ -71,7 +71,7 @@ same `background` read as one card.
 | `columnVerticalDirection` | `{ direction: "ttb" \| "btt" }` — the order of the stacked columns on the phone; `btt` puts the last column first. Columns are written in desktop order, and the desktop does not change. Works only while the columns stack, with `isColumnsMobileAdaptive` true | `{ direction: "ttb" }` |
 | `emptyVariableBehavior` | `"show"` \| `"hide"` — [personalization.md](personalization.md) | `"show"` |
 | `visibilityOnDevices` | as for `Block`. A row hidden on a device leaves its block, the block's spacing and `gapAfterBlock` in place — to hide a whole section, hide the block; a hidden block takes its `gapAfterBlock` with it, so a strip that must stay on the phone goes on the previous block as `gapAfterBlock.mobile`, and a mobile-only block carries its own as `gapAfterBlock.mobile` too. Hiding switches at 500px, stacking at 600px: between them the desktop variant shows on the stacked layout | `"all"` |
-| `targeting` | as for `Block` | — |
+| `targeting` | as for `Block` — the row alone goes to the segment | none |
 
 `RowStyle` covers `background` and `innerSpacing`, as `BlockStyle` does for a block. The row spacing of the styles
 (10px on every side in the platform's) and the 20px `columnsGap` are part of every width and distance: for a mockup
@@ -180,3 +180,21 @@ the containers' above, an element's own spacing, gaps and alignment in [text.md]
 [divider.md](divider.md), [image.md](image.md), [label.md](label.md), [groups.md](groups.md); the heights inside a
 product row card — [product-rows.md](product-rows.md), "Card heights and `autosizeKey`". For `Block` and
 `FlexRow`, when the email's letter styles set a value, that one applies, not the own value in the table.
+
+## Targeting
+
+A `Block` or a `FlexRow` shown only to a segment of customers, or hidden from one. The segment comes from Ops: `segments_list` with `entityType: User`, a segment of an `Active` segmentation, picked by the user by name — never one from memory or by a likely name. The three values are taken from one row of that list, and the attribute is written as JSON — double quotes on every key and string:
+
+```jsx
+<Block targeting={{"enabled": true, "segmentation": {"type": "IN", "selectedSegment": {"id": "68", "systemName": "vipCustomers", "segmentationInternalId": "48"}}}}>
+```
+
+| field | value |
+|---|---|
+| `enabled` | `true`; `false` keeps the setting but sends the block to everyone |
+| `segmentation.type` | `"IN"` — only to the segment, `"OUT"` — to everyone except it |
+| `selectedSegment.id` | `segmentInternalId` of the row |
+| `selectedSegment.systemName` | `segmentSystemName` of the row |
+| `selectedSegment.segmentationInternalId` | `segmentationInternalId` of the same row |
+
+The preview draws a targeted block like any other — it does not check the segment; the save checks that the three values name one segment of an active customer segmentation. A pair taken from two rows is a segment that does not exist. A `targeting` read with the email is written back as it came: dropped, the block goes to everyone.

@@ -1,5 +1,47 @@
 # CHANGELOG
 
+## 1.9.0 — 2026-11-02
+
+Upstream sync, operations side: `maestra-email-ops` **1.1.1** (upstream renumbered the skill; it
+follows 1.17.1). `maestra-email` keeps its bundled reference (`references/wiki/`, 1.18.2) and takes
+the upstream generator rules that the new operations need. Upstream's generator 2.0.1 reads the
+editor reference from the MCP `wiki` tool (`visual-template-editor`), which Maestra does not serve
+yet — that part follows in a later release.
+
+`maestra-email-ops` — rebuilt from the upstream text, about half the size, with the Maestra additions
+re-applied (email details card, inbox before/after mockup, letter styles, English-only phrasing):
+
+- **Saved templates, the whole set**: an email by a template, plus editing a template's content,
+  renaming it, creating one from an email layout, and copying a campaign's email or another
+  template ("save this email as a template") — `references/saved-template.md`,
+  `client_visual_template_edit` / `client_visual_template_create`. The template's name is the user's.
+- **A preview after every change**: each generation or edit ends with one preview of the final
+  layout, both snapshots opened before anything is said about the layout; the save offer comes in the
+  same reply. The stale-preview notice and the "preview only on request" rule are gone.
+- **What the campaign still needs to go out**: after the first save into a campaign that is not
+  ready to send, a short list in words — subject and preheader (offered from the email's content),
+  sender, recipients of a bulk campaign, validation errors, schedule — filling what MCP can.
+- **A block or a row for a segment**: `segments_list` → the user picks → the generator writes
+  `targeting`; the save confirmation names each targeted block, and a new email with none asks once.
+- The `formatInternalId` fallback sentence from 1.8.0 is removed: the Maestra MCP now takes
+  `template` / `settingsSource` and has the saved-template tools.
+- Recipients: a working campaign's recipients are not changed from here (upstream).
+
+`maestra-email` (1.18.2 reference, rules brought up to date):
+
+- **`targeting` is written now**, not only carried over: three values from one `segments_list`
+  row as JSON — `{"enabled": true, "segmentation": {"type": "IN" | "OUT", "selectedSegment":
+  {"id", "systemName", "segmentationInternalId"}}}` on a `Block` or a `FlexRow`; new section
+  "Targeting" in `wiki/containers.md`. The save checks the segment; the preview does not.
+- **Project fonts**: a font that is not on the lists can be the project's own —
+  `font: { internalId }` from `visual_template_custom_font_list`, with its weights checked.
+- A new email gets an unsubscribe footer unless it is transactional or its wrapper or campaign
+  settings carry the link.
+- The move into letter styles is offered in the save confirmation and counts only nodes written in
+  the conversation; a mockup is compared on both snapshots; "the preview is the canvas" rule.
+- Kept as Maestra rules: one size and one font per `<Text>` (the canvas/side-panel mismatch), alt
+  text on every image, the email details card.
+
 ## 1.8.0 — 2026-10-23
 
 Upstream sync: the email skills from the upstream editor skills — `maestra-email` **1.18.2**,
