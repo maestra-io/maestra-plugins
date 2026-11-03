@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 1.10.0 — 2026-11-02
+
+`maestra-email` **2.0.1** — the editor reference is now served by the platform, not bundled. The
+skill reads each tag's attributes, defaults and allowed values from the MCP `wiki` tool (domain
+`visual-template-editor`, ~40 pages: `email.tags.*`, `email.topics.*`, `common.*`); the 18 pages
+under `references/wiki/` are removed. When the reference cannot be read, the skill stops rather
+than guesses. Rebuilt from the upstream text with the Maestra additions re-applied: the email
+details card (step 0), the inbox-mockup pointer (step 6), "letter styles", and the rules for alt
+text on every image and one size and one font per `<Text>` — the latter now explained by the
+reference itself: a size or a font written in the markup is drawn on the canvas but dropped by the
+editor at the first edit, which is why the canvas and the side panel showed different looks.
+`<Timer>` and `<Video>` of a read email are carried over as read (the reference has their pages);
+new ones are still not written.
+
+`maestra-email-ops` 1.1.1 — the two links into the bundled pages now name the wiki pages
+(`email.tags.template` "In the preview", `email.topics.unsubscribe_link`). No other change.
+
 ## 1.9.0 — 2026-11-02
 
 Upstream sync, operations side: `maestra-email-ops` **1.1.1** (upstream renumbered the skill; it
