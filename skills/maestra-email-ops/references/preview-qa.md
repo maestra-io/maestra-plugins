@@ -38,9 +38,9 @@ without PNG links. The preview of every iteration needs only `SKILL.md`.
   selectively and checks the expected texts, images, layout and obvious
   escaping/structure problems against the user's request. Do not read the whole HTML
   into the model's context without need. Where the canvas differs from the sent email — `#` links, sample
-  values, placeholders — is in `maestra-email/references/wiki/canvas.md`: none of it is a defect.
+  values, placeholders — is in the wiki page `email.tags.template`, "In the preview": none of it is a defect.
   In the canvas HTML every link inside `<Text>` is `#`, ordinary ones too. Addresses and the unsubscribe link are checked against the JSX, not the canvas HTML; a link inside a
-  `<SyncBlock>` — `maestra-email/references/wiki/unsubscribe-link.md`.
+  `<SyncBlock>` — `email.topics.unsubscribe_link`.
 
   PNG QA uses the desktop/mobile links from the preview response and visually checks
   content, clipping, the responsive branch and image loading. This is best-effort QA, not
