@@ -161,7 +161,7 @@ tool the email can be built only without this image, by agreement.
 - Each call opens a new widget; old ones are not updated. If the user asks which one to trust — the last one;
   earlier ones show earlier versions.
 - **The preview is the editor canvas, not the email that is sent**: sample values are not customer data, and
-  where the canvas differs from the sent email is in `maestra-email/references/wiki/canvas.md`.
+  where the canvas differs from the sent email is in the wiki page `email.tags.template`, "In the preview".
 - **`settingsSource` is the template whose settings the email will have once saved, and is passed only when
   there is one.** Editing a campaign's email — the campaign's template of the version being edited, once it has a saved
   email; building by a saved template — the saved template; a campaign without a saved email that is not built by a
