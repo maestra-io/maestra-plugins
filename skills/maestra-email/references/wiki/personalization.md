@@ -1,5 +1,5 @@
 ---
-description: "The <Var> chip: its form, where it stands, which settings come from a lookup, what it prints on its own, empty values, formatString, the common parameters, the two backend errors that do not name their cause"
+description: "The <Var> chip: its form, where it stands, which settings come from a lookup, what it prints on its own, shopper-currency money and formatMoney, empty values, formatString, the common parameters, the two backend errors that do not name their cause"
 ---
 
 # Personalization — `<Var>`
@@ -74,11 +74,86 @@ sample is not.
 | prices and amounts — every parameter with `formatDecimalPrice`: `*Price`, `*OldPrice`, `*PriceOfLine`, `*Amount`, `OrderDeliveryCost`, `OrderItem*PricePerUnit` | the project's currency sign — after the number or before it, by the project's locale | `affixVariableText={{ "aroundText": { "before": "…", "after": "…" } }}` — it replaces the default whole, so `before` alone drops the sign: repeat the sign in `after`, or put the word outside the chip (`from <Var … />`) and keep the default |
 | discounts — every parameter with `discountSettings` | the same currency sign: `format` is `absolute` by default, and the sign is the affix, not part of the format | `discountSettings={{ "format": "percent" }}` **together with** `affixVariableText={{ "aroundText": { "before": "", "after": "%" } }}`; `percent` alone changes only the number and the badge reads "$14.56" |
 | `RecipientGreeting` | the whole phrase, "Hello, Anna!", and "Hello!" for a customer without a name — in the project's language | `affixVariableText`, both blocks: `aroundText` alone leaves the nameless customer with the default phrase, and the preview does not show it |
+| shopper-currency amounts — every parameter with `formatMoney`: `OrderPresentment*`, `OrderItemPresentment*`, `ProductListItemPresentmentPrice` | the sign of the shopper's currency: the short one (`$`) on the seven older amounts, the unambiguous one (`US$`) on the three newer ones, unless `formatMoney` says otherwise | `formatMoney` — "Shopper-currency money"; there is no currency affix to repeat |
 | `ProductBonus`, `ProductListItemProductBonus` | the bonus word in the plural form the number takes (one / few / many) | `pluralizationAffix` with all three forms — the converter refuses a partial set; on `RecipientBonusBalance`, `RecipientNearestExpirationBonuses`, `OrderChargedBonuses`, `RecipientCustomFieldInteger` it is off and needs `"isEnabled": true` |
 
 ```jsx
 <Var param="RecipientGreeting" affixVariableText={{ "aroundText": { "before": "Hi, ", "after": "!" }, "emptyBehavior": { "mode": "fallback", "fallbackText": "Hi!" } }} />
 <Var param="RecipientBonusBalance" balance={{ "systemName": "<FROM_LOOKUP>", "name": "<FROM_LOOKUP>", "internalId": "<FROM_LOOKUP>" }} pluralizationAffix={{ "isEnabled": true, "pluralForms": { "one": "<ONE>", "few": "<FEW>", "many": "<MANY>" } }} />
+```
+
+## Shopper-currency money — `formatMoney`
+
+The `OrderPresentment*` and `OrderItemPresentment*` amounts are in the shopper's currency (of the order or checkout), and
+`ProductListItemPresentmentPrice` — the price per item of a cart (product list) row, as last sent for that row — is in
+the currency of that row; `formatMoney` prints that currency's sign itself. `displayMode` picks the sign:
+
+| `displayMode` | prints |
+|---|---|
+| `narrowSymbol` | the short sign: `$6.00` for US and Canadian dollars alike |
+| `symbol` | the unambiguous sign: `US$6.00`, `CA$6.00` |
+| `code` | the currency code: `USD 6.00` |
+
+What an omitted `formatMoney` means depends on the parameter, in JSX you read and in JSX you write:
+
+- On the seven older amounts — `OrderPresentmentTotalAmount`, `OrderPresentmentTotalTax`,
+  `OrderPresentmentTotalShipping`, `OrderPresentmentTotalDiscounts`, `OrderPresentmentGiftCardAmount`,
+  `OrderItemPresentmentLineTotal`, `OrderItemPresentmentUnitPrice` — it is the short sign (`narrowSymbol`): a bare
+  `<Var param="OrderPresentmentTotalAmount" />` prints `$6.00`. A chip the editor inserted reads back with
+  `formatMoney={{"displayMode":"symbol"}}` — keep a read chip's attribute as it came: dropping it turns `US$` into `$`.
+- On the three newer ones — `ProductListItemPresentmentPrice`, `OrderPresentmentTaxAddedToPrices`,
+  `OrderPresentmentTotalAmountWithTax` — it is `symbol`, what the editor inserts: a bare tag prints `CA$12.99`, and a
+  chip with `symbol` reads back as a bare tag.
+
+Writing a new chip, state the mode instead of leaving it out — it then means the same on every parameter. `symbol` is
+the recommended one: a store selling in several dollar currencies otherwise shows the same `$` for all of them; `code`
+for a currency whose sign is in Arabic script (AED, SAR, KWD, BHD, OMR), which does not read well in a left-to-right line.
+
+```jsx
+<Text><p style="margin: 0;">Total: <Var param="OrderPresentmentTotalAmount" formatMoney={{ "displayMode": "symbol" }} /></p></Text>
+```
+
+Each of these prints nothing, and its node hides, without the amount or the currency. `OrderPresentmentTotalAmount`
+is items plus delivery **without** the tax a shop adds to its prices at checkout; `OrderPresentmentTotalTax` is all of
+the order's tax, including tax already in the prices. Three of them carry a rule of their own:
+
+- `ProductListItemPresentmentPrice` hides on a cart row that has no price in the shopper's currency (a row sent
+  without a currency). Give it a companion, `ProductListItemProductPriceFallback`: the catalogue price, in the shop's
+  currency, shown only on such rows, with `formatDecimalPrice` (two decimals) and the sign typed in `affixVariableText`
+  like any catalogue price — exactly one of the two prints on every row, and neither on a row with no currency and no
+  catalogue price. **Put the two in separate elements** (or the element on `emptyVariableBehavior="show"`): a node
+  hides unless every chip in it has its data, and "a price in the shopper's currency" and "no such price" never hold
+  together, so one node holding both hides on every row.
+- `OrderPresentmentTaxAddedToPrices` (tax not included in prices) is the order's tax only when the shop adds tax at
+  checkout because its prices do not include it; in a shop whose prices include tax, or when that is unknown, it hides.
+  Add `numericFilter={{ "enabled": true, "operator": "gte", "value": 0.01 }}` to hide a zero tax too.
+- `OrderPresentmentTotalAmountWithTax` is the order total plus that tax when the shop adds it at checkout, and the
+  order total as it is otherwise — the amount the shopper sees. Its "no data" and numeric filter look at the order
+  total without tax.
+
+Do not combine `affixVariableText`'s `"emptyBehavior": { "mode": "fallback" }` with a `numericFilter` on any of them: an
+empty value then fails the email.
+
+```jsx
+<Text><p style="margin: 0;">Tax: <Var param="OrderPresentmentTaxAddedToPrices" formatMoney={{ "displayMode": "symbol" }} numericFilter={{ "enabled": true, "operator": "gte", "value": 0.01 }} /></p></Text>
+<Text><p style="margin: 0;">Total: <Var param="OrderPresentmentTotalAmountWithTax" formatMoney={{ "displayMode": "symbol" }} /></p></Text>
+```
+
+The cart price and its fallback stand only in a card of a product list row (`FROM_PRODUCT_LIST`,
+`references/wiki/product-rows.md`), each in its own element:
+
+```jsx
+<Block>
+  <CollectionRow dataSource={{ "key": "FROM_PRODUCT_LIST", "model": { "settings": { "model": { "productListSystemName": "<FROM_LOOKUP>", "productListInternalId": "<FROM_LOOKUP>" } } } }}>
+    <CardTemplate url={[<Var param="ProductListItemProductUrl" />]}>
+      <Column size={12}>
+        <Text><p style="margin: 0;"><Var param="ProductListItemProductName" formatString={{ "isTruncateEnabled": true, "truncateValue": 40 }} /></p></Text>
+        <Text><p style="margin: 0;"><Var param="ProductListItemPresentmentPrice" formatMoney={{ "displayMode": "symbol" }} /></p></Text>
+        <Text><p style="margin: 0;"><Var param="ProductListItemProductPriceFallback" formatDecimalPrice={{ "formattingRule": "N2", "roundingRule": null, "content": { "textBeforePlaceholder": "", "textAfterPlaceholder": "" } }} affixVariableText={{ "aroundText": { "enabled": true, "before": "$", "after": "" } }} /></p></Text>
+      </Column>
+    </CardTemplate>
+  </CollectionRow>
+</Block>
 ```
 
 ## Empty value

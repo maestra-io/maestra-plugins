@@ -6,11 +6,11 @@ description: "Every root <Var> parameter of the email with its attributes, and w
 
 A root parameter is not a product parameter, and an *(automated only)* parameter is empty in a bulk (`Manual`) campaign ([personalization.md](personalization.md)).
 
-49 parameters of the email itself, with the attributes of each. The other 127 are product parameters; they live only inside
+51 parameters of the email itself, with the attributes of each. The other 129 are product parameters; they live only inside
 a product row and are listed in [product-parameters.md](./product-parameters.md).
 
 **The entity decides where a parameter can go, and the campaign kind decides whether it is available at all.** An email parameter
-(`root`) goes anywhere in the email, including order data: the 26 rows marked *(automated only)*
+(`root`) goes anywhere in the email, including order data: the 28 rows marked *(automated only)*
 read the order, and in a bulk campaign they have nothing to read, while in an automated email such a parameter goes
 anywhere — in a heading, in text, in a button — and not only in a product row card. Three of them
 read not the order itself but a level inside it: `OrderItemStatusName` — an order line, `OrderPaymentAmount`
@@ -53,7 +53,9 @@ refuse right away; try it and see whether the converter accepts it.
 | `OrderPaymentAmount` *(automated only)* | `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `OrderPaymentType` *(automated only)* | `caseFormatter`, `affixVariableText` |
 | `OrderPresentmentGiftCardAmount` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderPresentmentTaxAddedToPrices` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
 | `OrderPresentmentTotalAmount` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
+| `OrderPresentmentTotalAmountWithTax` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
 | `OrderPresentmentTotalDiscounts` *(automated only)* | `discountSettings`, `numericFilter`, `formatMoney`, `affixVariableText` |
 | `OrderPresentmentTotalShipping` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
 | `OrderPresentmentTotalTax` *(automated only)* | `numericFilter`, `formatMoney`, `affixVariableText` |
@@ -81,7 +83,7 @@ refuse right away; try it and see whether the converter accepts it.
 ## Product parameters are listed separately
 
 Besides the email, parameters have five more entities — product, viewed product, product list row,
-single list row and order line. These are the remaining 127 parameters, and they are listed by entity in
+single list row and order line. These are the remaining 129 parameters, and they are listed by entity in
 [product-parameters.md](./product-parameters.md); they stand only inside a product row card
 ([personalization.md](./personalization.md), "Where a chip stands").
 

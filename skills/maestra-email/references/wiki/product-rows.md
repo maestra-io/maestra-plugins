@@ -120,6 +120,7 @@ glue a prefix onto a name: the price of a product in an order is `OrderItemAmoun
 | image | `ProductPictureUrl` | `ProductListItemProductPictureUrl` | `OrderItemProductPictureUrl` |
 | link | `ProductUrl` | `ProductListItemProductUrl` | `OrderItemProductUrl` |
 | price | `ProductPrice` | `ProductListItemProductPrice` | `OrderItemAmount` |
+| price in the shopper's currency | — | `ProductListItemPresentmentPrice`, and `ProductListItemProductPriceFallback` in a separate element | `OrderItemPresentmentUnitPrice` (the shopper's currency of the order, no fallback) |
 | price before discount | `ProductOldPrice` | `ProductListItemProductOldPrice` | `OrderItemBaseAmount` |
 | description | `ProductDescription` | `ProductListItemProductDescription` | `OrderItemProductDescription` |
 | discount | `ProductDiscount` | `ProductListItemProductDiscount` | `OrderItemDiscount` |
@@ -127,7 +128,11 @@ glue a prefix onto a name: the price of a product in an order is `OrderItemAmoun
 | manufacturer | `ProductVendorName` | `ProductListItemProductVendorName` | `OrderItemProductVendorName` |
 
 For `SingleProductListItem*` and `ProductView*` names are built the same way as for `ProductListItem*` — with
-their own prefix instead of `ProductListItem`. A name that does not exist will not be accepted by the
+their own prefix instead of `ProductListItem`. The exception is the price in the shopper's currency: of the list
+families only the product list row (`FROM_PRODUCT_LIST`) has it, with the catalogue-price fallback for a row sent
+without a currency. `Product*`, `SingleProductListItem*` and `ProductView*` have no counterpart, and a prefix glued
+onto it is not a parameter; an order line has its own `OrderItemPresentment*` amounts. The rules for the pair are in
+`references/wiki/personalization.md`, "Shopper-currency money". A name that does not exist will not be accepted by the
 converter: `Unknown personalization parameter` — so guessing is pointless, and the full list of product
 parameters by entity is in `references/wiki/product-parameters.md`.
 
