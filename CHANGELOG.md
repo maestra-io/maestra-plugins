@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 1.9.1 — 2026-11-20
+
+`maestra-email` knows the four shopper-currency fields of the email editor, checked line by line
+against the editor's own JSX reference (the renderer library's `personalization_parameters`,
+`product_parameters` and `personalization` pages). The skill version stays 1.18.2: it mirrors upstream.
+
+- **New parameters**: `OrderPresentmentTaxAddedToPrices` (tax not included in prices) and
+  `OrderPresentmentTotalAmountWithTax` (order total with tax) — email root, automated only;
+  `ProductListItemPresentmentPrice` (price per item in the shopper's currency) and
+  `ProductListItemProductPriceFallback` (product price when there is none in the shopper's currency) — product
+  list row. Rows added to `wiki/personalization-parameters.md` and `wiki/product-parameters.md`;
+  counts recomputed from the tables: 51 email parameters (28 automated only), 129 product parameters
+  (35 in the product list row), 180 in all.
+- `wiki/personalization.md`: a shopper-currency row in "What a chip prints on its own" and a new
+  section "Shopper-currency money — `formatMoney`": the display modes; an omitted `formatMoney` is the
+  short sign on the seven older amounts and `symbol` on the three newer ones; the order amount
+  excludes tax added at checkout, the order tax is all tax; the cart price and its fallback in
+  separate elements, and why; the tax field with `numericFilter` `gte 0.01`; the total with tax; no
+  `emptyBehavior` fallback together with a `numericFilter`; examples.
+- `wiki/product-rows.md`: "price in the shopper's currency" in the value → name table — the product
+  list row with its fallback; no counterpart in `Product*`, `SingleProductListItem*`, `ProductView*`.
+
 ## 1.9.0 — 2026-11-02
 
 Upstream sync, operations side: `maestra-email-ops` **1.1.1** (upstream renumbered the skill; it

@@ -8,7 +8,7 @@ The parameter matches the entity the chosen mechanic iterates over ([product-row
 
 Five product entities — product (`product`), viewed product (`productView`), product list row
 (`productListItem`), single list row (`singleProductListItem`) and order line (`orderItem`) —
-127 parameters out of 176, with the attributes of each. Open it when the product value you need is not in the
+129 parameters out of 180, with the attributes of each. Open it when the product value you need is not in the
 “value → parameter name” table in [product-rows.md](./product-rows.md). Parameters of the email itself are in
 [personalization-parameters.md](./personalization-parameters.md).
 
@@ -52,7 +52,7 @@ The mechanics of the `Product*` row — `product-rows.md`, "One card renders eve
 | `ProductVendorCode` | `productSegment`, `caseFormatter`, `affixVariableText` |
 | `ProductVendorName` | `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
 
-## `productListItem` — product list row (33)
+## `productListItem` — product list row (35)
 
 Mechanic `FROM_PRODUCT_LIST` — the row iterates over a project product list.
 
@@ -69,6 +69,7 @@ Mechanic `FROM_PRODUCT_LIST` — the row iterates over a project product list.
 | `ProductListItemDiscountByOldProductPrice` | `discountSettings`, `productSegment`, `numericFilter`, `formatDecimal`, `affixVariableText` |
 | `ProductListItemDiscountByPriceOfLine` | `discountSettings`, `productSegment`, `numericFilter`, `formatDecimal`, `affixVariableText` |
 | `ProductListItemOldPriceOfLine` | `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
+| `ProductListItemPresentmentPrice` | `productSegment`, `numericFilter`, `formatMoney`, `affixVariableText` |
 | `ProductListItemPrice` | `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `ProductListItemPriceOfLine` | `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `ProductListItemProductAddToCartUrl` | `hostname`, `externalSystem`, `amount`, `discountQuery`, `destinationRoute`, `productSegment`, `affixVariableText` |
@@ -88,6 +89,7 @@ Mechanic `FROM_PRODUCT_LIST` — the row iterates over a project product list.
 | `ProductListItemProductPersonalPrice` | `personalPriceTypeSettings`, `inputLimitSetting`, `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixPersonalPriceEditor`, `affixVariableText` |
 | `ProductListItemProductPictureUrl` | `productSegment` |
 | `ProductListItemProductPrice` | `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
+| `ProductListItemProductPriceFallback` | `productSegment`, `numericFilter`, `formatDecimalPrice`, `affixVariableText` |
 | `ProductListItemProductUrl` | `productSegment`, `affixVariableText` |
 | `ProductListItemProductVendorCode` | `productSegment`, `caseFormatter`, `affixVariableText` |
 | `ProductListItemProductVendorName` | `productSegment`, `formatString`, `caseFormatter`, `affixVariableText` |
