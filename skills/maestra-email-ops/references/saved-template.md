@@ -14,10 +14,11 @@ saved template.
 
 1. **Target.** §1–§2 of the canonical workflow; a new campaign — "New campaign from scratch" first.
 2. **Reading.** `visual_template_get` with `template` — the saved template.
-3. **Letter styles**, when the generator needs them — `visual_template_theme_get` on the saved template: after
-   the save the email has the template's styles, not the campaign's.
-4. **Confirmation** — §4, with the letter-styles line "the email's width, background, CSS and letter styles are
-   taken from template <name>", plus "and changed by this document" if it has `<Theme>`.
+3. **Branded letter styles**, when the generator needs them — `visual_template_theme_get` on the saved template:
+   after the save the email has the template's styles, not the campaign's.
+4. **Confirmation** — §4, with the branded-letter-styles line "the email's width, background, CSS and
+   branded letter styles are taken from template <name>", plus "and changed by this document" if it has
+   `<Theme>`.
 5. **Save** — §5 with `settingsSource` — the saved template, in this one save only. The next edits are saved
    without it: the campaign already holds the settings, and passing it again overwrites what the user has
    changed in the editor since.
@@ -39,6 +40,6 @@ saved template.
 4. **The name** of a new template or a copy is the user's: ask for it if the request does not give one.
 5. **Confirmation** before writing JSX — `client_visual_template_edit` with `jsx` and
    `client_visual_template_create` with `content` `new`: the template's name, the change and
-   the letter-styles line — for a change, the line of §4; for a new template, "the template's width, background,
-   CSS and letter styles are taken from <template>" or "… are the platform defaults", plus "and changed by this
-   document" if it has `<Theme>`. A rename and a copy are done on the request.
+   the branded-letter-styles line — for a change, the line of §4; for a new template, "the template's width,
+   background, CSS and branded letter styles are taken from <template>" or "… are the platform defaults", plus
+   "and changed by this document" if it has `<Theme>`. A rename and a copy are done on the request.

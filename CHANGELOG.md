@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.10.1 — 2026-11-23
+
+`maestra-email-ops` 1.1.2 — names the email's styles as the editor and `maestra-email` do: "branded
+letter styles" (the editor's switch reads "Apply branded letter styles to an element"). Wording only, in
+the skill, `references/saved-template.md` and `references/before-after-mockup.md`; the confirmation
+line of §4 is now "branded letter styles:", and the save confirmation asks "Save this email's styles as
+its branded letter styles?". The plugin description in the manifests and the README say the same. No
+change in behavior.
+
 ## 1.10.0 — 2026-11-23
 
 `maestra-email` **2.0.1** — the editor reference is now served by the Maestra Platform, not bundled. The

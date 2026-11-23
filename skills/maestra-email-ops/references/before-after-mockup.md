@@ -37,7 +37,7 @@ here, the user asked for the pictures.
 The links are temporary: render and run the script in one go, don't park them for later.
 
 If this edit wrote a `<Theme>` into the format, the "before" rendered under the same format
-picks up the new letter styles. Say so when handing the pictures over.
+picks up the new branded letter styles. Say so when handing the pictures over.
 
 ## 3. Choose the sample values and the header
 
@@ -118,7 +118,7 @@ Hand over with the host's file-delivery tool, the side-by-side image first. In o
 
 - it is a mockup built from the platform's render, with invented sample values (name them);
 - long images get compressed by messengers when sent as a photo — send them as a file;
-- the letter-styles caveat from step 2, if it applies.
+- the branded-letter-styles caveat from step 2, if it applies.
 
 Don't relay `containerWidth`, don't present the sample values as customer data, and don't send
 the pictures anywhere yourself.

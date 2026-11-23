@@ -1,9 +1,9 @@
 ---
 name: maestra-email-ops
-description: Operational actions for Maestra emails — preview, reading and saving the visual template, letter styles, saved templates (an email by one, changing, creating, copying), saved blocks, a block shown only to a segment, reading/editing campaign metadata and recipients (a segment or a filter), what a campaign still needs to go out, test sends, finding gallery assets via MCP, uploading images from the user's machine through the MCP App panel, PNG preview links, and an inbox-style mockup of the finished email (before/after when there is an earlier version) to share with a client or the team. Use together with the maestra-email skill when images, a preview, a check, a test send or a write to Maestra are needed, or when the user wants a picture of the email as it looks in an inbox ("before/after", "до/после", "mockup", "скриншот для клиента").
+description: Operational actions for Maestra emails — preview, reading and saving the visual template, branded letter styles, saved templates (an email by one, changing, creating, copying), saved blocks, a block shown only to a segment, reading/editing campaign metadata and recipients (a segment or a filter), what a campaign still needs to go out, test sends, finding gallery assets via MCP, uploading images from the user's machine through the MCP App panel, PNG preview links, and an inbox-style mockup of the finished email (before/after when there is an earlier version) to share with a client or the team. Use together with the maestra-email skill when images, a preview, a check, a test send or a write to Maestra are needed, or when the user wants a picture of the email as it looks in an inbox ("before/after", "до/после", "mockup", "скриншот для клиента").
 metadata:
   author: Maestra.io
-  version: 1.1.1
+  version: 1.1.2
 ---
 
 > Note: `Mindboxeditor` is the platform's literal editor-kind value returned by the API (legacy name); do not rename it.
@@ -80,7 +80,7 @@ The sending protocol is mandatory in both cases:
 | Change the content inside a `<QuokkaBlock>` of an email that was read or of a library block | `visual_template_quokka_block_describe` by the block's `templateId` → the Generator → §4–§5 |
 | Change the content inside a `<SyncBlock>` | not through MCP: say it is a universal block (a block shared between emails), edited only in the editor |
 | "heading", hero, content in the email body | the visual workflow, not subject |
-| "styling", "design", "letter styles", "the style of all buttons/headings" | the email's letter styles: `visual_template_theme_get` and `<Theme>` in the JSX (§3), not subject |
+| "styling", "design", "branded letter styles", "the style of all buttons/headings" | the email's branded letter styles: `visual_template_theme_get` and `<Theme>` in the JSX (§3), not subject |
 | Change the template type: "rebuild it in the visual editor", "convert it to HTML" | "Changing the template type" |
 | "email subject", sender, preheader | `campaign_get` → `campaign_edit_content` |
 | Name, UTM, schedule | `campaign_get` → `campaign_edit` |
@@ -229,17 +229,17 @@ The only detailed workflow for reading, editing and writing JSX.
 ### 3. Editing
 
 1. Generator makes only the requested changes; each change ends with a preview.
-2. The generator needs the current letter styles — to move a look into `<Theme>` or check values after the
-   move — `visual_template_theme_get` on the campaign's template with the current JSX; give the fragment to the
-   generator as is. Platform defaults (no template yet) are never relayed to the user as their email's styling.
-3. A request to restyle nodes that follow the letter styles — the number first. Count how many other elements
-   an edit of the letter styles will affect, name the number and ask: edit the letter styles or detach the named
-   nodes. "Throughout the email", "all the buttons" — the choice is made: edit the letter styles and name the
-   number without asking.
+2. The generator needs the current branded letter styles — to move a look into `<Theme>` or check values after
+   the move — `visual_template_theme_get` on the campaign's template with the current JSX; give the fragment to
+   the generator as is. Platform defaults (no template yet) are never relayed to the user as their email's styling.
+3. A request to restyle nodes that follow the branded letter styles — the number first. Count how many other
+   elements an edit of the branded letter styles will affect, name the number and ask: edit the branded letter
+   styles or detach the named nodes. "Throughout the email", "all the buttons" — the choice is made: edit the
+   branded letter styles and name the number without asking.
 
-The state of the letter styles is needed only when the document names a look, and needs no separate call: no
-format or `No visual template was saved for …` — platform defaults; an email in the format — item 2, only when the
-generator needs the values. The tool's response is large; do not call it for this question alone.
+The state of the branded letter styles is needed only when the document names a look, and needs no separate call:
+no format or `No visual template was saved for …` — platform defaults; an email in the format — item 2, only when
+the generator needs the values. The tool's response is large; do not call it for this question alone.
 
 ### 4. Confirmation
 
@@ -257,24 +257,25 @@ the user saw in the last preview:
   email (the first save into an empty format, or one replacing the format's email) with none, and segments never
   touched in the conversation — ask once whether some block should go only to a segment; "no" holds to the end of the
   conversation
-- letter styles: this line is mandatory in **every** confirmation and is read directly from the document, not
-  from memory of the questions asked — three mutually exclusive cases:
-  - the document has `<Theme>` → "the email's letter styles are set by this document";
+- branded letter styles: this line is mandatory in **every** confirmation and is read directly from the document,
+  not from memory of the questions asked — three mutually exclusive cases:
+  - the document has `<Theme>` → "the email's branded letter styles are set by this document";
   - there is no `<Theme>`, and the nodes name their own look → "the email is saved with its own styles on each
     element";
-  - there is no `<Theme>` and the nodes name no look → "the email's letter styles stay as they are, the nodes follow
-    them".
+  - there is no `<Theme>` and the nodes name no look → "the email's branded letter styles stay as they are, the
+    nodes follow them".
 
   No line — the confirmation is incomplete. Separately from the line: if the document meets the condition of
   step 5 of `maestra-email/SKILL.md`, and the offer has not been made in this
   conversation — make it right here, together with the other save parameters: "Save
-  this email's styles as its letter styles? Then you'll be able to change headings and buttons across the whole
-  email at once." One conversation — one such question: the answer holds until its end, and neither a second
+  this email's styles as its branded letter styles? Then you'll be able to change headings and buttons across the
+  whole email at once." One conversation — one such question: the answer holds until its end, and neither a second
   save nor edits re-trigger it
 - existing email: only if the format already had a visual template and replacement was chosen —
   "the email in the format is replaced entirely"
-- style move: only if the edit moves the nodes' styles into the email's letter styles — "the styles move
-  into the email's letter styles, the look does not change; from then on they can be edited across the whole email at once"
+- style move: only if the edit moves the nodes' styles into the email's branded letter styles — "the styles move
+  into the email's branded letter styles, the look does not change; from then on they can be edited across the
+  whole email at once"
 - applying line: only for a working campaign — "customers will see the edit after it is applied in
   the editor"
 ```
@@ -285,8 +286,8 @@ An ambiguous target is asked about earlier and separately from the write confirm
 
 1. **One edit — one write** into the chosen `formatInternalId`; no second call with the same JSX to another
    address. `settingsSource` — only in the save that applies a saved template (`references/saved-template.md`).
-   Moving styles into the letter styles is **one** save: `<Theme>`, the nodes the styles left and `themeVariant` in
-   one document — saved apart, the email is left without a look in between.
+   Moving styles into the branded letter styles is **one** save: `<Theme>`, the nodes the styles left and
+   `themeVariant` in one document — saved apart, the email is left without a look in between.
 2. An existing template: `mailingRowVersion` and the `visualTemplateRowVersion` of the version you write into.
    A bootstrap: `mailingRowVersion` only. A draft the save itself creates needs no template version either.
 3. Take from the response the new versions, the state and validation errors; the campaign version — per
