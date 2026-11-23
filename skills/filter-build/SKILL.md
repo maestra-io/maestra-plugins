@@ -147,8 +147,7 @@ browsing `types = ["segment"]` without a query, one narrowing it with `query = "
 
 These are two separate searches. For another page of either, repeat the same arguments and
 add `"cursor": "<exact nextCursor from that response>"`. If the cursor is rejected, restart
-the same listing once without `cursor`; on a repeated failure, offer a feedback report: the step 10
-template as far as it applies (no reference filter is needed) and its consent steps. Follow
+the same listing once without `cursor`; report a repeated failure through feedback. Follow
 `nextCursor` as needed; an incomplete or truncated response does not establish absence. For segments, `pageSize` counts
 segmentations. A matching segmentation can include child segments whose names do not
 match the query. A segmentation and one segment within it are different selections: keep
@@ -243,15 +242,9 @@ does not save a segment or change data.
 
 If the user says the result is wrong, clarify the mismatch and ask for a link to a filter
 that represents the intended selection. Use that URL as a reference in feedback; request
-its JSON as well if you need to inspect or edit it. Send the report through the same server,
-only with the user's consent:
+its JSON as well if you need to inspect or edit it. Send the report through the same server.
 
-1. Show the user the full report text exactly as it will be sent and ask, for example:
-   "Send this report to the Maestra developers?"
-2. Call `feedback` only after an unambiguous yes. If the user changes the text, show the new
-   version and ask again. On a no, do not send; offer the report as copyable text instead.
-
-When you call it, pass the report below as its `feedback` argument.
+When you call `feedback`, pass the report below as its `feedback` argument.
 
 Fill this template from the current session. Keep both URL fields explicit; write
 `not provided` or `unavailable` when the source does not exist. Never invent a trace ID.
@@ -279,12 +272,9 @@ with SQL, selected refs, coverage, finalSql, platform verdicts and feedbackState
 Remove credentials and personal data. Report only observed behavior. A missing reference
 filter or trace URL does not prevent reporting: include the visible technical trace anyway.
 
-`feedback` accepts one text report, not a trace attachment. Every `feedback` call while you run
-this skill, whatever prompts it, follows the two consent steps above. Running as a sub-agent with
-no way to ask the user, do not call `feedback`: end your answer with the report text under the
-heading `Feedback report`, for the caller to offer. Say it was submitted only after the tool
-succeeds. If unavailable, provide a copyable report. Continue a requested correction through this
-workflow; do not promise a reply from the feedback channel.
+`feedback` accepts one text report, not a trace attachment. Say it was submitted only after
+the tool succeeds. If unavailable, provide a copyable report. Continue a requested correction
+through this workflow; do not promise a reply from the feedback channel.
 
 ## Batch requests
 

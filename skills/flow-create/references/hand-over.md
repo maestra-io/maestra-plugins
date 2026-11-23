@@ -85,8 +85,7 @@ real. It is an offer, never a step you take on your own — you act on an explic
 else, and you never launch, pause, stop or delete the flow (`SKILL.md`, top and step 8).
 
 **When they accept, the reply also asks once for a 1-to-10 rating of the build**, in one unobtrusive
-line that says the number, any comment and the flow ids go to the Maestra developers — never before
-acceptance, and once per thread: an unanswered ask is spent
+line — never before acceptance, and once per thread: an unanswered ask is spent
 (`references/feedback-and-selfcheck.md` → *Rating the build*).
 
 ## Reporting a stop under CRITICAL 6
@@ -114,10 +113,7 @@ Cut it, whatever else is true of it, if the user cannot act on it:
 - **System names, ids, type tags, row versions, field names, discriminators** — anything from the
   platform's own vocabulary.
 - **Tool behaviour** — how a write answered, that a listing had to be re-queried. If it is worth
-  reporting, or a filter sub-agent returned a `Feedback report`, offer in *Suggestions* to send the
-  Maestra developers a report. On a yes, show the full text exactly as it will be sent, with no
-  credentials or personal data, and call `feedback` only after an unambiguous yes to that text. If
-  they change it, show the new version and ask again; on a no, send nothing.
+  reporting, it goes to the `feedback` tool, not to the reader.
   > **One exception: a message step 7 tells you to pass on verbatim (CRITICAL 5) outranks this.**
   > Never tidy such a message out of the hand-over, and never paraphrase it into something acceptable.
 - **A platform quirk with no user-side move.** A value the read path regenerates and nothing can
