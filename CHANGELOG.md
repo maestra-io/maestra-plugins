@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.9.2 — 2026-11-23
+
+- Filter and flow skills send `feedback` reports without asking first; a filter sub-agent sends its own
+  report. The email skills still ask before sending.
+- README: the "Send" line of "What the skills do in your account and on your computer" says the same.
+
 ## 1.9.1 — 2026-11-20
 
 `maestra-email` knows the four shopper-currency fields of the email editor, checked line by line
